@@ -42,16 +42,6 @@ matrix:
         - CIBW_BUILD="cp36-*"
         - COVER="on"
 
-    - name: "Linux py37"
-      sudo: required
-      language: python
-      python: 3.7
-      services: docker
-      env:
-        - PIP=pip
-        - CIBW_BUILD="cp37-*"
-        - COVER="off"
-
     - name: "MacOS py27"
       os: osx
       language: generic
@@ -82,14 +72,6 @@ matrix:
       env:
         - PIP=pip2
         - CIBW_BUILD="cp36-*"
-        - COVER="off"
-
-    - name: "MacOS py37"
-      os: osx
-      language: generic
-      env:
-        - PIP=pip2
-        - CIBW_BUILD="cp37-*"
         - COVER="off"
 
 env:
