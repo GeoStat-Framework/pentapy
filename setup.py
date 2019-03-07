@@ -30,6 +30,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 # version finder ##############################################################
 
+
 def read(*parts):
     """read file data"""
     with codecs.open(os.path.join(HERE, *parts), "r") as fp:
@@ -48,6 +49,7 @@ def find_version(*file_paths):
 
 
 # cython handler ##############################################################
+
 
 class BuildFailed(Exception):
     """Exeption for Cython build failed"""
@@ -109,9 +111,7 @@ CLASSIFIERS = [
 
 EXT_MODULES = []
 if USE_CYTHON:
-    EXT_MODULES += cythonize(
-        os.path.join("pentapy", "solver.pyx")
-    )
+    EXT_MODULES += cythonize(os.path.join("pentapy", "solver.pyx"))
 else:
     EXT_MODULES += [
         Extension(
@@ -144,12 +144,10 @@ setup_kw = {
     "url": "https://github.com/GeoStat-Framework/pentapy",
     "license": "GPL - see LICENSE",
     "classifiers": CLASSIFIERS,
-    "platforms": ["Linux"],
+    "platforms": ["Windows", "Linux", "Mac OS-X"],
     "include_package_data": True,
     "setup_requires": ["numpy>=1.13.0"],  # numpy imported in setup.py
-    "install_requires": [
-        "numpy>=1.13.0",
-    ],
+    "install_requires": ["numpy>=1.13.0"],
     "packages": find_packages(exclude=["tests*", "docs*"]),
     "ext_modules": EXT_MODULES,
     "include_dirs": [numpy.get_include()],

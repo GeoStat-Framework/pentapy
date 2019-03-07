@@ -28,6 +28,8 @@ def penta_solver1(mat_flat, rhs):
        [0        Dlow1[1] Dlow1[2] ... Dlow1[N-2] Dlow1[N-1] Dlow1[N]]
        [0        0        Dlow2[2] ... Dlow2[N-2] Dlow2[N-2] Dlow2[N]]]
 
+    This routine was presented in [Askar2015]_.
+
     Parameters
     ----------
     mat_flat : :class:`numpy.ndarray`
@@ -39,6 +41,13 @@ def penta_solver1(mat_flat, rhs):
     -------
     result : :class:`numpy.ndarray`
         Result of the equation system
+
+    References
+    ----------
+    .. [Askar2015] S. S. Askar and A. A. Karawia,
+       ''On Solving Pentadiagonal Linear Systems via Transformations''
+       Mathematical Problems in Engineering, vol. 2015, Article ID 232456,
+       9 pages, 2015. https://doi.org/10.1155/2015/232456.
     """
 
     mat_j = mat_flat.shape[1]

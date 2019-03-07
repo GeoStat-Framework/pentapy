@@ -15,7 +15,7 @@ import numpy as np
 
 try:
     from pentapy.solver import penta_solver1
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     print("pentapy Warning: No Cython functions imported")
     from pentapy.py_solver import penta_solver1
 
@@ -86,7 +86,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
 
     rhs = np.array(rhs, dtype=np.double)
 
-    if solver==1:
+    if solver == 1:
         return penta_solver1(mat_flat, rhs)
     else:
         raise ValueError("pentapy.solve: unknown solver (" + str(solver) + ")")
