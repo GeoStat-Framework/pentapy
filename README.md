@@ -23,11 +23,6 @@ presented by [Askar et al. 2015][ref_link].
 [ref_link]: http://dx.doi.org/10.1155/2015/232456
 
 
-## Documentation for pentapy
-
-You can find the documentation under [geostat-framework.readthedocs.io][doc_link].
-
-
 ### Examples
 
 #### Solving a pentadiagonal linear equation system
@@ -79,4 +74,3 @@ You can contact us via <info@geostat-framework.org>.
 [pip_link]: https://pypi.org/project/pentapy
 [winpy_link]: https://winpython.github.io/
 [gpl_link]: https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE
-[doc_link]: https://geostat-framework.readthedocs.io/projects/pentapy/en/latest/
