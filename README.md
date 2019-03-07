@@ -1,5 +1,6 @@
 # Welcome to pentapy
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2587158.svg)](https://doi.org/10.5281/zenodo.2587158)
 [![PyPI version](https://badge.fury.io/py/pentapy.svg)](https://badge.fury.io/py/pentapy)
 [![Build Status](https://travis-ci.org/GeoStat-Framework/pentapy.svg?branch=master)](https://travis-ci.org/GeoStat-Framework/pentapy)
 [![Build status](https://ci.appveyor.com/api/projects/status/yyfgn9dgxcoolp97/branch/master?svg=true)](https://ci.appveyor.com/project/GeoStat-Framework/pentapy/branch/master)
