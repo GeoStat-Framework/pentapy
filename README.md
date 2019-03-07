@@ -1,5 +1,10 @@
 # Welcome to pentapy
 
+[![PyPI version](https://badge.fury.io/py/pentapy.svg)](https://badge.fury.io/py/pentapy)
+[![Build Status](https://travis-ci.org/GeoStat-Framework/pentapy.svg?branch=master)](https://travis-ci.org/GeoStat-Framework/pentapy)
+[![Build status](https://ci.appveyor.com/api/projects/status/yyfgn9dgxcoolp97/branch/master?svg=true)](https://ci.appveyor.com/project/GeoStat-Framework/pentapy/branch/master)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
 
 ## Purpose
 
