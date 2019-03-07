@@ -8,7 +8,7 @@
 
 ## Purpose
 
-pentapy is a toolbox to deal with pentadiagonal matrizes in Python.
+pentapy is a toolbox to deal with pentadiagonal matrices in Python.
 
 
 ## Installation
