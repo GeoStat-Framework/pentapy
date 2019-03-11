@@ -236,9 +236,11 @@ def create_full(mat, up=2, low=2, col_wise=True):
     """
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
-        raise ValueError("create_banded: matrix has to be 2D")
+        raise ValueError("create_full: matrix has to be 2D")
     if mat.shape[0] != up+low+1:
-        raise ValueError("create_banded: matrix has wrong count of bands")
+        raise ValueError("create_full: matrix has wrong count of bands")
+    if mat.shape[1] < 3:
+        raise ValueError("create_full: matrix needs at least 3 rows")
     size = mat.shape[1]
     mat_full = np.diag(mat[up])
     if col_wise:
@@ -252,3 +254,12 @@ def create_full(mat, up=2, low=2, col_wise=True):
         for i in range(low):
             mat_full[diag_indices(size, -(low - i))] = mat[-i-1, (low - i) :]
     return mat_full
+
+
+def _check_penta(mat):
+    if mat.ndim != 2:
+        raise ValueError("pentapy: matrix has to be 2D")
+    if mat.shape[0] != 5:
+        raise ValueError("pentapy: matrix needs 5 bands")
+    if mat.shape[1] < 3:
+        raise ValueError("pentapy: matrix needs at least 3 rows")

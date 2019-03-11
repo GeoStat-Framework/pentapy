@@ -12,7 +12,7 @@ The following functions are provided
 from __future__ import division, absolute_import, print_function
 
 import numpy as np
-from pentapy.tools import shift_banded, create_banded
+from pentapy.tools import shift_banded, create_banded, _check_penta
 
 USE_CY = True
 try:
@@ -66,7 +66,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
 
             * ``[1, "1", "PTRANS-I"]`` : The PTRANS-I algorithm
             * ``[2, "2", "PTRANS-II"]`` : The PTRANS-II algorithm (not available)
-            * ``[3, "3", "lapack", "dgbsv"]`` : The lapack "dgbsv" algorithm
+            * ``[3, "3", "lapack", "solve_banded"]`` : scipy.linalg.solve_banded
             * ``[4, "4", "sp.sparse"]`` : The scipy sparse solver without umf_pack
             * ``[5, "5", "sp.sparse_umf", "umf", "umf_pack"]`` :
               The scipy sparse solver with umf_pack
@@ -82,8 +82,10 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
     if solver in [1, "1", "PTRANS-I"]:
         if is_flat and index_row_wise:
             mat_flat = np.array(mat, dtype=np.double)
+            _check_penta(mat_flat)
         elif is_flat:
             mat_flat = np.array(mat, dtype=np.double)
+            _check_penta(mat_flat)
             shift_banded(mat_flat, copy=False)
         else:
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
@@ -94,24 +96,24 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             "pentapy.solve: "
             + "The PTRANS-II algorithm is not yet implemented"
         )
-    elif solver in [3, "3", "lapack", "dgbsv"]:
+    elif solver in [3, "3", "lapack", "solve_banded"]:
         try:
-            from scipy.linalg.lapack import dgbsv
+            from scipy.linalg import solve_banded
         except ImportError:  # pragma: no cover
             raise ValueError(
                 "pentapy.solve: "
-                + "scipy.linalg.lapack.dgbsv could not be imported"
+                + "scipy.linalg.solve_banded could not be imported"
             )
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
+            _check_penta(mat_flat)
             shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
             mat_flat = np.array(mat)
         else:
             mat_flat = create_banded(mat)
-        mat_lapack = np.vstack((np.zeros((2, mat_flat.shape[1])), mat_flat))
-        return dgbsv(2, 2, mat_lapack, rhs, overwrite_ab=1)[2]
-    elif solver in [4, "4", "sp.sparse"]:
+        return solve_banded((2, 2), mat_flat, rhs)
+    elif solver in [4, "4", "spsolve"]:
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
@@ -122,6 +124,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             )
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
+            _check_penta(mat_flat)
             shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
             mat_flat = np.array(mat)
@@ -130,7 +133,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         size = mat_flat.shape[1]
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=False)
-    elif solver in [5, "5", "sp.sparse_umf", "umf", "umf_pack"]:
+    elif solver in [5, "5", "spsolve_umf", "umf", "umf_pack"]:
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
@@ -141,6 +144,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             )
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
+            _check_penta(mat_flat)
             shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
             mat_flat = np.array(mat)
