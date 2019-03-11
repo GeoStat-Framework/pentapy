@@ -20,6 +20,7 @@ try:
 except ImportError:  # pragma: no cover
     print("pentapy Warning: No Cython functions imported")
     from pentapy.py_solver import penta_solver1
+
     USE_CY = False
 
 
@@ -67,8 +68,8 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             * ``[1, "1", "PTRANS-I"]`` : The PTRANS-I algorithm
             * ``[2, "2", "PTRANS-II"]`` : The PTRANS-II algorithm (not available)
             * ``[3, "3", "lapack", "solve_banded"]`` : scipy.linalg.solve_banded
-            * ``[4, "4", "sp.sparse"]`` : The scipy sparse solver without umf_pack
-            * ``[5, "5", "sp.sparse_umf", "umf", "umf_pack"]`` :
+            * ``[4, "4", "spsolve"]`` : The scipy sparse solver without umf_pack
+            * ``[5, "5", "spsolve_umf", "umf", "umf_pack"]`` :
               The scipy sparse solver with umf_pack
 
         Default: ``1``
@@ -119,8 +120,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             from scipy.sparse.linalg import spsolve
         except ImportError:  # pragma: no cover
             raise ValueError(
-                "pentapy.solve: "
-                + "scipy.sparse could not be imported"
+                "pentapy.solve: scipy.sparse could not be imported"
             )
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
@@ -139,8 +139,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             from scipy.sparse.linalg import spsolve
         except ImportError:  # pragma: no cover
             raise ValueError(
-                "pentapy.solve: "
-                + "scipy.sparse could not be imported"
+                "pentapy.solve: scipy.sparse could not be imported"
             )
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
@@ -155,5 +154,5 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         return spsolve(M, rhs, use_umfpack=True)
     else:
         raise ValueError(
-            "pentapy.solve: "
-            + "unknown solver (" + str(solver) + ")")
+            "pentapy.solve: unknown solver (" + str(solver) + ")"
+        )

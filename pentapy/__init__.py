@@ -42,9 +42,4 @@ from pentapy.tools import (
 
 __all__ = ["__version__"]
 __all__ += ["solve"]
-__all__ += [
-    "create_banded",
-    "create_full",
-    "shift_banded",
-    "diag_indices",
-]
+__all__ += ["create_banded", "create_full", "shift_banded", "diag_indices"]
