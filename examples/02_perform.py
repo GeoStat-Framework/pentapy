@@ -4,6 +4,7 @@ from __future__ import division, absolute_import, print_function
 import numpy as np
 from scipy import sparse as sps
 from scipy.sparse.linalg import spsolve
+from scipy.linalg import solve_banded
 from pentapy.py_solver import penta_solver1 as ps1
 from pentapy.core import solve as ps2
 from pentapy import tools
@@ -12,7 +13,7 @@ import perfplot
 
 def get_les(size):
     mat = (np.random.random((5, size)) - 0.5) * 1e-5
-    V = np.array(np.random.random(size) * 1e5, dtype=np.double)
+    V = np.array(np.random.random(size) * 1e5)
     return mat, V
 
 def solve_1(in_val):
@@ -43,8 +44,13 @@ def solve_5(in_val):
 
 def solve_6(in_val):
     mat, V = in_val
+    return solve_banded((2, 2), mat, V)
+
+def solve_7(in_val):
+    mat, V = in_val
     M = tools.create_full(mat)
     return np.linalg.solve(M, V)
+
 
 perfplot.show(
     setup=get_les,
@@ -55,6 +61,7 @@ perfplot.show(
         solve_4,
         solve_5,
         solve_6,
+        solve_7,
     ],
     labels=[
         'scipy sparse',
@@ -62,6 +69,7 @@ perfplot.show(
         'penta_py',
         'penta_cy',
         'lapack dgbsv',
+        'scipy solve_banded',
         'numpy',
     ],
     n_range=[2**k for k in range(2, 13)],
