@@ -32,8 +32,8 @@ def diag_indices(n, offset=0):
     offset : int, optional
       The diagonal offset.
     """
-    idx = np.arange(n-np.abs(offset)) - np.min((0, offset))
-    idy = np.arange(n-np.abs(offset)) + np.max((0, offset))
+    idx = np.arange(n - np.abs(offset)) - np.min((0, offset))
+    idy = np.arange(n - np.abs(offset)) + np.max((0, offset))
     return idx, idy
 
 
@@ -101,15 +101,15 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
             mat_flat[i, : -(up - i)] = mat_flat[i, (up - i) :]
             mat_flat[i, -(up - i) :] = 0
         for i in range(low):
-            mat_flat[-i-1, (low - i) :] = mat_flat[-i-1, : -(low - i)]
-            mat_flat[-i-1, : (low - i)] = 0
+            mat_flat[-i - 1, (low - i) :] = mat_flat[-i - 1, : -(low - i)]
+            mat_flat[-i - 1, : (low - i)] = 0
     else:
         for i in range(up):
             mat_flat[i, (up - i) :] = mat_flat[i, : -(up - i)]
             mat_flat[i, : (up - i)] = 0
         for i in range(low):
-            mat_flat[-i-1, : -(low - i)] = mat_flat[-i-1, (low - i) :]
-            mat_flat[-i-1, -(low - i) :] = 0
+            mat_flat[-i - 1, : -(low - i)] = mat_flat[-i - 1, (low - i) :]
+            mat_flat[-i - 1, -(low - i) :] = 0
     return mat_flat
 
 
@@ -176,12 +176,12 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
         for i in range(up):
             mat_flat[i, (up - i) :] = mat.diagonal(up - i)
         for i in range(low):
-            mat_flat[-i-1, : -(low - i)] = mat.diagonal(-(low - i))
+            mat_flat[-i - 1, : -(low - i)] = mat.diagonal(-(low - i))
     else:
         for i in range(up):
             mat_flat[i, : -(up - i)] = mat.diagonal(up - i)
         for i in range(low):
-            mat_flat[-i-1, (low - i) :] = mat.diagonal(-(low - i))
+            mat_flat[-i - 1, (low - i) :] = mat.diagonal(-(low - i))
     return mat_flat
 
 
@@ -237,22 +237,24 @@ def create_full(mat, up=2, low=2, col_wise=True):
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
         raise ValueError("create_full: matrix has to be 2D")
-    if mat.shape[0] != up+low+1:
+    if mat.shape[0] != up + low + 1:
         raise ValueError("create_full: matrix has wrong count of bands")
-    if mat.shape[1] < 3:
-        raise ValueError("create_full: matrix needs at least 3 rows")
+    if mat.shape[1] < max(up, low) + 1:
+        raise ValueError("create_full: matrix has to few information")
     size = mat.shape[1]
     mat_full = np.diag(mat[up])
     if col_wise:
         for i in range(up):
             mat_full[diag_indices(size, up - i)] = mat[i, (up - i) :]
         for i in range(low):
-            mat_full[diag_indices(size, -(low - i))] = mat[-i-1, : -(low - i)]
+            mat_full[diag_indices(size, -(low - i))] = mat[
+                -i - 1, : -(low - i)
+            ]
     else:
         for i in range(up):
             mat_full[diag_indices(size, up - i)] = mat[i, : -(up - i)]
         for i in range(low):
-            mat_full[diag_indices(size, -(low - i))] = mat[-i-1, (low - i) :]
+            mat_full[diag_indices(size, -(low - i))] = mat[-i - 1, (low - i) :]
     return mat_full
 
 
