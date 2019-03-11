@@ -61,10 +61,10 @@ This should give something like:
 
 In the following a couple of solvers for pentadiagonal systems is compared:
 
-* Solver 1: [``scipy.sparse.linalg.spsolve``](http://scipy.github.io/devdocs/generated/scipy.sparse.linalg.spsolve.html) with ``use_umfpack=False``
-* Solver 2: [``scipy.sparse.linalg.spsolve``](http://scipy.github.io/devdocs/generated/scipy.sparse.linalg.spsolve.html) with [``use_umfpack=True``](https://scikit-umfpack.github.io/scikit-umfpack/)
-* Solver 3: Python implementation of ``pentapy.solve``
-* Solver 4: Cython implementation of ``pentapy.solve``
+* Solver 1: Python implementation of ``pentapy.solve``
+* Solver 2: Cython implementation of ``pentapy.solve``
+* Solver 3: [``scipy.sparse.linalg.spsolve``](http://scipy.github.io/devdocs/generated/scipy.sparse.linalg.spsolve.html) with ``use_umfpack=False``
+* Solver 4: [``scipy.sparse.linalg.spsolve``](http://scipy.github.io/devdocs/generated/scipy.sparse.linalg.spsolve.html) with [``use_umfpack=True``](https://scikit-umfpack.github.io/scikit-umfpack/)
 * Solver 5: [Lapack solver](http://www.netlib.org/lapack/explore-html/d3/d49/group__double_g_bsolve_gafa35ce1d7865b80563bbed6317050ad7.html) for diagonal matrices [``scipy.linalg.lapack.dgbsv``](scipy.github.io/devdocs/generated/scipy.linalg.lapack.dgbsv.html)
 * Solver 6: Scipy banded solver [``scipy.linalg.solve_banded``](scipy.github.io/devdocs/generated/scipy.linalg.solve_banded.html)
 * Solver 7: Standard solver of Numpy [``np.linalg.solve``](https://www.numpy.org/devdocs/reference/generated/numpy.linalg.solve.html)
