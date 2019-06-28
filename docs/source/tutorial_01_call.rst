@@ -26,6 +26,7 @@ A pentadiagonal system is given by the equation: :math:`M\cdot X = Y`, where
 
 The aim is now, to solve this equation for :math:`X`.
 
+
 Memory efficient storage
 ------------------------
 
@@ -52,6 +53,7 @@ To store a pentadiagonal matrix memory efficient, there are two options:
     d_{2}^{\left(-1\right)} & d_{3}^{\left(-1\right)} & d_{4}^{\left(-1\right)} & \cdots & d_{n-1}^{\left(-1\right)} & d_{n}^{\left(-1\right)} & 0\\
     d_{3}^{\left(-2\right)} & d_{4}^{\left(-2\right)} & d_{5}^{\left(-2\right)} & \cdots & d_{n}^{\left(-2\right)} & 0 & 0
     \end{matrix}\right)
+
 
 Solving the system using pentapy
 --------------------------------
@@ -87,6 +89,7 @@ If you got a col-wise flattend matrix you have to set ``index_row_wise=False``:
 
     X = pp.solve(M, Y, is_flat=True, index_row_wise=False)
 
+
 Tools
 -----
 
@@ -99,6 +102,40 @@ pentapy provides some tools to convert a pentadiagonal matrix.
    shift_banded
    create_banded
    create_full
+
+
+Example
+-------
+
+This is an example of how to solve a LES with a pentadiagonal matrix.
+The matrix is given as a row-wise flattened matrix, that is filled with
+random numbers.
+Afterwards the matrix is transformed to the full quadradratic matrix to check
+the result.
+
+.. code-block:: python
+
+    import numpy as np
+    import pentapy as pp
+
+    size = 1000
+    # create a flattened pentadiagonal matrix
+    M_flat = (np.random.random((5, size)) - 0.5) * 1e-5
+    V = np.random.random(size) * 1e5
+    # solve the LES with M_flat as row-wise flattened matrix
+    X = pp.solve(M_flat, V, is_flat=True)
+
+    # create the corresponding matrix for checking
+    M = pp.create_full(M_flat, col_wise=False)
+    # calculate the error
+    print(np.max(np.abs(np.dot(M, X) - V)))
+
+
+This should give something small like:
+
+.. code-block:: python
+
+    4.257890395820141e-08
 
 
 .. raw:: latex
