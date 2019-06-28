@@ -19,7 +19,8 @@ import numpy as np
 
 def diag_indices(n, offset=0):
     """
-    Return the indices to access the main or minar diagonal of an array.
+    Return indices to access the main or minor diagonal of a matrix.
+
     This returns a tuple of indices that can be used to access the main
     diagonal of an array `a` with ``a.ndim == 2`` dimensions and shape
     (n, n).
@@ -31,6 +32,14 @@ def diag_indices(n, offset=0):
       indices can be used.
     offset : int, optional
       The diagonal offset.
+
+    Returns
+    -------
+    idx : :class:`numpy.ndarray`
+        row indices
+    idy : :class:`numpy.ndarray`
+        col indices
+
     """
     idx = np.arange(n - np.abs(offset)) - np.min((0, offset))
     idy = np.arange(n - np.abs(offset)) + np.max((0, offset))
@@ -38,11 +47,9 @@ def diag_indices(n, offset=0):
 
 
 def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
-    """Shift row of a banded matrix
+    """Shift rows of a banded matrix.
 
-    Either from column-wise to row-wise storage or vice versa
-
-    Solver for a pentadiagonal system
+    Either from column-wise to row-wise storage or vice versa.
 
     The Matrix has to be given as a flattend matrix.
     Either in a column-wise flattend form::
@@ -114,7 +121,7 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 
 
 def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
-    """Create a banded matrix from a (n x n) Matrix
+    """Create a banded matrix from a given (n x n) Matrix.
 
     The Matrix will to be returned as a flattend matrix.
     Either in a column-wise flattend form::
@@ -186,7 +193,7 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
 
 
 def create_full(mat, up=2, low=2, col_wise=True):
-    """Create a (n x n) Matrix from a banded matrix
+    """Create a (n x n) Matrix from a given banded matrix
 
     The given Matrix has to be a flattend matrix.
     Either in a column-wise flattend form::

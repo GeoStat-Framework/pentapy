@@ -19,7 +19,7 @@ Solver for a linear equations system with a pentadiagonal matrix.
 Tools
 ^^^^^
 
-.. currentmodule:: pentapy.core
+.. currentmodule:: pentapy.tools
 
 The following tools are provided
 
