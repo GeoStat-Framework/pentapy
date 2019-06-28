@@ -82,7 +82,7 @@ Have a look at the script: [``examples/02_perform.py``](https://github.com/GeoSt
 
 ## Requirements:
 
-- [NumPy >= 1.13.0](https://www.numpy.org)
+- [NumPy >= 1.14.5](https://www.numpy.org)
 
 
 ## Contact

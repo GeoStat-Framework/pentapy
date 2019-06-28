@@ -95,7 +95,7 @@ DOCLINES = __doc__.split("\n")
 README = open(os.path.join(HERE, "README.md")).read()
 
 CLASSIFIERS = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: End Users/Desktop",
     "Intended Audience :: Science/Research",
@@ -146,8 +146,8 @@ setup_kw = {
     "classifiers": CLASSIFIERS,
     "platforms": ["Windows", "Linux", "Mac OS-X"],
     "include_package_data": True,
-    "setup_requires": ["numpy>=1.13.0"],  # numpy imported in setup.py
-    "install_requires": ["numpy>=1.13.0"],
+    "setup_requires": ["numpy>=1.14.5"],  # numpy imported in setup.py
+    "install_requires": ["numpy>=1.14.5"],
     "packages": find_packages(exclude=["tests*", "docs*"]),
     "ext_modules": EXT_MODULES,
     "include_dirs": [numpy.get_include()],
