@@ -16,10 +16,10 @@ from pentapy.tools import shift_banded, create_banded, _check_penta
 
 USE_CY = True
 try:
-    from pentapy.solver import penta_solver1
+    from pentapy.solver import penta_solver1, penta_solver2
 except ImportError:  # pragma: no cover
     print("pentapy Warning: No Cython functions imported")
-    from pentapy.py_solver import penta_solver1
+    from pentapy.py_solver import penta_solver1, penta_solver2
 
     USE_CY = False
 
@@ -66,7 +66,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         Which solver should be used. The following are provided:
 
             * ``[1, "1", "PTRANS-I"]`` : The PTRANS-I algorithm
-            * ``[2, "2", "PTRANS-II"]`` : The PTRANS-II algorithm (not available)
+            * ``[2, "2", "PTRANS-II"]`` : The PTRANS-II algorithm
             * ``[3, "3", "lapack", "solve_banded"]`` : scipy.linalg.solve_banded
             * ``[4, "4", "spsolve"]`` : The scipy sparse solver without umf_pack
             * ``[5, "5", "spsolve_umf", "umf", "umf_pack"]`` :
@@ -93,10 +93,17 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         rhs = np.array(rhs, dtype=np.double)
         return penta_solver1(mat_flat, rhs)
     elif solver in [2, "2", "PTRANS-II"]:
-        raise NotImplementedError(
-            "pentapy.solve: "
-            + "The PTRANS-II algorithm is not yet implemented"
-        )
+        if is_flat and index_row_wise:
+            mat_flat = np.array(mat, dtype=np.double)
+            _check_penta(mat_flat)
+        elif is_flat:
+            mat_flat = np.array(mat, dtype=np.double)
+            _check_penta(mat_flat)
+            shift_banded(mat_flat, copy=False)
+        else:
+            mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
+        rhs = np.array(rhs, dtype=np.double)
+        return penta_solver2(mat_flat, rhs)
     elif solver in [3, "3", "lapack", "solve_banded"]:
         try:
             from scipy.linalg import solve_banded
@@ -153,6 +160,4 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=True)
     else:
-        raise ValueError(
-            "pentapy.solve: unknown solver (" + str(solver) + ")"
-        )
+        raise ValueError("pentapy.solve: unknown solver (" + str(solver) + ")")
