@@ -4,6 +4,7 @@ Tutorial 1: Solving a pentadiagonal system
 Pentadiagonal systems arise in many areas of science and engineering,
 for example in solving differential equations with a finite difference sceme.
 
+
 Theoretical Background
 ----------------------
 
@@ -43,6 +44,11 @@ To store a pentadiagonal matrix memory efficient, there are two options:
     0 & 0 & d_{3}^{\left(-2\right)} & \cdots & d_{n-2}^{\left(-2\right)} & d_{n-1}^{\left(-2\right)} & d_{n}^{\left(-2\right)}
     \end{matrix}\right)
 
+Here we see, that the numbering in the above given matrix was aiming at the
+row-wise storage. That means, the indices were taken from the row-indices of
+the entries.
+
+
 2. column-wise storage:
 
 .. math::
@@ -53,6 +59,9 @@ To store a pentadiagonal matrix memory efficient, there are two options:
     d_{2}^{\left(-1\right)} & d_{3}^{\left(-1\right)} & d_{4}^{\left(-1\right)} & \cdots & d_{n-1}^{\left(-1\right)} & d_{n}^{\left(-1\right)} & 0\\
     d_{3}^{\left(-2\right)} & d_{4}^{\left(-2\right)} & d_{5}^{\left(-2\right)} & \cdots & d_{n}^{\left(-2\right)} & 0 & 0
     \end{matrix}\right)
+
+The numbering here is a bit confusing, but in the column-wise storage, all
+entries written in one column were in the same column in the original matrix.
 
 
 Solving the system using pentapy
