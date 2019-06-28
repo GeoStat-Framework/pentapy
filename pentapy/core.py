@@ -26,7 +26,7 @@ except ImportError:  # pragma: no cover
 
 def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
     """
-    Solver for a pentadiagonal system
+    Solver for a pentadiagonal system.
 
     The Matrix can be given as a full n x n Matrix or as a flattend one.
     The flattend matrix can be given in a row-wise flattend form::
@@ -104,7 +104,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
         rhs = np.array(rhs, dtype=np.double)
         return penta_solver2(mat_flat, rhs)
-    elif solver in [3, "3", "lapack", "solve_banded"]:
+    elif solver in [3, "3", "lapack", "solve_banded"]:  # pragma: no cover
         try:
             from scipy.linalg import solve_banded
         except ImportError:  # pragma: no cover
@@ -121,11 +121,11 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         else:
             mat_flat = create_banded(mat)
         return solve_banded((2, 2), mat_flat, rhs)
-    elif solver in [4, "4", "spsolve"]:
+    elif solver in [4, "4", "spsolve"]:  # pragma: no cover
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
-        except ImportError:  # pragma: no cover
+        except ImportError:
             raise ValueError(
                 "pentapy.solve: scipy.sparse could not be imported"
             )
@@ -140,11 +140,11 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         size = mat_flat.shape[1]
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=False)
-    elif solver in [5, "5", "spsolve_umf", "umf", "umf_pack"]:
+    elif solver in [5, "5", "spsolve_umf", "umf", "umf_pack"]:  # pragma: no cover
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
-        except ImportError:  # pragma: no cover
+        except ImportError:
             raise ValueError(
                 "pentapy.solve: scipy.sparse could not be imported"
             )
@@ -159,5 +159,5 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         size = mat_flat.shape[1]
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=True)
-    else:
+    else:  # pragma: no cover
         raise ValueError("pentapy.solve: unknown solver (" + str(solver) + ")")
