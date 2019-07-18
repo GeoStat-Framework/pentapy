@@ -92,8 +92,8 @@ You can contact us via <info@geostat-framework.org>.
 
 ## License
 
-[GPL][gpl_link] © 2019
+[MIT][licence_link] © 2019
 
 [pip_link]: https://pypi.org/project/pentapy
 [winpy_link]: https://winpython.github.io/
-[gpl_link]: https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE
+[licence_link]: https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE
