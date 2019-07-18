@@ -140,7 +140,13 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         size = mat_flat.shape[1]
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=False)
-    elif solver in [5, "5", "spsolve_umf", "umf", "umf_pack"]:  # pragma: no cover
+    elif solver in [
+        5,
+        "5",
+        "spsolve_umf",
+        "umf",
+        "umf_pack",
+    ]:  # pragma: no cover
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
