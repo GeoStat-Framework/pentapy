@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-The tools module of pentapy
+The tools module of pentapy.
 
 The following functions are provided
 
@@ -193,7 +193,7 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
 
 
 def create_full(mat, up=2, low=2, col_wise=True):
-    """Create a (n x n) Matrix from a given banded matrix
+    """Create a (n x n) Matrix from a given banded matrix.
 
     The given Matrix has to be a flattend matrix.
     Either in a column-wise flattend form::

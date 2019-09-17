@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This is a solver for linear equation systems with a penta-diagonal matrix.
+A solver for linear equation systems with a penta-diagonal matrix.
 
 This is the python implementation.
 

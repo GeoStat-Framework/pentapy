@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-The core module of pentapy
+The core module of pentapy.
 
 The following functions are provided
 
