@@ -25,7 +25,7 @@ Pentadiagonal linear equation systems arise in many areas of science and enginee
 e.g. when solving differential equations, in interpolation problems, or in numerical schemes like finite difference.
 A specific example is the radial symmetric groundwater flow equation with
 consecutive rings of different constant transmissivity and boundary conditions,
-which can be expressed as a pentadiagonal equation system [@aquifer_test].
+which can be expressed as a pentadiagonal equation system [@avci_radial; @aquifer_test].
 
 Pentadiagonal matrices are banded, being determined by their diagonal,
 first and second upper minor-diagonals, as well as first and second lower minor-diagonals.
