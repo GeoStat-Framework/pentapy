@@ -85,4 +85,4 @@ Requirements
 License
 =======
 
-`GPL <https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE>`_ © 2019
+`MIT <https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE>`_ © 2019
