@@ -83,7 +83,7 @@ I acknowledge the supervision by Prof. Sabine Attinger, Prof. Alraune Zech,
 Prof. Peter Dietrich and Dr. Falk Heße and herewith want to thank them for
 their trust and support.
 I also want to thank Dr. Lennart Schüler for his constant help and the
-pleasant partnership during the work on the GeoStat Framwork.
+pleasant partnership during the work on the GeoStat Framework.
 This research was funded by the German Federal Environmental Foundation.
 
 # References
