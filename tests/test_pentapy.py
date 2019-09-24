@@ -4,6 +4,7 @@ This is the unittest for pentapy.
 """
 from __future__ import division, absolute_import, print_function
 
+import warnings
 import unittest
 import numpy as np
 import pentapy as pp
@@ -76,6 +77,29 @@ class TestPentapy(unittest.TestCase):
         self.assertAlmostEqual(diff_ful * 1e-5, 0.0)
         self.assertAlmostEqual(diff_pyt * 1e-5, 0.0)
         self.assertAlmostEqual(diff_row_col * 1e5, 0.0)
+
+    def test_error(self):
+        self.err_mat = np.array(
+            [[3, 2, 1, 0], [-3, -2, 7, 1], [3, 2, -1, 5], [0, 1, 2, 3]]
+        )
+        self.err_rhs = np.array([6, 3, 9, 6])
+        # https://stackoverflow.com/a/32089134/6696397
+        with warnings.catch_warnings(record=True) as wrn:
+            sol_1 = pp.solve(
+                self.err_mat, self.err_rhs, is_flat=False, solver=1
+            )
+            sol_2 = pp.solve(
+                self.err_mat, self.err_rhs, is_flat=False, solver=2
+            )
+        self.assertTrue(wrn)
+        self.assertTrue(np.all(np.isnan(sol_1)))
+        if wrn:
+            self.assertTrue(
+                str(wrn[0].message)
+                == "pentapy: PTRANS-I not suitable for input-matrix."
+            )
+        diff_2 = np.max(np.abs(np.dot(self.err_mat, sol_2) - self.err_rhs))
+        self.assertAlmostEqual(diff_2, 0.0)
 
 
 if __name__ == "__main__":
