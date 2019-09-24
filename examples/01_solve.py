@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+1. Example.
+
+Here we create a random row wise flattened matrix M_flat and a random
+right hand side for the pentadiagonal equation system.
+
+After solving we calculate the absolute difference between the right hand side
+and the product of the matrix (which is transformed to a full quadratic one)
+and the solution of the system.
+"""
 import numpy as np
 import pentapy as pp
 

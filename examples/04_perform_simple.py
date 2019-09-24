@@ -1,4 +1,17 @@
 # -*- coding: utf-8 -*-
+"""
+4. Example.
+
+Here we compare all algorithms for solving pentadiagonal systems provided
+by pentapy (except umf).
+
+To use this script you need to have the following packages installed:
+
+    * scipy
+    * scikit-umfpack
+    * perfplot
+    * matplotlib
+"""
 from __future__ import division, absolute_import, print_function
 
 import numpy as np
