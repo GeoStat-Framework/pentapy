@@ -151,6 +151,11 @@ setup_kw = {
     "packages": find_packages(exclude=["tests*", "docs*"]),
     "ext_modules": EXT_MODULES,
     "include_dirs": [numpy.get_include()],
+    "extras_require": {
+        "scipy": ["scipy"],
+        "umfpack": ["scikit-umfpack"],
+        "all": ["scipy", "scikit-umfpack"],
+    },
 }
 
 cmd_classes = setup_kw.setdefault("cmdclass", {})
