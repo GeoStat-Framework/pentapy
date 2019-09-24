@@ -13,14 +13,31 @@
 
 pentapy is a toolbox to deal with pentadiagonal matrices in Python.
 
+Pentadiagonal linear equation systems arise in many areas of science and engineering:
+e.g. when solving differential equations, in interpolation problems, or in numerical schemes like finite difference.
+
 
 ## Installation
 
 The package can be installed via [pip][pip_link].
-On Windows you can install [WinPython][winpy_link] to get
-Python and pip running.
+On Windows you can install [WinPython][winpy_link] to get Python and pip running.
 
     pip install pentapy
+
+There are pre-built wheels for Linux, MacOS and Windows for most Python versions (2.7, 3.4-3.7).
+
+If your system is not supported and you want to have the Cython routines of
+pentapy installed, you have to provide a c-compiler and run:
+
+    pip install numpy cython
+    pip install pentapy
+
+To get the scipy solvers running, you have to install scipy or you can use the
+extra argument:
+
+    pip install pentapy[all]
+
+Instead of "all" you can also typ "scipy" or "umfpack".
 
 
 ## References
@@ -28,10 +45,10 @@ Python and pip running.
 The solver is based on the algorithms PTRANS-I and PTRANS-II
 presented by [Askar et al. 2015][ref_link].
 
-[ref_link]: http://dx.doi.org/10.1155/2015/232456
 
+## Documentation and Examples
 
-## Examples
+You can find the documentation under [geostat-framework.readthedocs.io][doc_link].
 
 ### Solving a pentadiagonal linear equation system
 
@@ -94,6 +111,8 @@ You can contact us via <info@geostat-framework.org>.
 
 [MIT][licence_link] © 2019
 
+[ref_link]: http://dx.doi.org/10.1155/2015/232456
 [pip_link]: https://pypi.org/project/pentapy
 [winpy_link]: https://winpython.github.io/
 [licence_link]: https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE
+[doc_link]: https://geostat-framework.readthedocs.io/projects/pentapy/en/latest/
