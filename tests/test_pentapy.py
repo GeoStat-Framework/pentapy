@@ -12,6 +12,9 @@ from pentapy.py_solver import penta_solver1 as ps1
 from pentapy.py_solver import penta_solver2 as ps2
 
 
+warnings.simplefilter("always")
+
+
 class TestPentapy(unittest.TestCase):
     def setUp(self):
         self.seed = 19031977
