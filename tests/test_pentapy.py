@@ -95,8 +95,8 @@ class TestPentapy(unittest.TestCase):
                 self.err_mat, self.err_rhs, is_flat=False, solver=2
             )
         # self.assertTrue(wrn)
-        self.assertTrue(np.all(np.isnan(sol_1)))
         if wrn:
+            self.assertTrue(np.all(np.isnan(sol_1)))
             self.assertTrue(
                 str(wrn[0].message)
                 == "pentapy: PTRANS-I not suitable for input-matrix."
