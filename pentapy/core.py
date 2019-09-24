@@ -11,17 +11,24 @@ The following functions are provided
 """
 from __future__ import division, absolute_import, print_function
 
+import warnings
 import numpy as np
 from pentapy.tools import shift_banded, create_banded, _check_penta
 
-USE_CY = True
+
 try:
     from pentapy.solver import penta_solver1, penta_solver2
+
+    USE_CY = True
+    PtransError = ZeroDivisionError
 except ImportError:  # pragma: no cover
-    print("pentapy Warning: No Cython functions imported")
     from pentapy.py_solver import penta_solver1, penta_solver2
 
+    np.seterr(divide="raise")
+    warnings.simplefilter("always", ImportWarning)
+    warnings.warn("pentapy: No Cython functions imported", ImportWarning)
     USE_CY = False
+    PtransError = FloatingPointError
 
 
 def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
@@ -91,7 +98,11 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         else:
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
         rhs = np.array(rhs, dtype=np.double)
-        return penta_solver1(mat_flat, rhs)
+        try:
+            return penta_solver1(mat_flat, rhs)
+        except PtransError:
+            warnings.warn("pentapy: PTRANS-I not suitable for input-matrix.")
+            return np.full_like(rhs, np.nan)
     elif solver in [2, "2", "PTRANS-II"]:
         if is_flat and index_row_wise:
             mat_flat = np.array(mat, dtype=np.double)
@@ -103,7 +114,11 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         else:
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
         rhs = np.array(rhs, dtype=np.double)
-        return penta_solver2(mat_flat, rhs)
+        try:
+            return penta_solver2(mat_flat, rhs)
+        except PtransError:
+            warnings.warn("pentapy: PTRANS-II not suitable for input-matrix.")
+            return np.full_like(rhs, np.nan)
     elif solver in [3, "3", "lapack", "solve_banded"]:  # pragma: no cover
         try:
             from scipy.linalg import solve_banded
