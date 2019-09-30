@@ -27,11 +27,21 @@ class TestPentapy(unittest.TestCase):
     def test_tools(self):
         self.mat_int = np.zeros((100, 100), dtype=int)
         # fill bands of pentadiagonal matrix
-        self.mat_int[pp.diag_indices(100, 0)] = self.randint(1, 1000, size=100)
-        self.mat_int[pp.diag_indices(100, 1)] = self.randint(1, 1000, size=99)
-        self.mat_int[pp.diag_indices(100, 2)] = self.randint(1, 1000, size=98)
-        self.mat_int[pp.diag_indices(100, -1)] = self.randint(1, 1000, size=99)
-        self.mat_int[pp.diag_indices(100, -2)] = self.randint(1, 1000, size=98)
+        self.mat_int[pp.diag_indices(100, 0)] = self.rand.randint(
+            1, 1000, size=100
+        )
+        self.mat_int[pp.diag_indices(100, 1)] = self.rand.randint(
+            1, 1000, size=99
+        )
+        self.mat_int[pp.diag_indices(100, 2)] = self.rand.randint(
+            1, 1000, size=98
+        )
+        self.mat_int[pp.diag_indices(100, -1)] = self.rand.randint(
+            1, 1000, size=99
+        )
+        self.mat_int[pp.diag_indices(100, -2)] = self.rand.randint(
+            1, 1000, size=98
+        )
         # create banded
         self.mat_int_col = pp.create_banded(self.mat_int)
         self.mat_int_row = pp.create_banded(self.mat_int, col_wise=False)
