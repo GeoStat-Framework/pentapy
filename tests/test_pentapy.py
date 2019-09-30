@@ -24,6 +24,37 @@ class TestPentapy(unittest.TestCase):
         self.mat = (self.rand.rand(5, self.size) - 0.5) * 1e-5
         self.rhs = self.rand.rand(self.size) * 1e5
 
+    def test_tools(self):
+        self.mat_int = np.zeros((100, 100), dtype=int)
+        # fill bands of pentadiagonal matrix
+        self.mat_int[pp.diag_indices(100, 0)] = self.randint(1, 1000, size=100)
+        self.mat_int[pp.diag_indices(100, 1)] = self.randint(1, 1000, size=99)
+        self.mat_int[pp.diag_indices(100, 2)] = self.randint(1, 1000, size=98)
+        self.mat_int[pp.diag_indices(100, -1)] = self.randint(1, 1000, size=99)
+        self.mat_int[pp.diag_indices(100, -2)] = self.randint(1, 1000, size=98)
+        # create banded
+        self.mat_int_col = pp.create_banded(self.mat_int)
+        self.mat_int_row = pp.create_banded(self.mat_int, col_wise=False)
+        # create full
+        self.mat_int_col_ful = pp.create_full(self.mat_int_col, col_wise=True)
+        self.mat_int_row_ful = pp.create_full(self.mat_int_row, col_wise=False)
+        # shifting
+        self.mat_shift_cr = pp.shift_banded(self.mat_int_col)
+        self.mat_shift_rc = pp.shift_banded(self.mat_int_row, col_to_row=False)
+        # in place shifting
+        self.mat_int_col_ip = pp.create_banded(self.mat_int)
+        self.mat_int_row_ip = pp.create_banded(self.mat_int, col_wise=False)
+        pp.shift_banded(self.mat_int_col_ip, copy=False)
+        pp.shift_banded(self.mat_int_row_ip, copy=False, col_to_row=False)
+        # checking
+        self.assertEqual(np.sum(self.mat_int > 0), 494)
+        self.assertEqual(self.mat_int_col, self.mat_shift_rc)
+        self.assertEqual(self.mat_int_row, self.mat_shift_cr)
+        self.assertEqual(self.mat_int_col, self.mat_int_row_ip)
+        self.assertEqual(self.mat_int_row, self.mat_int_col_ip)
+        self.assertEqual(self.mat_int, self.mat_int_col_ful)
+        self.assertEqual(self.mat_int, self.mat_int_row_ful)
+
     def test_solve1(self):
         self.mat_col = pp.shift_banded(self.mat, col_to_row=False)
         self.mat_ful = pp.create_full(self.mat, col_wise=False)
