@@ -81,15 +81,14 @@ Performance
 
 In the following, a couple of solvers for pentadiagonal systems are compared:
 
-* Solver 1: Python implementation of ``pentapy.solve``
-* Solver 2: Cython implementation of ``pentapy.solve``
-* Solver 3: ``scipy.sparse.linalg.spsolve`` (`link <http://scipy.github.io/devdocs/generated/scipy.sparse.linalg.spsolve.html>`__) with ``use_umfpack=False``
-* Solver 4: ``scipy.sparse.linalg.spsolve`` (`link <http://scipy.github.io/devdocs/generated/scipy.sparse.linalg.spsolve.html>`__) with ``use_umfpack=True`` (`link <https://scikit-umfpack.github.io/scikit-umfpack/>`__)
-* Solver 5: `Lapack solver <http://www.netlib.org/lapack/explore-html/d3/d49/group__double_g_bsolve_gafa35ce1d7865b80563bbed6317050ad7.html>`_ for diagonal matrices ``scipy.linalg.lapack.dgbsv`` (`link <scipy.github.io/devdocs/generated/scipy.linalg.lapack.dgbsv.html>`__)
-* Solver 6: Scipy banded solver ``scipy.linalg.solve_banded`` (`link <scipy.github.io/devdocs/generated/scipy.linalg.solve_banded.html>`__)
-* Solver 7: Standard solver of Numpy ``np.linalg.solve`` (`link <https://www.numpy.org/devdocs/reference/generated/numpy.linalg.solve.html>`__)
+* Solver 1: Standard linear algebra solver of Numpy ``np.linalg.solve`` (`link <https://www.numpy.org/devdocs/reference/generated/numpy.linalg.solve.html>`__)
+* Solver 2: ``scipy.sparse.linalg.spsolve`` (`link <http://scipy.github.io/devdocs/generated/scipy.sparse.linalg.spsolve.html>`__)
+* Solver 3: Scipy banded solver [``scipy.linalg.solve_banded``](scipy.github.io/devdocs/generated/scipy.linalg.solve_banded.html)
+* Solver 4: pentapy.solve with ``solver=1``
+* Solver 5: pentapy.solve with ``solver=2``
 
-.. image:: https://raw.githubusercontent.com/GeoStat-Framework/pentapy/master/examples/perfplot.png
+
+.. image:: https://raw.githubusercontent.com/GeoStat-Framework/pentapy/master/examples/perfplot_simple.png
    :width: 400px
    :align: center
 
@@ -99,6 +98,12 @@ Requirements
 ============
 
 - `Numpy >= 1.14.5 <http://www.numpy.org>`_
+
+Optional
+--------
+
+- `SciPy <https://www.scipy.org/>`__
+- `scikit-umfpack <https://github.com/scikit-umfpack/scikit-umfpack>`__
 
 
 License

@@ -102,6 +102,10 @@ Have a look at the script: [``examples/04_perform_simple.py``](https://github.co
 
 - [NumPy >= 1.14.5](https://www.numpy.org)
 
+### Optional
+
+- [SciPy](https://www.scipy.org/)
+- [scikit-umfpack](https://github.com/scikit-umfpack/scikit-umfpack)
 
 ## Contact
 
