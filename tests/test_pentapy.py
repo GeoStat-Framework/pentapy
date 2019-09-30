@@ -58,28 +58,12 @@ class TestPentapy(unittest.TestCase):
         pp.shift_banded(self.mat_int_row_ip, copy=False, col_to_row=False)
         # checking
         self.assertEqual(np.sum(self.mat_int > 0), 494)
-        self.assertTrue(
-            np.testing.assert_array_equal(self.mat_int_col, self.mat_shift_rc)
-        )
-        self.assertTrue(
-            np.testing.assert_array_equal(self.mat_int_row, self.mat_shift_cr)
-        )
-        self.assertTrue(
-            np.testing.assert_array_equal(
-                self.mat_int_col, self.mat_int_row_ip
-            )
-        )
-        self.assertTrue(
-            np.testing.assert_array_equal(
-                self.mat_int_row, self.mat_int_col_ip
-            )
-        )
-        self.assertTrue(
-            np.testing.assert_array_equal(self.mat_int, self.mat_int_col_ful)
-        )
-        self.assertTrue(
-            np.testing.assert_array_equal(self.mat_int, self.mat_int_row_ful)
-        )
+        self.assertTrue(np.array_equal(self.mat_int_col, self.mat_shift_rc))
+        self.assertTrue(np.array_equal(self.mat_int_row, self.mat_shift_cr))
+        self.assertTrue(np.array_equal(self.mat_int_col, self.mat_int_row_ip))
+        self.assertTrue(np.array_equal(self.mat_int_row, self.mat_int_col_ip))
+        self.assertTrue(np.array_equal(self.mat_int, self.mat_int_col_ful))
+        self.assertTrue(np.array_equal(self.mat_int, self.mat_int_row_ful))
 
     def test_solve1(self):
         self.mat_col = pp.shift_banded(self.mat, col_to_row=False)
