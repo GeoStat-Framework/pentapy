@@ -10,7 +10,7 @@ Solver
 
 .. currentmodule:: pentapy.core
 
-Solver for a linear equations system with a pentadiagonal matrix.
+Solver for a pentadiagonal equations system.
 
 .. autosummary::
    solve
@@ -21,7 +21,7 @@ Tools
 
 .. currentmodule:: pentapy.tools
 
-The following tools are provided
+The following tools are provided:
 
 .. autosummary::
    diag_indices

@@ -19,7 +19,7 @@ import numpy as np
 
 def diag_indices(n, offset=0):
     """
-    Return indices to access the main or minor diagonal of a matrix.
+    Indices for the main or minor diagonals of a matrix.
 
     This returns a tuple of indices that can be used to access the main
     diagonal of an array `a` with ``a.ndim == 2`` dimensions and shape
@@ -76,9 +76,9 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 
       col_to_row=False
 
-    Dup1 and Dup2 or the first and second upper minor-diagonals and Dlow1 resp.
-    Dlow2 are the lower ones. The number of upper and lower minor-diagonals can
-    be altered.
+    Dup1 and Dup2 are the first and second upper minor-diagonals
+    and Dlow1 resp. Dlow2 are the lower ones.
+    The number of upper and lower minor-diagonals can be altered.
 
     Parameters
     ----------
@@ -121,7 +121,7 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 
 
 def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
-    """Create a banded matrix from a given (n x n) Matrix.
+    """Create a banded matrix from a given quadratic Matrix.
 
     The Matrix will to be returned as a flattend matrix.
     Either in a column-wise flattend form::

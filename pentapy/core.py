@@ -35,7 +35,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
     """
     Solver for a pentadiagonal system.
 
-    The Matrix can be given as a full n x n Matrix or as a flattend one.
+    The matrix can be given as a full n x n matrix or as a flattend one.
     The flattend matrix can be given in a row-wise flattend form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
@@ -52,8 +52,8 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
        [Dlow1[0] Dlow1[1] Dlow1[2] ... Dlow1[N-2] Dlow1[N-1] 0       ]
        [Dlow2[0] Dlow2[1] Dlow2[2] ... Dlow2[N-2] 0          0       ]]
 
-    Dup1 and Dup2 or the first and second upper minor-diagonals and Dlow1 resp.
-    Dlow2 are the lower ones.
+    Dup1 and Dup2 are the first and second upper minor-diagonals
+    and Dlow1 resp. Dlow2 are the lower ones.
     If you provide a column-wise flattend matrix, you have to set::
 
       index_row_wise=False
@@ -74,8 +74,10 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
 
             * ``[1, "1", "PTRANS-I"]`` : The PTRANS-I algorithm
             * ``[2, "2", "PTRANS-II"]`` : The PTRANS-II algorithm
-            * ``[3, "3", "lapack", "solve_banded"]`` : scipy.linalg.solve_banded
-            * ``[4, "4", "spsolve"]`` : The scipy sparse solver without umf_pack
+            * ``[3, "3", "lapack", "solve_banded"]`` :
+              scipy.linalg.solve_banded
+            * ``[4, "4", "spsolve"]`` :
+              The scipy sparse solver without umf_pack
             * ``[5, "5", "spsolve_umf", "umf", "umf_pack"]`` :
               The scipy sparse solver with umf_pack
 
@@ -84,7 +86,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
     Returns
     -------
     result : :class:`numpy.ndarray`
-        Result of the equation system
+        Solution of the equation system
     """
 
     if solver in [1, "1", "PTRANS-I"]:
