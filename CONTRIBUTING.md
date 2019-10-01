@@ -31,5 +31,9 @@ with your idea or suggestion and we'd love to discuss about it.
 - Commit your stuff
 - Add yourself to AUTHORS.md (if you want to).
 - We use the black code format, please use the script `black --line-length 79 pentapy/` after you have written your code.
-- Add some tests if possible.
+- Add some tests of your extension to ``tests/test_pentapy.py``
+  - we use [unittest](https://docs.python.org/3/library/unittest.html)
+    for our test suite, have a look at their documentation
+  - to run the tests you can use [pytest](https://github.com/pytest-dev/pytest)
+    with running ``pytest -v tests/`` from the source directory
 - Push to your fork and submit a pull request.
