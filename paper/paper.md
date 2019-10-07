@@ -76,7 +76,7 @@ this package outperforms the current algorithms for solving pentadiagonal system
 The solver can handle different input formats of the coefficient matrix, i.e. a flattend matrix or a
 quadratic matrix.
 
-The source code for ``pentapy`` has been archived to Zenodo with the linked DOI: [@zenodo]
+The source code for ``pentapy`` has been archived to Zenodo with the linked DOI.
 
 # Acknowledgements
 
