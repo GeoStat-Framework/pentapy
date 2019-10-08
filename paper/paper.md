@@ -53,7 +53,7 @@ Here, $d_i$ are the diagonal entries and $d_i^{(j)}$ represent the $j$-th minor 
 
 Recently, @askar presented two algorithms to 
 solve the linear systems of equations for $X$, ``PTRANS-I`` and ``PTRANS-II``, 
-applying first transforamtion to a triangular matrix and then, respectively, backward and forward substitution.
+applying first transformation to a triangular matrix and then, respectively, backward and forward substitution.
 ``pentapy`` provides Cython [@cython] implementations of these
 algorithms and a set of tools to convert matrices to row-wise or
 column-wise flattened matrices and vice versa.
