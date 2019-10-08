@@ -53,7 +53,7 @@ Here, $d_i$ are the diagonal entries and $d_i^{(j)}$ represent the $j$-th minor 
 
 Recently @askar presented two algorithms, ``PTRANS-I`` and ``PTRANS-II``,
 that solve the linear systems of equations for $X$ by transformation to
-a triangular matrix and subsequent backward and forward substitution.
+a triangular matrix and subsequent backward respectively forward substitution.
 ``pentapy`` provides Cython [@cython] implementations of these
 algorithms and a set of tools to convert matrices to row-wise or
 column-wise flattened matrices and vice versa.
@@ -68,7 +68,7 @@ The performance comparison in figure 1, done with ``perfplot`` [@perfplot], show
 of ``pentapy`` are almost one order of magnitude faster than the SciPy algorithms for banded or sparse matrices.
 The linear algebra solver of NumPy [@numpy] served as a standard reference, which disregards the special structure of the equation system.
 
-![Performance comparison of Pentapy, Lapack, Scipy and Numpy routines depending on the matrix size.](perfplot_simple.png)
+![Performance comparison of pentapy, Lapack, SciPy and NumPy routines depending on the matrix size. (system specifications: i5-6200U with 2.3GHz, 16GB RAM)](perfplot_simple.png)
 
 ``pentapy`` is designed to provide a fast solver for the special case of a
 pentadiagonal linear system. To the best of the author's knowledge,
