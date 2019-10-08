@@ -1,5 +1,6 @@
 # Welcome to pentapy
 
+[![status](https://joss.theoj.org/papers/57c3bbdd7b7f3068dd1e669ccbcf107c/status.svg)](https://joss.theoj.org/papers/57c3bbdd7b7f3068dd1e669ccbcf107c)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2587158.svg)](https://doi.org/10.5281/zenodo.2587158)
 [![PyPI version](https://badge.fury.io/py/pentapy.svg)](https://badge.fury.io/py/pentapy)
 [![Build Status](https://travis-ci.org/GeoStat-Framework/pentapy.svg?branch=master)](https://travis-ci.org/GeoStat-Framework/pentapy)
