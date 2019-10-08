@@ -21,8 +21,8 @@ bibliography: paper.bib
 
 # Summary
 
-Pentadiagonal linear equation systems arise in many areas of science and engineering:
-e.g. when solving differential equations, in interpolation problems, or in numerical schemes like finite difference.
+Pentadiagonal linear systems of equations arise in many areas of science and engineering:
+e.g., when solving differential equations, in interpolation problems, or in numerical schemes like finite differences.
 A specific example is the radial symmetric groundwater flow equation with
 consecutive rings of different constant transmissivity and radial boundary conditions,
 which can be expressed as a pentadiagonal equation system [@avci_radial; @aquifer_test].
@@ -49,41 +49,40 @@ d_{3}^{\left(-2\right)} & d_{3}^{\left(-1\right)} & d_{3} & d_{3}^{\left(1\right
 \end{matrix}\right)
 $$
 
-Here the $d_i$ are the diagonal entries and the $d_i^{(j)}$ represent the $j$-th minor diagonal.
+Here, $d_i$ are the diagonal entries and $d_i^{(j)}$ represent the $j$-th minor diagonal.
 
-Recently @askar presented two algorithms ``PTRANS-I`` and ``PTRANS-II``,
-which solve the linear equation systems for $X$ by transformation to
-a triangular matrix and subsequent backward resp. forward substitution.
+Recently @askar presented two algorithms, ``PTRANS-I`` and ``PTRANS-II``,
+that solve the linear systems of equations for $X$ by transformation to
+a triangular matrix and subsequent backward and forward substitution.
 ``pentapy`` provides Cython [@cython] implementations of these
 algorithms and a set of tools to convert matrices to row-wise or
 column-wise flattened matrices and vice versa.
 
 Since the algorithms have weak points,
 for example when the first or last diagonal entry is zero,
-``pentapy`` also provides interfaces to solvers from scipy [@scipy],
+``pentapy`` also provides interfaces to solvers from SciPy [@scipy],
 like ``scipy.linalg.solve_banded`` (Lapack) and ``scipy.sparse.linalg.spsolve``.
 The solver can be selected by a keyword argument.
 
-The performance comparison in figure 1 (done with ``perfplot`` [@perfplot]) shows that the implementations
-of ``pentapy`` are almost one order of magnitude faster than the scipy algorithms for banded or sparse matrices.
+The performance comparison in figure 1, done with ``perfplot`` [@perfplot], shows that the implementations
+of ``pentapy`` are almost one order of magnitude faster than the SciPy algorithms for banded or sparse matrices.
 The linear algebra solver of NumPy [@numpy] served as a standard reference, which disregards the special structure of the equation system.
 
 ![Performance comparison of Pentapy, Lapack, Scipy and Numpy routines depending on the matrix size.](perfplot_simple.png)
 
 ``pentapy`` is designed to provide a fast solver for the special case of a
-pentadiagonal linear system. To the best of the authors knowledge,
+pentadiagonal linear system. To the best of the author's knowledge,
 this package outperforms the current algorithms for solving pentadiagonal systems in Python.
-The solver can handle different input formats of the coefficient matrix, i.e. a flattend matrix or a
+The solver can handle different input formats of the coefficient matrix, i.e., a flattend matrix or a
 quadratic matrix.
 
-The source code for ``pentapy`` has been archived to Zenodo with the linked DOI.
 
 # Acknowledgements
 
-I acknowledge the supervision by Prof. Sabine Attinger, Prof. Alraune Zech,
-Prof. Peter Dietrich and Dr. Falk Heße and herewith want to thank them for
+I acknowledge the supervision by Prof.\ Sabine Attinger, Prof.\ Alraune Zech,
+Prof. Peter Dietrich and Dr.\ Falk Heße and herewith want to thank them for
 their trust and support.
-I also want to thank Dr. Lennart Schüler for his constant help and the
+I also want to thank Dr.\ Lennart Schüler for his constant help and the
 pleasant partnership during the work on the GeoStat Framework.
 This research was funded by the German Federal Environmental Foundation.
 
