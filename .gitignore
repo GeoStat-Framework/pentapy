@@ -108,3 +108,6 @@ info/
 
 # Cython generated C code
 *.c
+
+# JOSS stuff
+paper/compile
