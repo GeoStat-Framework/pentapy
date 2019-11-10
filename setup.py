@@ -110,7 +110,7 @@ CLASSIFIERS = [
 ]
 EXT_MODULES = []
 if USE_CYTHON:
-    EXT_MODULES.append(cythonize(os.path.join("pentapy", "solver.pyx")))
+    EXT_MODULES = cythonize(os.path.join("pentapy", "solver.pyx"))
 else:
     EXT_MODULES.append(
         Extension(
