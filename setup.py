@@ -91,9 +91,9 @@ else:
     print("## pentapy setup: cython used")
     USE_CYTHON = True
 
-DOCLINES = __doc__.split("\n")
+VERSION = find_version("pentapy", "_version.py")
+DOCLINE = __doc__.split("\n")[0]
 README = open(os.path.join(HERE, "README.md")).read()
-
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -108,19 +108,17 @@ CLASSIFIERS = [
     "Topic :: Scientific/Engineering",
     "Topic :: Utilities",
 ]
-
 EXT_MODULES = []
 if USE_CYTHON:
-    EXT_MODULES += cythonize(os.path.join("pentapy", "solver.pyx"))
+    EXT_MODULES.append(cythonize(os.path.join("pentapy", "solver.pyx")))
 else:
-    EXT_MODULES += [
+    EXT_MODULES.append(
         Extension(
             "pentapy.solver",
             [os.path.join("pentapy", "solver.c")],
             include_dirs=[numpy.get_include()],
         )
-    ]
-
+    )
 # This is the important part. By setting this compiler directive, cython will
 # embed signature information in docstrings. Sphinx then knows how to extract
 # and use those signatures.
@@ -129,14 +127,13 @@ for ext_m in EXT_MODULES:
     ext_m.cython_directives = {"embedsignature": True}
 # version import not possible due to cython
 # see: https://packaging.python.org/guides/single-sourcing-package-version/
-VERSION = find_version("pentapy", "_version.py")
 
 setup_kw = {
     "name": "pentapy",
     "version": VERSION,
     "maintainer": "Sebastian Mueller",
     "maintainer_email": "info@geostat-framework.org",
-    "description": DOCLINES[0],
+    "description": DOCLINE,
     "long_description": README,
     "long_description_content_type": "text/markdown",
     "author": "Sebastian Mueller",
