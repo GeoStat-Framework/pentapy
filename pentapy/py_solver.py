@@ -13,8 +13,6 @@ The following functions are provided
    penta_solver2
 
 """
-from __future__ import division, absolute_import, print_function
-
 import numpy as np
 
 

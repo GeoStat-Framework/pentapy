@@ -9,8 +9,6 @@ The following functions are provided
 .. autosummary::
    solve
 """
-from __future__ import division, absolute_import, print_function
-
 import warnings
 import numpy as np
 from pentapy.tools import shift_banded, create_banded, _check_penta
