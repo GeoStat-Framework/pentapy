@@ -6,7 +6,7 @@
 [![Build Status](https://travis-ci.org/GeoStat-Framework/pentapy.svg?branch=master)](https://travis-ci.org/GeoStat-Framework/pentapy)
 [![Build status](https://ci.appveyor.com/api/projects/status/yyfgn9dgxcoolp97/branch/master?svg=true)](https://ci.appveyor.com/project/GeoStat-Framework/pentapy/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/GeoStat-Framework/pentapy/badge.svg?branch=master)](https://coveralls.io/github/GeoStat-Framework/pentapy?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/pentapy/badge/?version=latest)](https://geostat-framework.readthedocs.io/projects/pentapy/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/pentapy/badge/?version=stable)](https://geostat-framework.readthedocs.io/projects/pentapy/en/stable/?badge=stable)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 
@@ -121,4 +121,4 @@ You can contact us via <info@geostat-framework.org>.
 [pip_link]: https://pypi.org/project/pentapy
 [winpy_link]: https://winpython.github.io/
 [licence_link]: https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE
-[doc_link]: https://geostat-framework.readthedocs.io/projects/pentapy/en/latest/
+[doc_link]: https://pentapy.readthedocs.org
