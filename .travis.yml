@@ -11,7 +11,7 @@ env:
     - CIBW_BEFORE_BUILD="pip install numpy==1.17.3 cython==0.29.14 setuptools"
     - CIBW_TEST_REQUIRES=pytest
     - CIBW_TEST_COMMAND="pytest -v {project}/tests"
-    - CIBW_SKIP="cp27-*"
+    - CIBW_BUILD="cp35-* cp36-* cp37-* cp38-*"
 
 before_install:
   - |
