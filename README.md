@@ -41,6 +41,15 @@ following extra argument:
 Instead of "all" you can also typ "scipy" or "umfpack" to get one of these specific packages.
 
 
+## Citation
+
+If you use `pentapy` in your publication, please cite it:
+
+> Müller, (2019). pentapy: A Python toolbox for pentadiagonal linear systems. Journal of Open Source Software, 4(42), 1759, https://doi.org/10.21105/joss.01759
+
+To cite a certain release, have a look at the Zenodo site: https://doi.org/10.5281/zenodo.2587158
+
+
 ## References
 
 The solver is based on the algorithms PTRANS-I and PTRANS-II
