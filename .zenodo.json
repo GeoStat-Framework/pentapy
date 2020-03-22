@@ -1,0 +1,19 @@
+{
+    "license": "MIT",
+    "language": "eng",
+    "keywords": [
+        "linear algebra",
+        "equation systems",
+        "pentadiagonal matrices",
+        "math",
+        "Python",
+        "GeoStat-Framework"
+    ],
+    "creators": [
+        {
+            "orcid": "0000-0001-9060-4008",
+            "affiliation": "Helmholtz Centre for Environmental Research - UFZ",
+            "name": "Sebastian M\u00fcller"
+        }
+    ]
+}

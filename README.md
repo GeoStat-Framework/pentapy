@@ -115,7 +115,7 @@ You can contact us via <info@geostat-framework.org>.
 
 ## License
 
-[MIT][licence_link] © 2020
+[MIT][licence_link] © 2019 - 2020
 
 [ref_link]: http://dx.doi.org/10.1155/2015/232456
 [pip_link]: https://pypi.org/project/pentapy
