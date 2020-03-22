@@ -29,9 +29,6 @@ The following tools are provided:
    create_banded
    create_full
 """
-from __future__ import absolute_import
-
-from pentapy._version import __version__
 from pentapy.core import solve
 from pentapy.tools import (
     create_banded,
@@ -39,6 +36,12 @@ from pentapy.tools import (
     shift_banded,
     diag_indices,
 )
+
+try:
+    from pentapy._version import __version__
+except ImportError:  # pragma: nocover
+    # package is not installed
+    __version__ = "0.0.0.dev0"
 
 __all__ = ["__version__"]
 __all__ += ["solve"]

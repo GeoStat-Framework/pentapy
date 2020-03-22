@@ -4,13 +4,11 @@ This is the unittest for pentapy.
 """
 from __future__ import division, absolute_import, print_function
 
-import platform
+# import platform
 import warnings
 import unittest
 import numpy as np
 import pentapy as pp
-from pentapy.py_solver import penta_solver1 as ps1
-from pentapy.py_solver import penta_solver2 as ps2
 
 
 warnings.simplefilter("always")
@@ -78,12 +76,10 @@ class TestPentapy(unittest.TestCase):
             solver=1,
         )
         sol_ful = pp.solve(self.mat_ful, self.rhs, solver=1)
-        sol_pyt = ps1(self.mat, self.rhs)
 
         diff_row = np.max(np.abs(np.dot(self.mat_ful, sol_row) - self.rhs))
         diff_col = np.max(np.abs(np.dot(self.mat_ful, sol_col) - self.rhs))
         diff_ful = np.max(np.abs(np.dot(self.mat_ful, sol_ful) - self.rhs))
-        diff_pyt = np.max(np.abs(np.dot(self.mat_ful, sol_pyt) - self.rhs))
 
         diff_row_col = np.max(
             np.abs(self.mat_ful - pp.create_full(self.mat_col))
@@ -91,7 +87,6 @@ class TestPentapy(unittest.TestCase):
         self.assertAlmostEqual(diff_row * 1e-5, 0.0)
         self.assertAlmostEqual(diff_col * 1e-5, 0.0)
         self.assertAlmostEqual(diff_ful * 1e-5, 0.0)
-        self.assertAlmostEqual(diff_pyt * 1e-5, 0.0)
         self.assertAlmostEqual(diff_row_col * 1e5, 0.0)
 
     def test_solve2(self):
@@ -107,12 +102,10 @@ class TestPentapy(unittest.TestCase):
             solver=2,
         )
         sol_ful = pp.solve(self.mat_ful, self.rhs, solver=2)
-        sol_pyt = ps2(self.mat, self.rhs)
 
         diff_row = np.max(np.abs(np.dot(self.mat_ful, sol_row) - self.rhs))
         diff_col = np.max(np.abs(np.dot(self.mat_ful, sol_col) - self.rhs))
         diff_ful = np.max(np.abs(np.dot(self.mat_ful, sol_ful) - self.rhs))
-        diff_pyt = np.max(np.abs(np.dot(self.mat_ful, sol_pyt) - self.rhs))
 
         diff_row_col = np.max(
             np.abs(self.mat_ful - pp.create_full(self.mat_col))
@@ -120,7 +113,6 @@ class TestPentapy(unittest.TestCase):
         self.assertAlmostEqual(diff_row * 1e-5, 0.0)
         self.assertAlmostEqual(diff_col * 1e-5, 0.0)
         self.assertAlmostEqual(diff_ful * 1e-5, 0.0)
-        self.assertAlmostEqual(diff_pyt * 1e-5, 0.0)
         self.assertAlmostEqual(diff_row_col * 1e5, 0.0)
 
     def test_error(self):
@@ -128,19 +120,6 @@ class TestPentapy(unittest.TestCase):
             [[3, 2, 1, 0], [-3, -2, 7, 1], [3, 2, -1, 5], [0, 1, 2, 3]]
         )
         self.err_rhs = np.array([6, 3, 9, 6])
-        # there is a cython bug for 32bit where no ZeroDivisionError is raised
-        if platform.architecture()[0] == "64bit":
-            # https://stackoverflow.com/a/32089134/6696397
-            with warnings.catch_warnings(record=True) as wrn:
-                sol_1 = pp.solve(
-                    self.err_mat, self.err_rhs, is_flat=False, solver=1
-                )
-            self.assertTrue(wrn)
-            self.assertTrue(np.all(np.isnan(sol_1)))
-            self.assertTrue(
-                str(wrn[0].message)
-                == "pentapy: PTRANS-I not suitable for input-matrix."
-            )
         sol_2 = pp.solve(self.err_mat, self.err_rhs, is_flat=False, solver=2)
         diff_2 = np.max(np.abs(np.dot(self.err_mat, sol_2) - self.err_rhs))
         self.assertAlmostEqual(diff_2, 0.0)

@@ -12,8 +12,6 @@ The following functions are provided
    create_banded
    create_full
 """
-from __future__ import division, absolute_import, print_function
-
 import numpy as np
 
 

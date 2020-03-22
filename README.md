@@ -3,10 +3,9 @@
 [![status](https://joss.theoj.org/papers/57c3bbdd7b7f3068dd1e669ccbcf107c/status.svg)](https://joss.theoj.org/papers/57c3bbdd7b7f3068dd1e669ccbcf107c)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2587158.svg)](https://doi.org/10.5281/zenodo.2587158)
 [![PyPI version](https://badge.fury.io/py/pentapy.svg)](https://badge.fury.io/py/pentapy)
-[![Build Status](https://travis-ci.org/GeoStat-Framework/pentapy.svg?branch=master)](https://travis-ci.org/GeoStat-Framework/pentapy)
-[![Build status](https://ci.appveyor.com/api/projects/status/yyfgn9dgxcoolp97/branch/master?svg=true)](https://ci.appveyor.com/project/GeoStat-Framework/pentapy/branch/master)
+[![Build Status](https://travis-ci.com/GeoStat-Framework/pentapy.svg?branch=master)](https://travis-ci.com/GeoStat-Framework/pentapy)
 [![Coverage Status](https://coveralls.io/repos/github/GeoStat-Framework/pentapy/badge.svg?branch=master)](https://coveralls.io/github/GeoStat-Framework/pentapy?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/pentapy/badge/?version=latest)](https://geostat-framework.readthedocs.io/projects/pentapy/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/pentapy/badge/?version=stable)](https://geostat-framework.readthedocs.io/projects/pentapy/en/stable/?badge=stable)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 
@@ -39,6 +38,15 @@ following extra argument:
     pip install pentapy[all]
 
 Instead of "all" you can also typ "scipy" or "umfpack" to get one of these specific packages.
+
+
+## Citation
+
+If you use `pentapy` in your publication, please cite it:
+
+> Müller, (2019). pentapy: A Python toolbox for pentadiagonal linear systems. Journal of Open Source Software, 4(42), 1759, https://doi.org/10.21105/joss.01759
+
+To cite a certain release, have a look at the Zenodo site: https://doi.org/10.5281/zenodo.2587158
 
 
 ## References
@@ -95,7 +103,7 @@ The implementations of pentapy are almost one order of magnitude faster than the
 scipy algorithms for banded or sparse matrices.
 
 The performance plot was created with [``perfplot``](https://github.com/nschloe/perfplot).
-Have a look at the script: [``examples/04_perform_simple.py``](https://github.com/GeoStat-Framework/pentapy/blob/master/examples/04_perform_simple.py).
+Have a look at the script: [``examples/03_perform_simple.py``](https://github.com/GeoStat-Framework/pentapy/blob/master/examples/03_perform_simple.py).
 
 
 
@@ -115,10 +123,10 @@ You can contact us via <info@geostat-framework.org>.
 
 ## License
 
-[MIT][licence_link] © 2019
+[MIT][licence_link] © 2019 - 2020
 
 [ref_link]: http://dx.doi.org/10.1155/2015/232456
 [pip_link]: https://pypi.org/project/pentapy
 [winpy_link]: https://winpython.github.io/
 [licence_link]: https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE
-[doc_link]: https://geostat-framework.readthedocs.io/projects/pentapy/en/latest/
+[doc_link]: https://pentapy.readthedocs.org

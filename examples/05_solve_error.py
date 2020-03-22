@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-6. Example.
+5. Example.
 
 Here we demonstrate that the solver PTRANS-I can fail to solve a given system.
 A warning is given in that case and the output will be a nan-array.
