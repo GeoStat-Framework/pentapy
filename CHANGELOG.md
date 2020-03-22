@@ -10,7 +10,7 @@ All notable changes to **pentapy** will be documented in this file.
 
 ### Changes
 - python only builds are no longer available
-- Python 2 support dropped
+- Python 2.7 and 3.4 support dropped
 
 
 ## [1.0.3] - 2019-11-10

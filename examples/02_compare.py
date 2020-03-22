@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-3. Example.
+2. Example.
 
 Here we compare the outcome of the PTRANS-I and PTRANS-II algorithm for
 a random input.

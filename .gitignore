@@ -111,3 +111,6 @@ info/
 
 # JOSS stuff
 paper/compile
+
+# setuptools_scm generated version files
+pentapy/_version.py

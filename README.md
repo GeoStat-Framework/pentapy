@@ -104,7 +104,7 @@ The implementations of pentapy are almost one order of magnitude faster than the
 scipy algorithms for banded or sparse matrices.
 
 The performance plot was created with [``perfplot``](https://github.com/nschloe/perfplot).
-Have a look at the script: [``examples/04_perform_simple.py``](https://github.com/GeoStat-Framework/pentapy/blob/master/examples/04_perform_simple.py).
+Have a look at the script: [``examples/03_perform_simple.py``](https://github.com/GeoStat-Framework/pentapy/blob/master/examples/03_perform_simple.py).
 
 
 

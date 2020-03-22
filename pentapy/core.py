@@ -12,22 +12,7 @@ The following functions are provided
 import warnings
 import numpy as np
 from pentapy.tools import shift_banded, create_banded, _check_penta
-
-
-try:
-    from pentapy.solver import penta_solver1, penta_solver2
-
-    USE_CY = True
-    PtransError = ZeroDivisionError
-except ImportError:  # pragma: no cover
-    # from pentapy.py_solver import penta_solver1, penta_solver2
-
-    # np.seterr(divide="raise")
-    # warnings.simplefilter("always", ImportWarning)
-    # warnings.warn("pentapy: No Cython functions imported", ImportWarning)
-    # USE_CY = False
-    # PtransError = FloatingPointError
-    raise ImportError("pentapy: could not load cython modules.")
+from pentapy.solver import penta_solver1, penta_solver2
 
 
 def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
@@ -101,7 +86,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         rhs = np.array(rhs, dtype=np.double)
         try:
             return penta_solver1(mat_flat, rhs)
-        except PtransError:
+        except ZeroDivisionError:
             warnings.warn("pentapy: PTRANS-I not suitable for input-matrix.")
             return np.full_like(rhs, np.nan)
     elif solver in [2, "2", "PTRANS-II"]:
@@ -117,7 +102,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         rhs = np.array(rhs, dtype=np.double)
         try:
             return penta_solver2(mat_flat, rhs)
-        except PtransError:
+        except ZeroDivisionError:
             warnings.warn("pentapy: PTRANS-II not suitable for input-matrix.")
             return np.full_like(rhs, np.nan)
     elif solver in [3, "3", "lapack", "solve_banded"]:  # pragma: no cover

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-4. Example.
+3. Example.
 
 Here we compare all algorithms for solving pentadiagonal systems provided
 by pentapy (except umf).
