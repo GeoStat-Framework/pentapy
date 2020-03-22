@@ -20,13 +20,14 @@ try:
     USE_CY = True
     PtransError = ZeroDivisionError
 except ImportError:  # pragma: no cover
-    from pentapy.py_solver import penta_solver1, penta_solver2
+    # from pentapy.py_solver import penta_solver1, penta_solver2
 
-    np.seterr(divide="raise")
-    warnings.simplefilter("always", ImportWarning)
-    warnings.warn("pentapy: No Cython functions imported", ImportWarning)
-    USE_CY = False
-    PtransError = FloatingPointError
+    # np.seterr(divide="raise")
+    # warnings.simplefilter("always", ImportWarning)
+    # warnings.warn("pentapy: No Cython functions imported", ImportWarning)
+    # USE_CY = False
+    # PtransError = FloatingPointError
+    raise ImportError("pentapy: could not load cython modules.")
 
 
 def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
