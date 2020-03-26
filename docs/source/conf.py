@@ -172,12 +172,14 @@ html_sidebars = {
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "pentapydoc"
-
+# logos for the page
+html_logo = "pics/pentapy_150.png"
+html_favicon = "pics/pentapy.ico"
 
 # -- Options for LaTeX output ---------------------------------------------
 # latex_engine = 'lualatex'
 # logo to big
-# latex_logo = "pics/gstools_150.png"
+latex_logo = "pics/pentapy_150.png"
 
 # latex_show_urls = 'footnote'
 # http://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-latex-output

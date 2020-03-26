@@ -2,6 +2,11 @@
 pentapy Quickstart
 ==================
 
+.. image:: /pics/pentapy.png
+   :width: 150px
+   :align: center
+
+
 pentapy is a toolbox to deal with pentadiagonal matrices in Python and solve
 the corresponding linear equation systems.
 

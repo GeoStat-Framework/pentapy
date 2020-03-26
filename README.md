@@ -8,6 +8,10 @@
 [![Documentation Status](https://readthedocs.org/projects/pentapy/badge/?version=stable)](https://geostat-framework.readthedocs.io/projects/pentapy/en/stable/?badge=stable)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
+<p align="center">
+<img src="https://github.com/GeoStat-Framework/GeoStat-Framework.github.io/raw/master/docs/source/pics/pentapy.png" alt="pentapy-LOGO" width="251px"/>
+</p>
+
 
 ## Purpose
 
