@@ -3,10 +3,14 @@
 [![status](https://joss.theoj.org/papers/57c3bbdd7b7f3068dd1e669ccbcf107c/status.svg)](https://joss.theoj.org/papers/57c3bbdd7b7f3068dd1e669ccbcf107c)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2587158.svg)](https://doi.org/10.5281/zenodo.2587158)
 [![PyPI version](https://badge.fury.io/py/pentapy.svg)](https://badge.fury.io/py/pentapy)
-[![Build Status](https://travis-ci.com/GeoStat-Framework/pentapy.svg?branch=master)](https://travis-ci.com/GeoStat-Framework/pentapy)
-[![Coverage Status](https://coveralls.io/repos/github/GeoStat-Framework/pentapy/badge.svg?branch=master)](https://coveralls.io/github/GeoStat-Framework/pentapy?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/pentapy/badge/?version=stable)](https://geostat-framework.readthedocs.io/projects/pentapy/en/stable/?badge=stable)
+[![Build Status](https://github.com/GeoStat-Framework/pentapy/workflows/Continuous%20Integration/badge.svg?branch=develop)](https://github.com/GeoStat-Framework/pentapy/actions)
+[![Coverage Status](https://coveralls.io/repos/github/GeoStat-Framework/pentapy/badge.svg?branch=develop)](https://coveralls.io/github/GeoStat-Framework/pentapy?branch=develop)
+[![Documentation Status](https://readthedocs.org/projects/pentapy/badge/?version=latest)](https://geostat-framework.readthedocs.io/projects/pentapy/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
+<p align="center">
+<img src="https://github.com/GeoStat-Framework/GeoStat-Framework.github.io/raw/master/docs/source/pics/pentapy.png" alt="pentapy-LOGO" width="251px"/>
+</p>
 
 
 ## Purpose
@@ -57,7 +61,7 @@ presented by [Askar et al. 2015][ref_link].
 
 ## Documentation and Examples
 
-You can find the documentation under [geostat-framework.readthedocs.io][doc_link].
+You can find the documentation under [https://pentapy.readthedocs.org][doc_link].
 
 ### Solving a pentadiagonal linear equation system
 
@@ -123,7 +127,7 @@ You can contact us via <info@geostat-framework.org>.
 
 ## License
 
-[MIT][licence_link] © 2019 - 2020
+[MIT][licence_link] © 2019 - 2021
 
 [ref_link]: http://dx.doi.org/10.1155/2015/232456
 [pip_link]: https://pypi.org/project/pentapy
