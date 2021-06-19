@@ -56,9 +56,9 @@ This is the first release of pentapy, a python toolbox for solving pentadiagonal
 The solver is implemented in cython, which makes it really fast.
 
 
-[1.1.1]: https://github.com/GeoStat-Framework/gstools/compare/v1.1.0...v1.1.1
-[1.1.0]: https://github.com/GeoStat-Framework/gstools/compare/v1.0.3...v1.1.0
-[1.0.3]: https://github.com/GeoStat-Framework/gstools/compare/v1.0.0...v1.0.3
-[1.0.0]: https://github.com/GeoStat-Framework/gstools/compare/v0.1.1...v1.0.0
-[0.1.1]: https://github.com/GeoStat-Framework/gstools/compare/v0.1...v0.1.1
-[0.1.0]: https://github.com/GeoStat-Framework/gstools/releases/tag/v0.1
+[1.1.1]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.0.3...v1.1.0
+[1.0.3]: https://github.com/GeoStat-Framework/pentapy/compare/v1.0.0...v1.0.3
+[1.0.0]: https://github.com/GeoStat-Framework/pentapy/compare/v0.1.1...v1.0.0
+[0.1.1]: https://github.com/GeoStat-Framework/pentapy/compare/v0.1...v0.1.1
+[0.1.0]: https://github.com/GeoStat-Framework/pentapy/releases/tag/v0.1
