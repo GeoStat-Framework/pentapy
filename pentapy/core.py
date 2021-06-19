@@ -9,6 +9,7 @@ The following functions are provided
 .. autosummary::
    solve
 """
+# pylint: disable=C0103, C0415, R0911, E0611
 import warnings
 import numpy as np
 from pentapy.tools import shift_banded, create_banded, _check_penta
@@ -72,7 +73,6 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
     result : :class:`numpy.ndarray`
         Solution of the equation system
     """
-
     if solver in [1, "1", "PTRANS-I"]:
         if is_flat and index_row_wise:
             mat_flat = np.array(mat, dtype=np.double)
@@ -108,11 +108,11 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
     elif solver in [3, "3", "lapack", "solve_banded"]:  # pragma: no cover
         try:
             from scipy.linalg import solve_banded
-        except ImportError:  # pragma: no cover
+        except ImportError as imp_err:  # pragma: no cover
             raise ValueError(
                 "pentapy.solve: "
-                + "scipy.linalg.solve_banded could not be imported"
-            )
+                "scipy.linalg.solve_banded could not be imported"
+            ) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
             _check_penta(mat_flat)
@@ -126,10 +126,10 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
-        except ImportError:
+        except ImportError as imp_err:
             raise ValueError(
                 "pentapy.solve: scipy.sparse could not be imported"
-            )
+            ) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
             _check_penta(mat_flat)
@@ -151,10 +151,10 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
-        except ImportError:
+        except ImportError as imp_err:
             raise ValueError(
                 "pentapy.solve: scipy.sparse could not be imported"
-            )
+            ) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
             _check_penta(mat_flat)

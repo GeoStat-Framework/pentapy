@@ -97,8 +97,8 @@ master_doc = "contents"
 # General information about the project.
 curr_year = datetime.datetime.now().year
 project = "pentapy"
-copyright = "2019 - {}, Sebastian Mueller".format(curr_year)
-author = "Sebastian Mueller"
+copyright = "2019 - {}, Sebastian Müller".format(curr_year)
+author = "Sebastian Müller"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -202,7 +202,7 @@ latex_documents = [
         master_doc,
         "pentapy.tex",
         "pentapy Documentation",
-        "Sebastian Mueller",
+        "Sebastian Müller",
         "manual",
     )
 ]
