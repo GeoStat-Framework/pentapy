@@ -12,12 +12,13 @@ The following functions are provided
    create_banded
    create_full
 """
+# pylint: disable=C0103
 import numpy as np
 
 
 def diag_indices(n, offset=0):
     """
-    Indices for the main or minor diagonals of a matrix.
+    Get indices for the main or minor diagonals of a matrix.
 
     This returns a tuple of indices that can be used to access the main
     diagonal of an array `a` with ``a.ndim == 2`` dimensions and shape
