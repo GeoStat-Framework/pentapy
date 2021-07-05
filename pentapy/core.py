@@ -75,7 +75,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
     """
     if solver in [1, "1", "PTRANS-I"]:
         if is_flat and index_row_wise:
-            mat_flat = np.array(mat, dtype=np.double)
+            mat_flat = np.asarray(mat, dtype=np.double)
             _check_penta(mat_flat)
         elif is_flat:
             mat_flat = np.array(mat, dtype=np.double)
@@ -83,7 +83,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             shift_banded(mat_flat, copy=False)
         else:
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
-        rhs = np.array(rhs, dtype=np.double)
+        rhs = np.asarray(rhs, dtype=np.double)
         try:
             return penta_solver1(mat_flat, rhs)
         except ZeroDivisionError:
@@ -91,7 +91,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             return np.full_like(rhs, np.nan)
     elif solver in [2, "2", "PTRANS-II"]:
         if is_flat and index_row_wise:
-            mat_flat = np.array(mat, dtype=np.double)
+            mat_flat = np.asarray(mat, dtype=np.double)
             _check_penta(mat_flat)
         elif is_flat:
             mat_flat = np.array(mat, dtype=np.double)
@@ -99,7 +99,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             shift_banded(mat_flat, copy=False)
         else:
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
-        rhs = np.array(rhs, dtype=np.double)
+        rhs = np.asarray(rhs, dtype=np.double)
         try:
             return penta_solver2(mat_flat, rhs)
         except ZeroDivisionError:
@@ -118,7 +118,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             _check_penta(mat_flat)
             shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
-            mat_flat = np.array(mat)
+            mat_flat = np.asarray(mat)
         else:
             mat_flat = create_banded(mat)
         return solve_banded((2, 2), mat_flat, rhs)
@@ -135,7 +135,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             _check_penta(mat_flat)
             shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
-            mat_flat = np.array(mat)
+            mat_flat = np.asarray(mat)
         else:
             mat_flat = create_banded(mat)
         size = mat_flat.shape[1]
@@ -160,7 +160,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             _check_penta(mat_flat)
             shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
-            mat_flat = np.array(mat)
+            mat_flat = np.asarray(mat)
         else:
             mat_flat = create_banded(mat)
         size = mat_flat.shape[1]
