@@ -3,8 +3,8 @@
 [![status](https://joss.theoj.org/papers/57c3bbdd7b7f3068dd1e669ccbcf107c/status.svg)](https://joss.theoj.org/papers/57c3bbdd7b7f3068dd1e669ccbcf107c)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2587158.svg)](https://doi.org/10.5281/zenodo.2587158)
 [![PyPI version](https://badge.fury.io/py/pentapy.svg)](https://badge.fury.io/py/pentapy)
-[![Build Status](https://github.com/GeoStat-Framework/pentapy/workflows/Continuous%20Integration/badge.svg?branch=develop)](https://github.com/GeoStat-Framework/pentapy/actions)
-[![Coverage Status](https://coveralls.io/repos/github/GeoStat-Framework/pentapy/badge.svg?branch=develop)](https://coveralls.io/github/GeoStat-Framework/pentapy?branch=develop)
+[![Build Status](https://github.com/GeoStat-Framework/pentapy/workflows/Continuous%20Integration/badge.svg?branch=main)](https://github.com/GeoStat-Framework/pentapy/actions)
+[![Coverage Status](https://coveralls.io/repos/github/GeoStat-Framework/pentapy/badge.svg?branch=main)](https://coveralls.io/github/GeoStat-Framework/pentapy?branch=main)
 [![Documentation Status](https://readthedocs.org/projects/pentapy/badge/?version=latest)](https://geostat-framework.readthedocs.io/projects/pentapy/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
@@ -100,14 +100,14 @@ In the following a couple of solvers for pentadiagonal systems are compared:
 * Solver 5: pentapy.solve with ``solver=2``
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/GeoStat-Framework/pentapy/master/examples/perfplot_simple.png" alt="Performance" width="600px"/>
+<img src="https://raw.githubusercontent.com/GeoStat-Framework/pentapy/main/examples/perfplot_simple.png" alt="Performance" width="600px"/>
 </p>
 
 The implementations of pentapy are almost one order of magnitude faster than the
 scipy algorithms for banded or sparse matrices.
 
 The performance plot was created with [``perfplot``](https://github.com/nschloe/perfplot).
-Have a look at the script: [``examples/03_perform_simple.py``](https://github.com/GeoStat-Framework/pentapy/blob/master/examples/03_perform_simple.py).
+Have a look at the script: [``examples/03_perform_simple.py``](https://github.com/GeoStat-Framework/pentapy/blob/main/examples/03_perform_simple.py).
 
 
 
@@ -132,5 +132,5 @@ You can contact us via <info@geostat-framework.org>.
 [ref_link]: http://dx.doi.org/10.1155/2015/232456
 [pip_link]: https://pypi.org/project/pentapy
 [winpy_link]: https://winpython.github.io/
-[licence_link]: https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE
+[licence_link]: https://github.com/GeoStat-Framework/pentapy/blob/main/LICENSE
 [doc_link]: https://pentapy.readthedocs.org
