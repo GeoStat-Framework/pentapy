@@ -30,7 +30,7 @@ with your idea or suggestion and we'd love to discuss about it.
 - Fork the repo on [GitHub](https://github.com/GeoStat-Framework/pentapy).
 - Commit your stuff
 - Add yourself to AUTHORS.md (if you want to).
-- We use the black code format, please use the script `black --line-length 79 pentapy/` after you have written your code.
+- We use the black code format, please use the script `black .` after you have written your code.
 - Add some tests of your extension to ``tests/test_pentapy.py``
   - we use [unittest](https://docs.python.org/3/library/unittest.html)
     for our test suite, have a look at their documentation
