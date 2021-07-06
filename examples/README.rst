@@ -1,5 +1,12 @@
-Tutorial 1: Solving a pentadiagonal system
-==========================================
+=================
+pentapy Tutorials
+=================
+
+In the following you will find Tutorials on how to use pentapy.
+
+
+Introduction: Solving a pentadiagonal system
+============================================
 
 Pentadiagonal systems arise in many areas of science and engineering,
 for example in solving differential equations with a finite difference sceme.
@@ -113,40 +120,5 @@ pentapy provides some tools to convert a pentadiagonal matrix.
    create_full
 
 
-Example
--------
-
-This is an example of how to solve a LES with a pentadiagonal matrix.
-The matrix is given as a row-wise flattened matrix, that is filled with
-random numbers.
-Afterwards the matrix is transformed to the full quadradratic matrix to check
-the result.
-
-.. code-block:: python
-
-    import numpy as np
-    import pentapy as pp
-
-    size = 1000
-    # create a flattened pentadiagonal matrix
-    M_flat = (np.random.random((5, size)) - 0.5) * 1e-5
-    V = np.random.random(size) * 1e5
-    # solve the LES with M_flat as row-wise flattened matrix
-    X = pp.solve(M_flat, V, is_flat=True)
-
-    # create the corresponding matrix for checking
-    M = pp.create_full(M_flat, col_wise=False)
-    # calculate the error
-    print(np.max(np.abs(np.dot(M, X) - V)))
-
-
-This should give something small like:
-
-.. code-block:: python
-
-    4.257890395820141e-08
-
-
-.. raw:: latex
-
-    \clearpage
+Gallery
+=======

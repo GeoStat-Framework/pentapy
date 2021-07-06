@@ -7,5 +7,6 @@ Contents
    :maxdepth: 3
 
    index
-   tutorials
+   examples/index
    package
+   changelog

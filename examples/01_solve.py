@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-1. Example.
+1. Example: Solving
+-------------------
 
 Here we create a random row wise flattened matrix M_flat and a random
 right hand side for the pentadiagonal equation system.

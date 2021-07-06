@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-4. Example.
+4. Example: Performance for full matrices
+-----------------------------------------
 
 Here we compare all algorithms for solving pentadiagonal systems provided
 by pentapy (except umf) using a full quadratic matrix as input.

@@ -93,7 +93,7 @@ In the following, a couple of solvers for pentadiagonal systems are compared:
 * Solver 5: pentapy.solve with ``solver=2``
 
 
-.. image:: https://raw.githubusercontent.com/GeoStat-Framework/pentapy/master/examples/perfplot_simple.png
+.. image:: https://raw.githubusercontent.com/GeoStat-Framework/pentapy/main/examples/perfplot_simple.png
    :width: 400px
    :align: center
 
@@ -114,4 +114,4 @@ Optional
 License
 =======
 
-`MIT <https://github.com/GeoStat-Framework/pentapy/blob/master/LICENSE>`_
+`MIT <https://github.com/GeoStat-Framework/pentapy/blob/main/LICENSE>`_

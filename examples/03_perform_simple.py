@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-3. Example.
+3. Example: Performance for flattened matrices
+----------------------------------------------
 
 Here we compare all algorithms for solving pentadiagonal systems provided
 by pentapy (except umf).
@@ -8,7 +9,6 @@ by pentapy (except umf).
 To use this script you need to have the following packages installed:
 
     * scipy
-    * scikit-umfpack
     * perfplot
     * matplotlib
 """

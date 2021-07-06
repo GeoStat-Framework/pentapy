@@ -21,12 +21,14 @@
 # pip install sphinx_rtd_theme
 # is needed in order to build the documentation
 import datetime
-import os
-import sys
+import warnings
 
-# local module should not be added to sys path if it's installed on RTFD
-# see: https://stackoverflow.com/a/31882049/6696397
-# sys.path.insert(0, os.path.abspath("../../"))
+warnings.filterwarnings(
+    "ignore",
+    category=UserWarning,
+    message="Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.",
+)
+
 from pentapy import __version__ as ver
 
 
@@ -60,6 +62,8 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",  # parameters look better than with numpydoc only
     "numpydoc",
+    "sphinx_gallery.gen_gallery",
+    "m2r2",
 ]
 
 # autosummaries from source-files
@@ -85,8 +89,8 @@ templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-# source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = ['.rst', '.md']
+# source_suffix = ".rst"
 
 # The master toctree document.
 # --> this is the sitemap (or content-list in latex -> needs a heading)
@@ -243,4 +247,26 @@ intersphinx_mapping = {
     "Python": ("https://docs.python.org/", None),
     "NumPy": ("http://docs.scipy.org/doc/numpy/", None),
     "Sphinx": ("http://www.sphinx-doc.org/en/stable/", None),
+}
+
+# -- Sphinx Gallery Options
+from sphinx_gallery.sorting import FileNameSortKey
+
+sphinx_gallery_conf = {
+    # only show "print" output as output
+    "capture_repr": (),
+    # path to your examples scripts
+    "examples_dirs": ["../../examples"],
+    # path where to save gallery generated examples
+    "gallery_dirs": ["examples"],
+    # Pattern to search for example files
+    "filename_pattern": "/.*.py",
+    # Remove the "Download all examples" button from the top level gallery
+    "download_all_examples": False,
+    # Sort gallery example by file name instead of number of lines (default)
+    "within_subsection_order": FileNameSortKey,
+    # directory where function granular galleries are stored
+    "backreferences_dir": None,
+    # Modules for which function level galleries are created.  In
+    "doc_module": "pentapy",
 }
