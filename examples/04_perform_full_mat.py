@@ -9,7 +9,6 @@ by pentapy (except umf) using a full quadratic matrix as input.
 To use this script you need to have the following packages installed:
 
     * scipy
-    * scikit-umfpack
     * perfplot
     * matplotlib
 """
