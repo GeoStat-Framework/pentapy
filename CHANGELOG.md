@@ -3,6 +3,15 @@
 All notable changes to **pentapy** will be documented in this file.
 
 
+## [1.1.2] - 2021-07
+
+### Changes
+- new package structure with `pyproject.toml` ([#15](https://github.com/GeoStat-Framework/pentapy/pull/15))
+- Sphinx-Gallery for Examples
+- Repository restructuring: use a single `main` branch
+- use `np.asarray` in `solve` to speed up computation ([#17](https://github.com/GeoStat-Framework/pentapy/pull/17))
+
+
 ## [1.1.1] - 2021-02
 
 ### Enhancements
@@ -56,6 +65,7 @@ This is the first release of pentapy, a python toolbox for solving pentadiagonal
 The solver is implemented in cython, which makes it really fast.
 
 
+[1.1.2]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/GeoStat-Framework/pentapy/compare/v1.0.0...v1.0.3
