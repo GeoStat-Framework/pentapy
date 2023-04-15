@@ -28,13 +28,7 @@ On Windows you can install [WinPython][winpy_link] to get Python and pip running
 
     pip install pentapy
 
-There are pre-built wheels for Linux, MacOS and Windows for most Python versions (2.7, 3.4-3.7).
-
-If your system is not supported and you want to have the Cython routines of
-pentapy installed, you have to provide a c-compiler and run:
-
-    pip install numpy cython
-    pip install pentapy
+There are pre-built wheels for Linux, MacOS and Windows for most Python versions.
 
 To get the scipy solvers running, you have to install scipy or you can use the
 following extra argument:
@@ -127,7 +121,7 @@ You can contact us via <info@geostat-framework.org>.
 
 ## License
 
-[MIT][licence_link] © 2019 - 2021
+[MIT][licence_link] © 2019 - 2023
 
 [ref_link]: http://dx.doi.org/10.1155/2015/232456
 [pip_link]: https://pypi.org/project/pentapy

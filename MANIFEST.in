@@ -1,7 +1,4 @@
-prune *
-graft tests
-recursive-include pentapy *.py *.pyx
-recursive-exclude pentapy *.c *.cpp
-include LICENSE README.md pyproject.toml setup.py setup.cfg
-exclude CHANGELOG.md CONTRIBUTING.md
-global-exclude __pycache__ *.py[cod] .*
+prune **
+recursive-include tests *.py
+recursive-include src/pentapy *.py *.pyx *.pxd
+include LICENSE README.md pyproject.toml setup.py

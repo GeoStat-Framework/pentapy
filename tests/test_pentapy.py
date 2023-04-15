@@ -1,15 +1,14 @@
-# -*- coding: utf-8 -*-
 """
 This is the unittest for pentapy.
 """
-from __future__ import division, absolute_import, print_function
+import unittest
 
 # import platform
 import warnings
-import unittest
-import numpy as np
-import pentapy as pp
 
+import numpy as np
+
+import pentapy as pp
 
 warnings.simplefilter("always")
 

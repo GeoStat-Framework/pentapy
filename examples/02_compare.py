@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 2. Example: Comparison
 ----------------------
@@ -7,6 +6,7 @@ Here we compare the outcome of the PTRANS-I and PTRANS-II algorithm for
 a random input.
 """
 import numpy as np
+
 import pentapy as pp
 
 size = 1000

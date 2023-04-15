@@ -1,5 +1,4 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True
-# -*- coding: utf-8 -*-
 """
 This is a solver linear equation systems with a penta-diagonal matrix,
 implemented in cython.
@@ -11,6 +10,14 @@ cimport numpy as np
 
 
 def penta_solver1(double[:,:] mat_flat, double[:] rhs):
+    return np.asarray(c_penta_solver1(mat_flat, rhs))
+
+
+def penta_solver2(double[:,:] mat_flat, double[:] rhs):
+    return np.asarray(c_penta_solver2(mat_flat, rhs))
+
+
+cdef double[:] c_penta_solver1(double[:,:] mat_flat, double[:] rhs):
 
     cdef int mat_j = mat_flat.shape[1]
 
@@ -59,10 +66,10 @@ def penta_solver1(double[:,:] mat_flat, double[:] rhs):
     for i in range(mat_j-3, -1, -1):
         result[i] = ze[i] - al[i] * result[i+1] - be[i] * result[i+2]
 
-    return np.asarray(result)
+    return result
 
 
-def penta_solver2(double[:,:] mat_flat, double[:] rhs):
+cdef double[:] c_penta_solver2(double[:,:] mat_flat, double[:] rhs):
 
     cdef int mat_j = mat_flat.shape[1]
 
@@ -111,4 +118,4 @@ def penta_solver2(double[:,:] mat_flat, double[:] rhs):
     for i in range(2, mat_j):
         result[i] = we[i] - si[i] * result[i-1] - ph[i] * result[i-2]
 
-    return np.asarray(result)
+    return result

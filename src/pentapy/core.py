@@ -1,19 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-The core module of pentapy.
-
-The following functions are provided
-
-.. currentmodule:: pentapy.core
-
-.. autosummary::
-   solve
-"""
+"""The core module of pentapy."""
 # pylint: disable=C0103, C0415, R0911, E0611
 import warnings
+
 import numpy as np
-from pentapy.tools import shift_banded, create_banded, _check_penta
+
 from pentapy.solver import penta_solver1, penta_solver2
+from pentapy.tools import _check_penta, create_banded, shift_banded
 
 
 def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):

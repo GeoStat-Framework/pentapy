@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 4. Example: Performance for full matrices
 -----------------------------------------
@@ -12,12 +11,10 @@ To use this script you need to have the following packages installed:
     * perfplot
     * matplotlib
 """
-from __future__ import division, absolute_import, print_function
-
 import numpy as np
-from pentapy import solve
-from pentapy import tools
 import perfplot
+
+from pentapy import solve, tools
 
 
 def get_les(size):
@@ -64,7 +61,7 @@ perfplot.show(
         "scipy.sparse.linalg.spsolve",
         "numpy.linalg.solve",
     ],
-    n_range=[2 ** k for k in range(2, 13)],
+    n_range=[2**k for k in range(2, 13)],
     xlabel="Size [n]",
     logy=True,
 )

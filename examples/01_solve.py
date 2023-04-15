@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 1. Example: Solving
 -------------------
@@ -11,6 +10,7 @@ and the product of the matrix (which is transformed to a full quadratic one)
 and the solution of the system.
 """
 import numpy as np
+
 import pentapy as pp
 
 size = 1000

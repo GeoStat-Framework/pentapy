@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 5. Example: Failing Corner Cases
 --------------------------------
@@ -7,6 +6,7 @@ Here we demonstrate that the solver PTRANS-I can fail to solve a given system.
 A warning is given in that case and the output will be a nan-array.
 """
 import numpy as np
+
 import pentapy as pp
 
 # create a full pentadiagonal matrix

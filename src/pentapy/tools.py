@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 The tools module of pentapy.
 
@@ -7,6 +6,8 @@ The following functions are provided
 .. currentmodule:: pentapy.tools
 
 .. autosummary::
+   :toctree:
+
    diag_indices
    shift_banded
    create_banded

@@ -1,18 +1,27 @@
-# -*- coding: utf-8 -*-
 """
 Purpose
 =======
 
 pentapy is a toolbox to deal with pentadiagonal matrizes in Python.
 
+
+Subpackages
+^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: api
+
+   tools
+
+
 Solver
 ^^^^^^
-
-.. currentmodule:: pentapy.core
 
 Solver for a pentadiagonal equations system.
 
 .. autosummary::
+   :toctree: api
+
    solve
 
 
@@ -33,8 +42,8 @@ from pentapy.core import solve
 from pentapy.tools import (
     create_banded,
     create_full,
-    shift_banded,
     diag_indices,
+    shift_banded,
 )
 
 try:
