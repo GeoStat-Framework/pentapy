@@ -19,6 +19,8 @@ See [#19](https://github.com/GeoStat-Framework/pentapy/pull/19)
 - move meta-data to pyproject.toml
 - simplified documentation
 
+### Bugfixes
+- determine correct version when installing from archive
 
 ## [1.1.2] - 2021-07
 
