@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#
 # GeoStatTools documentation build configuration file, created by
 # sphinx-quickstart on Fri Jan  5 14:20:43 2018.
 #
