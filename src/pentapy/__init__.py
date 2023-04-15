@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Purpose
 =======
@@ -33,8 +32,8 @@ from pentapy.core import solve
 from pentapy.tools import (
     create_banded,
     create_full,
-    shift_banded,
     diag_indices,
+    shift_banded,
 )
 
 try:

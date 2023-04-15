@@ -1,5 +1,4 @@
 #cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True
-# -*- coding: utf-8 -*-
 """
 This is a solver linear equation systems with a penta-diagonal matrix,
 implemented in cython.
