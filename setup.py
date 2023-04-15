@@ -17,6 +17,7 @@ CY_MODULES = [
 
 setup(
     ext_modules=cythonize(CY_MODULES),
-    package_data={"pentapy": ["*.pxd"]},
-    include_package_data=False,
+    package_data={"pentapy": ["*.pxd"]},  # include pxd files
+    include_package_data=False,  # ignore other files
+    zip_safe=False,
 )
