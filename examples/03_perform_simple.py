@@ -11,8 +11,6 @@ To use this script you need to have the following packages installed:
     * perfplot
     * matplotlib
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 import perfplot
 

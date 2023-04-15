@@ -6,6 +6,8 @@ The following functions are provided
 .. currentmodule:: pentapy.tools
 
 .. autosummary::
+   :toctree:
+
    diag_indices
    shift_banded
    create_banded

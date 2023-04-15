@@ -1,13 +1,4 @@
-"""
-The core module of pentapy.
-
-The following functions are provided
-
-.. currentmodule:: pentapy.core
-
-.. autosummary::
-   solve
-"""
+"""The core module of pentapy."""
 # pylint: disable=C0103, C0415, R0911, E0611
 import warnings
 

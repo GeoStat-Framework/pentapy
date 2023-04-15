@@ -7,9 +7,3 @@ pentapy API
 .. raw:: latex
 
     \clearpage
-
-.. toctree::
-   :hidden:
-
-   core.rst
-   tools.rst

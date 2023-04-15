@@ -21,15 +21,7 @@ Python and pip running.
 
     pip install pentapy
 
-There are pre-built wheels for Linux, MacOS and Windows for most Python versions (2.7, 3.4-3.7).
-
-If your system is not supported and you want to have the Cython routines of
-pentapy installed, you have to provide a c-compiler and run:
-
-.. code-block:: none
-
-    pip install numpy cython
-    pip install pentapy
+There are pre-built wheels for Linux, MacOS and Windows for most Python versions.
 
 To get the scipy solvers running, you have to install scipy or you can use the
 extra argument:

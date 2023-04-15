@@ -4,14 +4,24 @@ Purpose
 
 pentapy is a toolbox to deal with pentadiagonal matrizes in Python.
 
+
+Subpackages
+^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: api
+
+   tools
+
+
 Solver
 ^^^^^^
-
-.. currentmodule:: pentapy.core
 
 Solver for a pentadiagonal equations system.
 
 .. autosummary::
+   :toctree: api
+
    solve
 
 

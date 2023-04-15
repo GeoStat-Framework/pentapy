@@ -47,7 +47,7 @@ doc = [
     "m2r2>=0.2.8",
     "scipy>=1.1.0",
     "matplotlib>=3",
-    "perfplot>=0.8,<1",
+    "perfplot<0.9",
     "numpydoc>=1.1",
     "sphinx>=4",
     "sphinx-gallery>=0.8",
