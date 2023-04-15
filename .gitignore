@@ -87,9 +87,10 @@ celerybeat-schedule
 venv/
 ENV/
 
-# Spyder project settings
+# IDE project settings
 .spyderproject
 .spyproject
+.vscode
 
 # Rope project settings
 .ropeproject
@@ -114,3 +115,7 @@ paper/compile
 
 # setuptools_scm generated version files
 pentapy/_version.py
+
+# generated docs
+docs/source/examples/
+docs/source/api/
