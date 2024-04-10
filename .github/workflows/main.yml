@@ -71,7 +71,7 @@ jobs:
         with:
           output-dir: dist
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           path: ./dist/*.whl
 
@@ -112,7 +112,7 @@ jobs:
           # PEP 517 package builder from pypa
           python -m build --sdist --outdir dist .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         # if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
         with:
           path: dist/*.tar.gz
@@ -122,7 +122,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v3
         with:
           name: artifact
           path: dist
