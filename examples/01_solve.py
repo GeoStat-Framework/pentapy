@@ -9,6 +9,7 @@ After solving we calculate the absolute difference between the right hand side
 and the product of the matrix (which is transformed to a full quadratic one)
 and the solution of the system.
 """
+
 import numpy as np
 
 import pentapy as pp

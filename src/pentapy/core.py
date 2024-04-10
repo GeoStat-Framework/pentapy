@@ -1,4 +1,5 @@
 """The core module of pentapy."""
+
 # pylint: disable=C0103, C0415, R0911, E0611
 import warnings
 
@@ -101,10 +102,8 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         try:
             from scipy.linalg import solve_banded
         except ImportError as imp_err:  # pragma: no cover
-            raise ValueError(
-                "pentapy.solve: "
-                "scipy.linalg.solve_banded could not be imported"
-            ) from imp_err
+            msg = "pentapy.solve: scipy.linalg.solve_banded could not be imported"
+            raise ValueError(msg) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
             _check_penta(mat_flat)
@@ -119,9 +118,8 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
         except ImportError as imp_err:
-            raise ValueError(
-                "pentapy.solve: scipy.sparse could not be imported"
-            ) from imp_err
+            msg = "pentapy.solve: scipy.sparse could not be imported"
+            raise ValueError(msg) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
             _check_penta(mat_flat)
@@ -144,9 +142,8 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
         except ImportError as imp_err:
-            raise ValueError(
-                "pentapy.solve: scipy.sparse could not be imported"
-            ) from imp_err
+            msg = "pentapy.solve: scipy.sparse could not be imported"
+            raise ValueError(msg) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
             _check_penta(mat_flat)
@@ -159,4 +156,5 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=True)
     else:  # pragma: no cover
-        raise ValueError("pentapy.solve: unknown solver (" + str(solver) + ")")
+        msg = f"pentapy.solve: unknown solver ({solver})"
+        raise ValueError(msg)

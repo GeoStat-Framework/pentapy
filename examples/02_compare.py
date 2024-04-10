@@ -5,6 +5,7 @@
 Here we compare the outcome of the PTRANS-I and PTRANS-II algorithm for
 a random input.
 """
+
 import numpy as np
 
 import pentapy as pp

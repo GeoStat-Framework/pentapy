@@ -1,4 +1,5 @@
 """pentapy: A toolbox for pentadiagonal matrizes."""
+
 import os
 
 import numpy as np

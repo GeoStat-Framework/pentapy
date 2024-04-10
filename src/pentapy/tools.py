@@ -13,6 +13,7 @@ The following functions are provided
    create_banded
    create_full
 """
+
 # pylint: disable=C0103
 import numpy as np
 
@@ -171,9 +172,11 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
     """
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
-        raise ValueError("create_banded: matrix has to be 2D")
+        msg = "create_banded: matrix has to be 2D"
+        raise ValueError(msg)
     if mat.shape[0] != mat.shape[1]:
-        raise ValueError("create_banded: matrix has to be n x n")
+        msg = "create_banded: matrix has to be n x n"
+        raise ValueError(msg)
 
     size = mat.shape[0]
     mat_flat = np.zeros((5, size), dtype=dtype)
@@ -243,20 +246,21 @@ def create_full(mat, up=2, low=2, col_wise=True):
     """
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
-        raise ValueError("create_full: matrix has to be 2D")
+        msg = "create_full: matrix has to be 2D"
+        raise ValueError(msg)
     if mat.shape[0] != up + low + 1:
-        raise ValueError("create_full: matrix has wrong count of bands")
+        msg = "create_full: matrix has wrong count of bands"
+        raise ValueError(msg)
     if mat.shape[1] < max(up, low) + 1:
-        raise ValueError("create_full: matrix has to few information")
+        msg = "create_full: matrix has to few information"
+        raise ValueError(msg)
     size = mat.shape[1]
     mat_full = np.diag(mat[up])
     if col_wise:
         for i in range(up):
             mat_full[diag_indices(size, up - i)] = mat[i, (up - i) :]
         for i in range(low):
-            mat_full[diag_indices(size, -(low - i))] = mat[
-                -i - 1, : -(low - i)
-            ]
+            mat_full[diag_indices(size, -(low - i))] = mat[-i - 1, : -(low - i)]
     else:
         for i in range(up):
             mat_full[diag_indices(size, up - i)] = mat[i, : -(up - i)]
@@ -267,8 +271,11 @@ def create_full(mat, up=2, low=2, col_wise=True):
 
 def _check_penta(mat):
     if mat.ndim != 2:
-        raise ValueError("pentapy: matrix has to be 2D")
+        msg = "pentapy: matrix has to be 2D"
+        raise ValueError(msg)
     if mat.shape[0] != 5:
-        raise ValueError("pentapy: matrix needs 5 bands")
+        msg = "pentapy: matrix needs 5 bands"
+        raise ValueError(msg)
     if mat.shape[1] < 3:
-        raise ValueError("pentapy: matrix needs at least 3 rows")
+        msg = "pentapy: matrix needs at least 3 rows"
+        raise ValueError(msg)

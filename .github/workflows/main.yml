@@ -42,6 +42,10 @@ jobs:
         run: |
           python -m pylint src/pentapy/
 
+      - name: cython-lint check
+        run: |
+          cython-lint src/pentapy/
+
   build_wheels:
     name: wheels for ${{ matrix.cfg.os }} / ${{ matrix.cfg.arch }}
     runs-on: ${{ matrix.cfg.os }}
@@ -50,9 +54,7 @@ jobs:
       matrix:
         cfg:
         - { os: ubuntu-latest, arch: x86_64 }
-        - { os: ubuntu-latest, arch: i686 }
         - { os: windows-latest, arch: AMD64 }
-        - { os: windows-latest, arch: x86 }
         - { os: macos-latest, arch: x86_64 }
         - { os: macos-latest, arch: arm64 }
         - { os: macos-latest, arch: universal2 }
@@ -63,7 +65,7 @@ jobs:
           fetch-depth: '0'
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.1
+        uses: pypa/cibuildwheel@v2.17.0
         env:
           CIBW_ARCHS: ${{ matrix.cfg.arch }}
         with:
