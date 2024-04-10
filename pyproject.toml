@@ -1,15 +1,15 @@
 [build-system]
 requires = [
     "setuptools>=64",
-    "wheel",
     "setuptools_scm>=7",
-    "oldest-supported-numpy",
-    "Cython>=0.29.32,<3.0",
+    "numpy>=2.0.0rc1,<2.3; python_version >= '3.9'",
+    "oldest-supported-numpy; python_version < '3.9'",
+    "Cython>=3.0.10,<3.1.0",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 name = "pentapy"
 authors = [{name = "Sebastian Müller", email = "info@geostat-framework.org"}]
 readme = "README.md"
@@ -26,15 +26,16 @@ classifiers = [
     "Operating System :: Unix",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Scientific/Engineering",
     "Topic :: Utilities",
 ]
-dependencies = ["numpy>=1.14.5"]
+dependencies = ["numpy>=1.20.0"]
 
 [project.optional-dependencies]
 scipy = ["scipy"]
@@ -49,15 +50,16 @@ doc = [
     "matplotlib>=3",
     "perfplot<0.9",
     "numpydoc>=1.1",
-    "sphinx>=4",
+    "sphinx>=7",
     "sphinx-gallery>=0.8",
-    "sphinx-rtd-theme>=1,<1.1",
+    "sphinx-rtd-theme>=2",
 ]
 test = ["pytest-cov>=3"]
 check = [
   "black>=23,<24",
-  "isort[colors]<6",
-  "pylint<3",
+  "isort[colors]",
+  "pylint",
+  "cython-lint",
 ]
 
 [project.urls]
@@ -80,11 +82,18 @@ fallback_version = "0.0.0.dev0"
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-line_length = 79
 
 [tool.black]
-line-length = 79
-target-version = ["py37"]
+target-version = [
+    "py38",
+    "py39",
+    "py310",
+    "py311",
+    "py312",
+]
+
+[tool.cython-lint]
+max-line-length = 120
 
 [tool.coverage]
     [tool.coverage.run]
@@ -130,12 +139,10 @@ target-version = ["py37"]
 [tool.cibuildwheel]
 # Switch to using build
 build-frontend = "build"
-# Disable building PyPy wheels on all platforms, 32bit for py3.10/11 and musllinux builds, py3.6
-skip = ["cp36-*", "pp*", "cp31*-win32", "cp31*-manylinux_i686", "*-musllinux_*"]
+# Disable building PyPy wheels on all platforms, 32bit builds, py3.6, py3.7
+skip = ["cp36-*", "cp37-*", "pp*", "*-win32", "*-manylinux_i686", "*-musllinux_*"]
 # Run the package tests using `pytest`
 test-extras = "test"
 test-command = "pytest -v {package}/tests"
 # Skip trying to test arm64 builds on Intel Macs
 test-skip = "*-macosx_arm64 *-macosx_universal2:arm64"
-# no wheels for linux-32bit anymore for numpy>=1.22
-environment = "PIP_PREFER_BINARY=1"
