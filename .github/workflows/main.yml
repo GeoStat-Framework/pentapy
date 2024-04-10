@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
@@ -60,7 +60,7 @@ jobs:
         - { os: macos-latest, arch: universal2 }
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
 
@@ -71,7 +71,7 @@ jobs:
         with:
           output-dir: dist
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           path: ./dist/*.whl
 
@@ -85,12 +85,12 @@ jobs:
         python-version: [3.9]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -112,7 +112,7 @@ jobs:
           # PEP 517 package builder from pypa
           python -m build --sdist --outdir dist .
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         # if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
         with:
           path: dist/*.tar.gz
@@ -122,7 +122,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: artifact
           path: dist
