@@ -11,6 +11,7 @@ To use this script you need to have the following packages installed:
     * perfplot
     * matplotlib
 """
+
 import numpy as np
 import perfplot
 

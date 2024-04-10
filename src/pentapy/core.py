@@ -1,4 +1,5 @@
 """The core module of pentapy."""
+
 # pylint: disable=C0103, C0415, R0911, E0611
 import warnings
 
@@ -102,8 +103,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             from scipy.linalg import solve_banded
         except ImportError as imp_err:  # pragma: no cover
             raise ValueError(
-                "pentapy.solve: "
-                "scipy.linalg.solve_banded could not be imported"
+                "pentapy.solve: " "scipy.linalg.solve_banded could not be imported"
             ) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)

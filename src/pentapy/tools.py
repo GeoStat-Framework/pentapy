@@ -13,6 +13,7 @@ The following functions are provided
    create_banded
    create_full
 """
+
 # pylint: disable=C0103
 import numpy as np
 
@@ -254,9 +255,7 @@ def create_full(mat, up=2, low=2, col_wise=True):
         for i in range(up):
             mat_full[diag_indices(size, up - i)] = mat[i, (up - i) :]
         for i in range(low):
-            mat_full[diag_indices(size, -(low - i))] = mat[
-                -i - 1, : -(low - i)
-            ]
+            mat_full[diag_indices(size, -(low - i))] = mat[-i - 1, : -(low - i)]
     else:
         for i in range(up):
             mat_full[diag_indices(size, up - i)] = mat[i, : -(up - i)]
