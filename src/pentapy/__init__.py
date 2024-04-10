@@ -40,12 +40,7 @@ The following tools are provided:
 """
 
 from pentapy.core import solve
-from pentapy.tools import (
-    create_banded,
-    create_full,
-    diag_indices,
-    shift_banded,
-)
+from pentapy.tools import create_banded, create_full, diag_indices, shift_banded
 
 try:
     from pentapy._version import __version__
