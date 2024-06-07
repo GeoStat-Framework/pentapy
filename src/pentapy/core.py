@@ -77,7 +77,14 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         else:
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
         rhs = np.asarray(rhs, dtype=np.double)
+        single_rhs = rhs.ndim == 1
+        if single_rhs:
+            rhs = rhs[:, np.newaxis]
+
         try:
+            if single_rhs:
+                return penta_solver1(mat_flat, rhs).ravel()
+
             return penta_solver1(mat_flat, rhs)
         except ZeroDivisionError:
             warnings.warn("pentapy: PTRANS-I not suitable for input-matrix.")
