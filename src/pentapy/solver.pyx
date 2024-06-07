@@ -6,7 +6,7 @@ implemented in Cython.
 
 """
 
-### Imports ###
+# Imports
 
 import numpy as np
 
@@ -14,7 +14,7 @@ cimport numpy as np
 from libc.stdint cimport int64_t, uint64_t
 
 
-### Main Python Interface ###
+# Main Python Interface
 
 
 def penta_solver1(double[:, :] mat_flat, double[:, :] rhs):
@@ -25,7 +25,7 @@ def penta_solver2(double[:, :] mat_flat, double[:] rhs):
     return np.asarray(c_penta_solver2(mat_flat, rhs))
 
 
-### Solver Algorithm 1 ###
+# Solver Algorithm 1
 
 
 cdef double[:, :] c_penta_solver1(double[:, :] mat_flat, double[:, :] rhs):
@@ -96,13 +96,13 @@ cdef void c_penta_factorize_algo1(
 
     """
 
-    ### Variable declarations ###
+    # Variable declarations
 
     cdef uint64_t iter_row
     cdef double mu_i, ga_i, e_i
     cdef double al_i, al_i_minus_1, al_i_plus_1
 
-    ### Factorization ###
+    # Factorization
 
     # First row
     mu_i = mat_flat[2, 0]
@@ -187,12 +187,12 @@ cdef void c_solve_penta_from_factorize_algo_1(
 
     """
 
-    ### Variable declarations ###
+    # Variable declarations
 
     cdef int64_t iter_row
     cdef double ze_i, ze_i_minus_1, ze_i_plus_1
 
-    ### Transformation ###
+    # Transformation
 
     # first, the right-hand side is transformed into the vector ``zeta``
     # First row
@@ -233,7 +233,7 @@ cdef void c_solve_penta_from_factorize_algo_1(
     ) / mat_factorized[mat_n_rows-1, 1]
     result_view[mat_n_rows-1] = ze_i_plus_1
 
-    ### Backward substitution ###
+    # Backward substitution
 
     # The solution vector is calculated by backward substitution that overwrites the
     # right-hand side vector with the solution vector
@@ -251,7 +251,7 @@ cdef void c_solve_penta_from_factorize_algo_1(
     return
 
 
-### Solver Algorithm 2 ###
+# Solver Algorithm 2
 
 
 cdef double[:] c_penta_solver2(double[:, :] mat_flat, double[:] rhs):
