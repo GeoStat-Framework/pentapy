@@ -52,8 +52,8 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 
     Either from column-wise to row-wise storage or vice versa.
 
-    The Matrix has to be given as a flattend matrix.
-    Either in a column-wise flattend form::
+    The Matrix has to be given as a flattened matrix.
+    Either in a column-wise flattened form::
 
       [[0        0        Dup2[2]  ... Dup2[N-2]  Dup2[N-1]  Dup2[N] ]
        [0        Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  Dup1[N] ]
@@ -65,7 +65,7 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 
       col_to_row=True
 
-    Or in a row-wise flattend form::
+    Or in a row-wise flattened form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
        [Dup1[0]  Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  0       ]
@@ -98,7 +98,7 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
     Returns
     -------
     :class:`numpy.ndarray`
-        Shifted bandend matrix
+        Shifted banded matrix
     """
     if copy:
         mat_flat = np.copy(mat)
@@ -124,8 +124,8 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
     """Create a banded matrix from a given quadratic Matrix.
 
-    The Matrix will to be returned as a flattend matrix.
-    Either in a column-wise flattend form::
+    The Matrix will to be returned as a flattened matrix.
+    Either in a column-wise flattened form::
 
       [[0        0        Dup2[2]  ... Dup2[N-2]  Dup2[N-1]  Dup2[N] ]
        [0        Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  Dup1[N] ]
@@ -137,7 +137,7 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
 
       col_wise=True
 
-    Or in a row-wise flattend form::
+    Or in a row-wise flattened form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
        [Dup1[0]  Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  0       ]
@@ -168,7 +168,7 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
     Returns
     -------
     :class:`numpy.ndarray`
-        Bandend matrix
+        Banded matrix
     """
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
@@ -202,8 +202,8 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
 def create_full(mat, up=2, low=2, col_wise=True):
     """Create a (n x n) Matrix from a given banded matrix.
 
-    The given Matrix has to be a flattend matrix.
-    Either in a column-wise flattend form::
+    The given Matrix has to be a flattened matrix.
+    Either in a column-wise flattened form::
 
       [[0        0        Dup2[2]  ... Dup2[N-2]  Dup2[N-1]  Dup2[N] ]
        [0        Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  Dup1[N] ]
@@ -215,7 +215,7 @@ def create_full(mat, up=2, low=2, col_wise=True):
 
       col_wise=True
 
-    Or in a row-wise flattend form::
+    Or in a row-wise flattened form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
        [Dup1[0]  Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  0       ]

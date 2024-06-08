@@ -46,8 +46,8 @@ def solve(
     """
     Solver for a pentadiagonal system.
 
-    The matrix can be given as a full n x n matrix or as a flattend one.
-    The flattend matrix can be given in a row-wise flattend form::
+    The matrix can be given as a full n x n matrix or as a flattened one.
+    The flattened matrix can be given in a row-wise flattened form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
        [Dup1[0]  Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  0       ]
@@ -55,7 +55,7 @@ def solve(
        [0        Dlow1[1] Dlow1[2] ... Dlow1[N-2] Dlow1[N-1] Dlow1[N]]
        [0        0        Dlow2[2] ... Dlow2[N-2] Dlow2[N-2] Dlow2[N]]]
 
-    Or a column-wise flattend form::
+    Or a column-wise flattened form::
 
       [[0        0        Dup2[2]  ... Dup2[N-2]  Dup2[N-1]  Dup2[N] ]
        [0        Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  Dup1[N] ]
@@ -65,7 +65,7 @@ def solve(
 
     Dup1 and Dup2 are the first and second upper minor-diagonals
     and Dlow1 resp. Dlow2 are the lower ones.
-    If you provide a column-wise flattend matrix, you have to set::
+    If you provide a column-wise flattened matrix, you have to set::
 
       index_row_wise=False
 
@@ -77,9 +77,9 @@ def solve(
     rhs : :class:`numpy.ndarray` of shape (m,) or (m, n)
         The right hand side(s) of the equation system. Its shape is preserved.
     is_flat : :class:`bool`, default=False
-        State if the matrix is already flattend. Default: ``False``
+        State if the matrix is already flattened. Default: ``False``
     index_row_wise : :class:`bool`, default=True
-        State if the flattend matrix is row-wise flattend. Default: ``True``
+        State if the flattened matrix is row-wise flattened. Default: ``True``
     solver : :class:`int` or :class:`str`, default=1
         Which solver should be used. The following are provided:
 
