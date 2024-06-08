@@ -104,9 +104,9 @@ cdef void c_penta_factorize_algo1(
     # === Variable declarations ===
 
     cdef int64_t iter_row
-    cdef double mu_i, ga_i, e_i # mu, gamma, e
-    cdef double al_i, al_i_minus_1, al_i_plus_1 # alpha
-    cdef double be_i, be_i_minus_1, be_i_plus_1 # beta
+    cdef double mu_i, ga_i, e_i  # mu, gamma, e
+    cdef double al_i, al_i_minus_1, al_i_plus_1  # alpha
+    cdef double be_i, be_i_minus_1, be_i_plus_1  # beta
 
     # === Factorization ===
 
@@ -334,9 +334,9 @@ cdef void c_penta_factorize_algo2(
     # === Variable declarations ===
 
     cdef int64_t iter_row
-    cdef double ps_i, rho_i # psi, rho
-    cdef double si_i, si_i_minus_1, si_i_plus_1 # sigma
-    cdef double phi_i, phi_i_minus_1, phi_i_plus_1 # phi
+    cdef double ps_i, rho_i  # psi, rho
+    cdef double si_i, si_i_minus_1, si_i_plus_1  # sigma
+    cdef double phi_i, phi_i_minus_1, phi_i_plus_1  # phi
 
     # === Factorization ===
 
@@ -426,7 +426,7 @@ cdef void c_solve_penta_from_factorize_algo_2(
     # === Variable declarations ===
 
     cdef int64_t iter_row
-    cdef double om_i, om_i_minus_1, om_i_minus_2 # omega
+    cdef double om_i, om_i_minus_1, om_i_plus_1  # omega
 
     # === Transformation ===
 
