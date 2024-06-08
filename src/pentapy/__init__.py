@@ -44,7 +44,7 @@ from pentapy.tools import create_banded, create_full, diag_indices, shift_banded
 
 try:
     from pentapy._version import __version__
-except ImportError:  # pragma: nocover
+except ImportError:  # pragma: no cover
     # package is not installed
     __version__ = "0.0.0.dev0"
 
