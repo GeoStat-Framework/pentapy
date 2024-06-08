@@ -101,6 +101,7 @@ def solve(
     # first, the solver is converted to the internal name to avoid confusion
     solver_inter = pmodels._SOLVER_ALIAS_CONVERSIONS[str(solver).lower()]
 
+    # Case 1: the pentapy solvers
     if solver_inter in {
         pmodels.PentaSolverAliases.PTRANS_I,
         pmodels.PentaSolverAliases.PTRANS_II,
@@ -150,12 +151,14 @@ def solve(
             warnings.warn("pentapy: PTRANS-I not suitable for input-matrix.")
             return np.full(shape=rhs_og_shape, fill_value=np.nan)
 
+    # Case 2: LAPACK's banded solver
     elif solver_inter == pmodels.PentaSolverAliases.LAPACK:  # pragma: no cover
         try:
             from scipy.linalg import solve_banded
         except ImportError as imp_err:  # pragma: no cover
             msg = "pentapy.solve: scipy.linalg.solve_banded could not be imported"
             raise ValueError(msg) from imp_err
+
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
             ptools._check_penta(mat_flat)
@@ -164,34 +167,27 @@ def solve(
             mat_flat = np.asarray(mat)
         else:
             mat_flat = ptools.create_banded(mat)
-        return solve_banded((2, 2), mat_flat, rhs)
 
-    elif solver_inter == pmodels.PentaSolverAliases.SUPER_LU:  # pragma: no cover
+        # NOTE: since this is a general banded solver, the number of sub- and super-
+        #       diagonals has to be provided
+        return solve_banded(
+            l_and_u=(2, 2),
+            ab=mat_flat,
+            b=rhs,
+        )
+
+    # Case 3: SciPy's sparse solver with or without UMFPACK
+    elif solver_inter in {
+        pmodels.PentaSolverAliases.SUPER_LU,
+        pmodels.PentaSolverAliases.UMFPACK,
+    }:
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
         except ImportError as imp_err:
             msg = "pentapy.solve: scipy.sparse could not be imported"
             raise ValueError(msg) from imp_err
-        if is_flat and index_row_wise:
-            mat_flat = np.array(mat)
-            ptools._check_penta(mat_flat)
-            ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
-        elif is_flat:
-            mat_flat = np.asarray(mat)
-        else:
-            mat_flat = ptools.create_banded(mat)
-        size = mat_flat.shape[1]
-        M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
-        return spsolve(M, rhs, use_umfpack=False)
 
-    elif solver_inter == pmodels.PentaSolverAliases.UMFPACK:  # pragma: no cover
-        try:
-            from scipy import sparse as sps
-            from scipy.sparse.linalg import spsolve
-        except ImportError as imp_err:
-            msg = "pentapy.solve: scipy.sparse could not be imported"
-            raise ValueError(msg) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
             ptools._check_penta(mat_flat)
@@ -200,9 +196,24 @@ def solve(
             mat_flat = np.asarray(mat)
         else:
             mat_flat = ptools.create_banded(mat)
+
+        # the solvers require a sparse left-hand side matrix, so this is created here
+        # NOTE: the UMFPACK solver will not be triggered for multiple right-hand sides
+        use_umfpack = solver_inter == pmodels.PentaSolverAliases.UMFPACK
         size = mat_flat.shape[1]
-        M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
-        return spsolve(M, rhs, use_umfpack=True)
+        M = sps.spdiags(
+            data=mat_flat,
+            diags=[2, 1, 0, -1, -2],
+            m=size,
+            n=size,
+            format="csc",
+        )
+
+        return spsolve(
+            A=M,
+            b=rhs,
+            use_umfpack=use_umfpack,
+        )
 
     else:  # pragma: no cover
         msg = f"pentapy.solve: unknown solver ({solver})"
