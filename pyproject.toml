@@ -14,7 +14,7 @@ name = "pentapy"
 authors = [{name = "Sebastian Müller", email = "info@geostat-framework.org"}]
 readme = "README.md"
 license = {text = "MIT"}
-dynamic = ["version"]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 description = "pentapy: A toolbox for pentadiagonal matrizes."
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -35,32 +35,10 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Utilities",
 ]
-dependencies = ["numpy>=1.20.0"]
 
-[project.optional-dependencies]
-scipy = ["scipy"]
-umfpack = ["scikit-umfpack"]
-all = [
-    "scipy",
-    "scikit-umfpack",
-]
-doc = [
-    "m2r2>=0.2.8",
-    "scipy>=1.1.0",
-    "matplotlib>=3",
-    "perfplot<0.9",
-    "numpydoc>=1.1",
-    "sphinx>=7",
-    "sphinx-gallery>=0.8",
-    "sphinx-rtd-theme>=2",
-]
-test = ["pytest-cov>=3"]
-check = [
-  "black>=24,<25",
-  "isort[colors]",
-  "pylint",
-  "cython-lint",
-]
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements/base.txt"]}
+optional-dependencies = {scipy = {file = ["requirements/scipy.txt"]}, umfpack = {file = ["requirements/umfpack.txt"]}, all = {file = ["requirements/all.txt"]}, doc = {file = ["requirements/doc.txt"]}, test = {file = ["requirements/test.txt"]}, check = {file = ["requirements/check.txt"]}}
 
 [project.urls]
 Homepage = "https://github.com/GeoStat-Framework/pentapy"
@@ -103,7 +81,8 @@ max-line-length = 120
         "*examples*",
         "*tests*",
         "*paper*",
-        "pentapy/src/pentapy/_version.py",
+        "src/pentapy/_version.py",
+        "src/pentapy/__init__.py",
     ]
 
     [tool.coverage.report]
