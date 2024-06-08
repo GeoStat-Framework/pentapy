@@ -209,7 +209,9 @@ def gen_conditioned_rand_penta_matrix_dense(
     array([[ 0.92453713,  0.28308514, -0.09972199],
            [-0.09784268,  0.2270634 , -0.1509019 ],
            [-0.23431267,  0.00468463,  0.22991003]])
-    >>> # its bandwidth is computed and should be equal to 2
+    >>> # it has to be square and its bandwidth is computed and should be equal to 2
+    >>> mat.shape[0] == mat.shape[1]
+    True
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
@@ -226,7 +228,9 @@ def gen_conditioned_rand_penta_matrix_dense(
     array([[ 0.92453713,  0.28308514, -0.09972199],
            [-0.09784268,  0.2270634 , -0.1509019 ],
            [-0.23431267,  0.00468463, -0.02273771]])
-    >>> # its bandwidth is computed and should be equal to 2
+    >>> # it has to be square and its bandwidth is computed and should be equal to 2
+    >>> mat.shape[0] == mat.shape[1]
+    True
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
@@ -250,7 +254,9 @@ def gen_conditioned_rand_penta_matrix_dense(
            [ 0.  ,  0.  ,  0.43,  0.13,  0.39, -0.1 , -0.15],
            [ 0.  ,  0.  ,  0.  ,  0.06, -0.14,  0.4 ,  0.28],
            [ 0.  ,  0.  ,  0.  ,  0.  , -0.14,  0.36,  0.53]])
-    >>> # its bandwidth is computed and should be equal to 2
+    >>> # it has to be square and its bandwidth is computed and should be equal to 2
+    >>> mat.shape[0] == mat.shape[1]
+    True
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
@@ -271,7 +277,9 @@ def gen_conditioned_rand_penta_matrix_dense(
            [ 0.  ,  0.  ,  0.43,  0.13,  0.39, -0.1 , -0.15],
            [ 0.  ,  0.  ,  0.  ,  0.06, -0.14,  0.4 ,  0.28],
            [ 0.  ,  0.  ,  0.  ,  0.  , -0.14,  0.36,  0.28]])
-    >>> # its bandwidth is computed and should be equal to 2
+    >>> # it has to be square and its bandwidth is computed and should be equal to 2
+    >>> mat.shape[0] == mat.shape[1]
+    True
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
@@ -287,7 +295,9 @@ def gen_conditioned_rand_penta_matrix_dense(
     ...     seed=seed,
     ...     ill_conditioned=False,
     ... )
-    >>> # its bandwidth is computed and should be equal to 2
+    >>> # it has to be square and its bandwidth is computed and should be equal to 2
+    >>> mat.shape[0] == mat.shape[1]
+    True
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
@@ -300,7 +310,9 @@ def gen_conditioned_rand_penta_matrix_dense(
     ...     seed=seed,
     ...     ill_conditioned=True,
     ... )
-    >>> # its bandwidth is computed and should be equal to 2
+    >>> # it has to be square and its bandwidth is computed and should be equal to 2
+    >>> mat.shape[0] == mat.shape[1]
+    True
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
