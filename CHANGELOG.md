@@ -2,6 +2,39 @@
 
 All notable changes to **pentapy** will be documented in this file.
 
+## [1.4.0] - 2024-06
+
+See [#22](https://github.com/GeoStat-Framework/pentapy/pull/22)
+
+### Enhancements
+
+- added support for multiple right-hand sides (currently serial)
+- improved error handling and added debug information to error messages
+
+### Changes
+
+- shotgun refactored and documented the Cython implementation of PTRANS-I and PTRANS-II for single and multiple right-hand sides support
+- fully typed the function ``pentapy.solve``
+- made internal solver alias handling of ``pentapy.solve`` smarter, more robust, and removed all duplicate code
+- gave all solvers a consistent interface
+- made code in ``pentapy.core`` more human-readable and maintainable and added comments
+- fixed typos in documentation
+
+### Bugfixes
+
+- fixed error handling in case of zero-division to trigger dead error handling branch (see [Issue 23](https://github.com/GeoStat-Framework/pentapy/issues/23))
+- fixed edge case error for row/column of 3 (see [Issue 24](https://github.com/GeoStat-Framework/pentapy/issues/24))
+
+### Tests
+
+- transitioned from ``unittest``-based testing to fully ``pytest``-based testing with parametrized and parallelized exhaustive testing (see [Issue 25](https://github.com/GeoStat-Framework/pentapy/issues/25))
+- made actual tests more meaningful by comparing them to LAPACK as reference standard (see [Issue 25](https://github.com/GeoStat-Framework/pentapy/issues/25))
+- included external solver bindings accessible via ``pentapy.solve`` as part of the test suite
+- increased true coverage (not line-hit coverage) close to 100%
+
+### Packaging
+
+- made dependency specification file-based and dynamic
 
 ## [1.3.0] - 2024-04
 
@@ -100,6 +133,7 @@ This is the first release of pentapy, a python toolbox for solving pentadiagonal
 The solver is implemented in cython, which makes it really fast.
 
 
+[1.4.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.1...v1.1.2
