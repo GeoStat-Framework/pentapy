@@ -73,10 +73,11 @@ cdef void c_penta_factorize_algo1(
     """
     Factorizes the pentadiagonal matrix ``A`` into
 
-    - auxiliary coefficients ``e``, ``mu`` and ``gamma`` for the transformation of the
-        right-hand side
-    - a unit upper triangular matrix with the main diagonals ``alpha`` and ``beta``
-        for the following backward substitution. Its unit main diagonal is implicit.
+    - auxiliary coefficients ``e``, ``mu`` and ``gamma`` (``ga``) for the transformation
+        of the right-hand side
+    - a unit upper triangular matrix with the main diagonals ``alpha``(``al``) and
+        ``beta`` (``be``) for the following backward substitution. Its unit main
+        diagonal is implicit.
 
     They are overwriting the memoryview ``mat_factorized`` as follows:
 
@@ -99,8 +100,9 @@ cdef void c_penta_factorize_algo1(
     # === Variable declarations ===
 
     cdef uint64_t iter_row
-    cdef double mu_i, ga_i, e_i
-    cdef double al_i, al_i_minus_1, al_i_plus_1
+    cdef double mu_i, ga_i, e_i # mu, gamma, e
+    cdef double al_i, al_i_minus_1, al_i_plus_1 # alpha
+    cdef double be_i, be_i_minus_1, be_i_plus_1 # beta
 
     # === Factorization ===
 
