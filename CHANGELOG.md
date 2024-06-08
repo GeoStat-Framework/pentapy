@@ -4,7 +4,7 @@ All notable changes to **pentapy** will be documented in this file.
 
 ## [1.4.0] - 2024-06
 
-See [#22](https://github.com/GeoStat-Framework/pentapy/pull/22)
+See [#26](https://github.com/GeoStat-Framework/pentapy/pull/26)
 
 ### Enhancements
 
