@@ -9,6 +9,7 @@ from functools import partial
 from typing import Tuple
 
 import numpy as np
+from scipy import linalg as spla
 from scipy import sparse as sprs
 
 import pentapy as pp
@@ -195,9 +196,6 @@ def gen_conditioned_rand_penta_matrix_dense(
 
     Doctests
     --------
-    >>> # Imports
-    >>> from scipy.linalg import bandwidth
-
     >>> # 1) Generating a super small well-conditioned random pentadiagonal matrix
     >>> n_rows = 3
     >>> seed = 19_031_977
@@ -212,7 +210,7 @@ def gen_conditioned_rand_penta_matrix_dense(
            [-0.09784268,  0.2270634 , -0.1509019 ],
            [-0.23431267,  0.00468463,  0.22991003]])
     >>> # its bandwidth is computed and should be equal to 2
-    >>> bandwidth(mat)
+    >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
     >>> np.linalg.cond(mat)
@@ -229,7 +227,7 @@ def gen_conditioned_rand_penta_matrix_dense(
            [-0.09784268,  0.2270634 , -0.1509019 ],
            [-0.23431267,  0.00468463, -0.02273771]])
     >>> # its bandwidth is computed and should be equal to 2
-    >>> bandwidth(mat)
+    >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
     >>> # reciprocal floating point precision, i.e., ~1e16
@@ -253,7 +251,7 @@ def gen_conditioned_rand_penta_matrix_dense(
            [ 0.  ,  0.  ,  0.  ,  0.06, -0.14,  0.4 ,  0.28],
            [ 0.  ,  0.  ,  0.  ,  0.  , -0.14,  0.36,  0.53]])
     >>> # its bandwidth is computed and should be equal to 2
-    >>> bandwidth(mat)
+    >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
     >>> np.linalg.cond(mat)
@@ -274,7 +272,7 @@ def gen_conditioned_rand_penta_matrix_dense(
            [ 0.  ,  0.  ,  0.  ,  0.06, -0.14,  0.4 ,  0.28],
            [ 0.  ,  0.  ,  0.  ,  0.  , -0.14,  0.36,  0.28]])
     >>> # its bandwidth is computed and should be equal to 2
-    >>> bandwidth(mat)
+    >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
     >>> # reciprocal floating point precision, i.e., ~1e16
@@ -290,7 +288,7 @@ def gen_conditioned_rand_penta_matrix_dense(
     ...     ill_conditioned=False,
     ... )
     >>> # its bandwidth is computed and should be equal to 2
-    >>> bandwidth(mat)
+    >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
     >>> np.linalg.cond(mat)
@@ -303,12 +301,12 @@ def gen_conditioned_rand_penta_matrix_dense(
     ...     ill_conditioned=True,
     ... )
     >>> # its bandwidth is computed and should be equal to 2
-    >>> bandwidth(mat)
+    >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
     >>> # reciprocal floating point precision, i.e., ~1e16
     >>> np.linalg.cond(mat)
-    5.058722571393928e+17
+    1.7137059583101745e+19
 
     """
 
@@ -326,9 +324,8 @@ def gen_conditioned_rand_penta_matrix_dense(
 
     # Case 2: ill-conditioned matrix
     else:
-        # here, the smallest diagonal entry is set to a value that is numerically zero
-        # compared to the largest entry
-        d_diag[n_rows - 1] = 0.1 * np.finfo(np.float64).eps * d_diag[0]
+        # here, the smallest diagonal entry is set to zero
+        d_diag[n_rows - 1] = 0.0
 
     # ... followed by a unit lower triangular matrix with 2 sub-diagonals, but here
     # the entries may be negative ...
@@ -361,6 +358,68 @@ def gen_conditioned_rand_penta_matrix_dense(
 
     # finally, the matrix is reconstructed by multiplying the three matrices
     return (l_mat.multiply(d_diag[np.newaxis, ::]).dot(u_mat)).toarray()
+
+
+def solve_penta_matrix_dense_scipy(
+    mat: np.ndarray,
+    rhs: np.ndarray,
+) -> np.ndarray:
+    """
+    Solves a pentadiagonal matrix system using SciPy's banded solver.
+
+    Doctests
+    --------
+    >>> # Setting up a small test matrix and right-hand side
+    >>> n_rows = 5
+    >>> seed = 19_031_977
+
+    >>> mat = gen_conditioned_rand_penta_matrix_dense(
+    ...     n_rows=n_rows,
+    ...     seed=seed,
+    ...     ill_conditioned=False,
+    ... )
+    >>> rhs = np.random.rand(n_rows, 5)
+
+    >>> # Solving the system using SciPy's banded solver
+    >>> sol = solve_penta_matrix_dense_scipy(mat=mat, rhs=rhs)
+    >>> np.round(sol, 2)
+    array([[-2.16, -0.36,  0.72,  0.23, -0.2 ],
+           [ 4.07,  1.3 ,  0.81,  1.31,  0.48],
+           [ 4.05,  0.33,  2.19,  1.22,  0.58],
+           [-1.9 , -0.79,  1.02, -0.39,  1.02],
+           [ 6.31,  1.81,  1.29,  1.41,  0.37]])
+
+    >>> # the solution is checked by verifying that the residual is close to zero
+    >>> np.max(np.abs(mat @ sol - rhs)) <= np.finfo(np.float64).eps * n_rows
+    True
+
+    >>> # Setting up a large test matrix and right-hand side
+    >>> n_rows = 1_000
+
+    >>> mat = gen_conditioned_rand_penta_matrix_dense(
+    ...     n_rows=n_rows,
+    ...     seed=seed,
+    ...     ill_conditioned=False,
+    ... )
+    >>> rhs = np.random.rand(n_rows, 5)
+
+    >>> # Solving the system using SciPy's banded solver
+    >>> sol = solve_penta_matrix_dense_scipy(mat=mat, rhs=rhs)
+    >>> # the solution is checked by verifying that the residual is close to zero
+    >>> np.max(np.abs(mat @ sol - rhs)) <= np.finfo(np.float64).eps * n_rows
+    True
+
+    """
+
+    # first, the matrix is converted to LAPACK banded storage format
+    mat_banded = pp.create_banded(mat=mat, col_wise=True)
+
+    # then, the system is solved using SciPy's banded solver
+    return spla.solve_banded(
+        l_and_u=(2, 2),
+        ab=mat_banded,
+        b=rhs,
+    )
 
 
 # === Doctests ===
