@@ -52,8 +52,8 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 
     Either from column-wise to row-wise storage or vice versa.
 
-    The Matrix has to be given as a flattend matrix.
-    Either in a column-wise flattend form::
+    The Matrix has to be given as a flattened matrix.
+    Either in a column-wise flattened form::
 
       [[0        0        Dup2[2]  ... Dup2[N-2]  Dup2[N-1]  Dup2[N] ]
        [0        Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  Dup1[N] ]
@@ -65,7 +65,7 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 
       col_to_row=True
 
-    Or in a row-wise flattend form::
+    Or in a row-wise flattened form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
        [Dup1[0]  Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  0       ]
@@ -98,7 +98,7 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
     Returns
     -------
     :class:`numpy.ndarray`
-        Shifted bandend matrix
+        Shifted banded matrix
     """
     if copy:
         mat_flat = np.copy(mat)
@@ -124,8 +124,8 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
     """Create a banded matrix from a given quadratic Matrix.
 
-    The Matrix will to be returned as a flattend matrix.
-    Either in a column-wise flattend form::
+    The Matrix will to be returned as a flattened matrix.
+    Either in a column-wise flattened form::
 
       [[0        0        Dup2[2]  ... Dup2[N-2]  Dup2[N-1]  Dup2[N] ]
        [0        Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  Dup1[N] ]
@@ -137,7 +137,7 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
 
       col_wise=True
 
-    Or in a row-wise flattend form::
+    Or in a row-wise flattened form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
        [Dup1[0]  Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  0       ]
@@ -168,14 +168,18 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
     Returns
     -------
     :class:`numpy.ndarray`
-        Bandend matrix
+        Banded matrix
     """
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
-        msg = "create_banded: matrix has to be 2D"
+        msg = f"create_banded: matrix has to be 2D, got {mat.ndim}D"
         raise ValueError(msg)
+
     if mat.shape[0] != mat.shape[1]:
-        msg = "create_banded: matrix has to be n x n"
+        msg = (
+            f"create_banded: matrix has to be n x n, "
+            f"got {mat.shape[0]} x {mat.shape[1]}"
+        )
         raise ValueError(msg)
 
     size = mat.shape[0]
@@ -198,8 +202,8 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
 def create_full(mat, up=2, low=2, col_wise=True):
     """Create a (n x n) Matrix from a given banded matrix.
 
-    The given Matrix has to be a flattend matrix.
-    Either in a column-wise flattend form::
+    The given Matrix has to be a flattened matrix.
+    Either in a column-wise flattened form::
 
       [[0        0        Dup2[2]  ... Dup2[N-2]  Dup2[N-1]  Dup2[N] ]
        [0        Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  Dup1[N] ]
@@ -211,7 +215,7 @@ def create_full(mat, up=2, low=2, col_wise=True):
 
       col_wise=True
 
-    Or in a row-wise flattend form::
+    Or in a row-wise flattened form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
        [Dup1[0]  Dup1[1]  Dup1[2]  ... Dup1[N-2]  Dup1[N-1]  0       ]
@@ -246,14 +250,23 @@ def create_full(mat, up=2, low=2, col_wise=True):
     """
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
-        msg = "create_full: matrix has to be 2D"
+        msg = f"create_full: matrix has to be 2D, got {mat.ndim}D"
         raise ValueError(msg)
+
     if mat.shape[0] != up + low + 1:
-        msg = "create_full: matrix has wrong count of bands"
+        msg = (
+            f"create_full: matrix has wrong count of bands, required "
+            f"{up} + {low} + 1 = {up + low + 1}, got {mat.shape[0]} bands"
+        )
         raise ValueError(msg)
+
     if mat.shape[1] < max(up, low) + 1:
-        msg = "create_full: matrix has to few information"
+        msg = (
+            f"create_full: matrix has to few information, required "
+            f"{max(up, low) + 1} columns, got {mat.shape[1]} columns"
+        )
         raise ValueError(msg)
+
     size = mat.shape[1]
     mat_full = np.diag(mat[up])
     if col_wise:
@@ -266,16 +279,17 @@ def create_full(mat, up=2, low=2, col_wise=True):
             mat_full[diag_indices(size, up - i)] = mat[i, : -(up - i)]
         for i in range(low):
             mat_full[diag_indices(size, -(low - i))] = mat[-i - 1, (low - i) :]
+
     return mat_full
 
 
 def _check_penta(mat):
     if mat.ndim != 2:
-        msg = "pentapy: matrix has to be 2D"
+        msg = f"pentapy: matrix has to be 2D, got {mat.ndim}D"
         raise ValueError(msg)
     if mat.shape[0] != 5:
-        msg = "pentapy: matrix needs 5 bands"
+        msg = f"pentapy: matrix needs 5 bands, got {mat.shape[0]} bands"
         raise ValueError(msg)
     if mat.shape[1] < 3:
-        msg = "pentapy: matrix needs at least 3 rows"
+        msg = f"pentapy: matrix needs at least 3 rows, got {mat.shape[1]} rows"
         raise ValueError(msg)
