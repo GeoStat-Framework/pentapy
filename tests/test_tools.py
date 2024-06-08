@@ -9,9 +9,10 @@ import warnings
 from typing import Optional, Tuple, Type
 
 import numpy as np
-import pentapy as pp
 import pytest
 import util_funcs as uf
+
+import pentapy as pp
 from pentapy.tools import _check_penta
 
 warnings.simplefilter("always")
@@ -37,6 +38,10 @@ N_ROWS = [
     501,
     1_000,
     1_001,
+    2500,
+    2501,
+    5_000,
+    5_001,
     10_000,
     10_001,
 ]
