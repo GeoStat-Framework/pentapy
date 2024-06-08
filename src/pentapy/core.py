@@ -1,15 +1,48 @@
 """The core module of pentapy."""
 
 # pylint: disable=C0103, C0415, R0911, E0611
+
+# === Imports ===
+
 import warnings
+from typing import Literal
 
 import numpy as np
 
+from pentapy import _models as pmodels
+from pentapy import solver as psolver  # type: ignore
 from pentapy import tools as ptools
-from pentapy.solver import penta_solver1, penta_solver2
+
+# === Solver ===
 
 
-def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
+def solve(
+    mat: np.ndarray,
+    rhs: np.ndarray,
+    is_flat: bool = False,
+    index_row_wise: bool = True,
+    solver: Literal[
+        1,
+        "1",
+        "PTRANS-I",
+        "ptrans-i",
+        2,
+        "2",
+        "PTRANS-II",
+        "ptrans-ii",
+        3,
+        "3",
+        "lapack",
+        4,
+        "4",
+        "spsolve",
+        5,
+        "5",
+        "spsolve_umf",
+        "umf",
+        "umf_pack",
+    ] = 1,
+) -> np.ndarray:
     """
     Solver for a pentadiagonal system.
 
@@ -39,35 +72,39 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
 
     Parameters
     ----------
-    mat : :class:`numpy.ndarray`
-        The Matrix or the flattened Version of the pentadiagonal matrix.
-    rhs : :class:`numpy.ndarray`
-        The right hand side of the equation system.
-    is_flat : :class:`bool`, optional
+    mat : :class:`numpy.ndarray` of shape (m, m) or (5, m)
+        The full or flattened version of the pentadiagonal matrix.
+    rhs : :class:`numpy.ndarray` of shape (m,) or (m, n)
+        The right hand side(s) of the equation system. Its shape is preserved.
+    is_flat : :class:`bool`, default=False
         State if the matrix is already flattend. Default: ``False``
-    index_row_wise : :class:`bool`, optional
+    index_row_wise : :class:`bool`, default=True
         State if the flattend matrix is row-wise flattend. Default: ``True``
-    solver : :class:`int` or :class:`str`, optional
+    solver : :class:`int` or :class:`str`, default=1
         Which solver should be used. The following are provided:
 
-            * ``[1, "1", "PTRANS-I"]`` : The PTRANS-I algorithm
+            * ``[1, "1", "PTRANS-I"]`` : The PTRANS-I algorithm (default)
             * ``[2, "2", "PTRANS-II"]`` : The PTRANS-II algorithm
-            * ``[3, "3", "lapack", "solve_banded"]`` :
-              scipy.linalg.solve_banded
-            * ``[4, "4", "spsolve"]`` :
-              The scipy sparse solver without umf_pack
-            * ``[5, "5", "spsolve_umf", "umf", "umf_pack"]`` :
-              The scipy sparse solver with umf_pack
+            * ``[3, "3", "lapack", "solve_banded"]`` : :func:`scipy.linalg.solve_banded`
+            * ``[4, "4", "spsolve"]`` : :func:`scipy.sparse.linalg.spsolve(..., use_umfpack=False)`
+            * ``[5, "5", "spsolve_umf", "umf", "umf_pack"]`` : :func:`scipy.sparse.linalg.spsolve(..., use_umfpack=False)`
 
-        Default: ``1``
+        Strings are not case-sensitive.
 
     Returns
     -------
-    result : :class:`numpy.ndarray`
-        Solution of the equation system
+    result : :class:`numpy.ndarray` of shape (m,) or (m, n)
+        Solution of the equation system with the same shape as ``rhs``.
+
     """
 
-    if solver in [1, "1", "PTRANS-I"]:
+    # first, the solver is converted to the internal name to avoid confusion
+    solver_inter = pmodels._SOLVER_ALIAS_CONVERSIONS[str(solver).lower()]
+
+    if solver_inter in {
+        pmodels.PentaSolverAliases.PTRANS_I,
+        pmodels.PentaSolverAliases.PTRANS_II,
+    }:
         if is_flat and index_row_wise:
             mat_flat = np.asarray(mat, dtype=np.double)
             ptools._check_penta(mat_flat)
@@ -97,35 +134,23 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             rhs = rhs[:, np.newaxis]
 
         try:
+            solver_func = (
+                psolver.penta_solver1
+                if solver_inter == pmodels.PentaSolverAliases.PTRANS_I
+                else psolver.penta_solver2
+            )
+
             # if there was only a 1D right-hand side, the result has to be flattened
             if single_rhs:
-                return penta_solver1(mat_flat, rhs).ravel()
+                return solver_func(mat_flat, rhs).ravel()
 
-            return penta_solver1(mat_flat, rhs)
+            return solver_func(mat_flat, rhs)
 
         except ZeroDivisionError:
             warnings.warn("pentapy: PTRANS-I not suitable for input-matrix.")
             return np.full(shape=rhs_og_shape, fill_value=np.nan)
 
-    elif solver in [2, "2", "PTRANS-II"]:
-        if is_flat and index_row_wise:
-            mat_flat = np.asarray(mat, dtype=np.double)
-            ptools._check_penta(mat_flat)
-        elif is_flat:
-            mat_flat = np.array(mat, dtype=np.double)
-            ptools._check_penta(mat_flat)
-            ptools.shift_banded(mat_flat, copy=False)
-        else:
-            mat_flat = ptools.create_banded(mat, col_wise=False, dtype=np.double)
-
-        rhs = np.asarray(rhs, dtype=np.double)
-
-        try:
-            return penta_solver2(mat_flat, rhs)
-        except ZeroDivisionError:
-            warnings.warn("pentapy: PTRANS-II not suitable for input-matrix.")
-            return np.full_like(rhs, np.nan)
-    elif solver in [3, "3", "lapack", "solve_banded"]:  # pragma: no cover
+    elif solver_inter == pmodels.PentaSolverAliases.LAPACK:  # pragma: no cover
         try:
             from scipy.linalg import solve_banded
         except ImportError as imp_err:  # pragma: no cover
@@ -140,7 +165,8 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         else:
             mat_flat = ptools.create_banded(mat)
         return solve_banded((2, 2), mat_flat, rhs)
-    elif solver in [4, "4", "spsolve"]:  # pragma: no cover
+
+    elif solver_inter == pmodels.PentaSolverAliases.SUPER_LU:  # pragma: no cover
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
@@ -158,13 +184,8 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         size = mat_flat.shape[1]
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=False)
-    elif solver in [
-        5,
-        "5",
-        "spsolve_umf",
-        "umf",
-        "umf_pack",
-    ]:  # pragma: no cover
+
+    elif solver_inter == pmodels.PentaSolverAliases.UMFPACK:  # pragma: no cover
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
@@ -182,6 +203,7 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         size = mat_flat.shape[1]
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=True)
+
     else:  # pragma: no cover
         msg = f"pentapy.solve: unknown solver ({solver})"
         raise ValueError(msg)
