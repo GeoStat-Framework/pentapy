@@ -130,7 +130,7 @@ cdef void c_penta_factorize_algo1(
     mat_factorized[1, 4] = be_i
 
     # Central rows
-    for iter_row in range(2, mat_n_rows-2):
+    for iter_row in range(2, mat_n_rows - 2):
         e_i = mat_flat[4, iter_row]
         ga_i = mat_flat[3, iter_row] - al_i_minus_1 * e_i
         mu_i = mat_flat[2, iter_row] - be_i_minus_1 * e_i - al_i * ga_i
@@ -150,27 +150,27 @@ cdef void c_penta_factorize_algo1(
         mat_factorized[iter_row, 4] = be_i
 
     # Second to last row
-    e_i = mat_flat[4, mat_n_rows-2]
-    ga_i = mat_flat[3, mat_n_rows-2] - al_i_minus_1 * e_i
-    mu_i = mat_flat[2, mat_n_rows-2] - be_i_minus_1 * e_i - al_i * ga_i
-    al_i_plus_1 = (mat_flat[1, mat_n_rows-2] - be_i * ga_i) / mu_i
+    e_i = mat_flat[4, mat_n_rows - 2]
+    ga_i = mat_flat[3, mat_n_rows - 2] - al_i_minus_1 * e_i
+    mu_i = mat_flat[2, mat_n_rows - 2] - be_i_minus_1 * e_i - al_i * ga_i
+    al_i_plus_1 = (mat_flat[1, mat_n_rows - 2] - be_i * ga_i) / mu_i
 
-    mat_factorized[mat_n_rows-2, 0] = e_i
-    mat_factorized[mat_n_rows-2, 1] = mu_i
-    mat_factorized[mat_n_rows-2, 2] = ga_i
-    mat_factorized[mat_n_rows-2, 3] = al_i_plus_1
-    mat_factorized[mat_n_rows-2, 4] = 0.0
+    mat_factorized[mat_n_rows - 2, 0] = e_i
+    mat_factorized[mat_n_rows - 2, 1] = mu_i
+    mat_factorized[mat_n_rows - 2, 2] = ga_i
+    mat_factorized[mat_n_rows - 2, 3] = al_i_plus_1
+    mat_factorized[mat_n_rows - 2, 4] = 0.0
 
     # Last Row
-    e_i = mat_flat[4, mat_n_rows-1]
-    ga_i = mat_flat[3, mat_n_rows-1] - al_i * e_i
-    mu_i = mat_flat[2, mat_n_rows-1] - be_i * e_i - al_i_plus_1 * ga_i
+    e_i = mat_flat[4, mat_n_rows - 1]
+    ga_i = mat_flat[3, mat_n_rows - 1] - al_i * e_i
+    mu_i = mat_flat[2, mat_n_rows - 1] - be_i * e_i - al_i_plus_1 * ga_i
 
-    mat_factorized[mat_n_rows-1, 0] = e_i
-    mat_factorized[mat_n_rows-1, 1] = mu_i
-    mat_factorized[mat_n_rows-1, 2] = ga_i
-    mat_factorized[mat_n_rows-1, 3] = 0.0
-    mat_factorized[mat_n_rows-1, 4] = 0.0
+    mat_factorized[mat_n_rows - 1, 0] = e_i
+    mat_factorized[mat_n_rows - 1, 1] = mu_i
+    mat_factorized[mat_n_rows - 1, 2] = ga_i
+    mat_factorized[mat_n_rows - 1, 3] = 0.0
+    mat_factorized[mat_n_rows - 1, 4] = 0.0
 
     return
 
@@ -207,7 +207,7 @@ cdef void c_solve_penta_from_factorize_algo_1(
     result_view[1] = ze_i
 
     # Central rows
-    for iter_row in range(2, mat_n_rows-2):
+    for iter_row in range(2, mat_n_rows - 2):
         ze_i_plus_1 = (
             rhs_single[iter_row]
             - ze_i_minus_1 * mat_factorized[iter_row, 0]
@@ -219,30 +219,30 @@ cdef void c_solve_penta_from_factorize_algo_1(
 
     # Second to last row
     ze_i_plus_1 = (
-        rhs_single[mat_n_rows-2]
-        - ze_i_minus_1 * mat_factorized[mat_n_rows-2, 0]
-        - ze_i * mat_factorized[mat_n_rows-2, 2]
-    ) / mat_factorized[mat_n_rows-2, 1]
+        rhs_single[mat_n_rows - 2]
+        - ze_i_minus_1 * mat_factorized[mat_n_rows - 2, 0]
+        - ze_i * mat_factorized[mat_n_rows - 2, 2]
+    ) / mat_factorized[mat_n_rows - 2, 1]
     ze_i_minus_1 = ze_i
     ze_i = ze_i_plus_1
-    result_view[mat_n_rows-2] = ze_i_plus_1
+    result_view[mat_n_rows - 2] = ze_i_plus_1
 
     # Last row
     ze_i_plus_1 = (
-        rhs_single[mat_n_rows-1]
-        - ze_i_minus_1 * mat_factorized[mat_n_rows-1, 0]
-        - ze_i * mat_factorized[mat_n_rows-1, 2]
-    ) / mat_factorized[mat_n_rows-1, 1]
-    result_view[mat_n_rows-1] = ze_i_plus_1
+        rhs_single[mat_n_rows - 1]
+        - ze_i_minus_1 * mat_factorized[mat_n_rows - 1, 0]
+        - ze_i * mat_factorized[mat_n_rows - 1, 2]
+    ) / mat_factorized[mat_n_rows - 1, 1]
+    result_view[mat_n_rows - 1] = ze_i_plus_1
 
     # === Backward substitution ===
 
     # The solution vector is calculated by backward substitution that overwrites the
     # right-hand side vector with the solution vector
-    ze_i -= mat_factorized[mat_n_rows-2, 3] * ze_i_plus_1
-    result_view[mat_n_rows-2] = ze_i
+    ze_i -= mat_factorized[mat_n_rows - 2, 3] * ze_i_plus_1
+    result_view[mat_n_rows - 2] = ze_i
 
-    for iter_row in range(mat_n_rows-3, -1, -1):
+    for iter_row in range(mat_n_rows - 3, -1, -1):
         result_view[iter_row] -= (
             mat_factorized[iter_row, 3] * ze_i
             + mat_factorized[iter_row, 4] * ze_i_plus_1
