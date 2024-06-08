@@ -153,7 +153,7 @@ def solve(
             return np.full(shape=rhs_og_shape, fill_value=np.nan)
 
     # Case 2: LAPACK's banded solver
-    elif solver_inter == pmodels.PentaSolverAliases.LAPACK:  # pragma: no cover
+    elif solver_inter == pmodels.PentaSolverAliases.LAPACK:
         try:
             from scipy.linalg import solve_banded
         except ImportError as imp_err:  # pragma: no cover
