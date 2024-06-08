@@ -75,7 +75,8 @@ def solve(
     mat : :class:`numpy.ndarray` of shape (m, m) or (5, m)
         The full or flattened version of the pentadiagonal matrix.
     rhs : :class:`numpy.ndarray` of shape (m,) or (m, n)
-        The right hand side(s) of the equation system. Its shape is preserved.
+        The right hand side(s) of the equation system. Its shape determines the shape
+        of the output as they will be identical.
     is_flat : :class:`bool`, default=False
         State if the matrix is already flattened. Default: ``False``
     index_row_wise : :class:`bool`, default=True
