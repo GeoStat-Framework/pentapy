@@ -142,10 +142,11 @@ def solve(
             )
 
             # if there was only a 1D right-hand side, the result has to be flattened
+            sol = solver_func(mat_flat, rhs)
             if single_rhs:
-                return solver_func(mat_flat, rhs).ravel()
+                sol = sol.ravel()
 
-            return solver_func(mat_flat, rhs)
+            return sol
 
         except ZeroDivisionError:
             warnings.warn("pentapy: PTRANS-I not suitable for input-matrix.")
@@ -170,11 +171,17 @@ def solve(
 
         # NOTE: since this is a general banded solver, the number of sub- and super-
         #       diagonals has to be provided
-        return solve_banded(
-            l_and_u=(2, 2),
-            ab=mat_flat,
-            b=rhs,
-        )
+        # NOTE: LAPACK handles all the reshaping and flattening internally
+        try:
+            return solve_banded(
+                l_and_u=(2, 2),
+                ab=mat_flat,
+                b=rhs,
+            )
+
+        except np.linalg.LinAlgError:
+            warnings.warn("pentapy: LAPACK solver encountered singular matrix.")
+            return np.full(shape=rhs.shape, fill_value=np.nan)
 
     # Case 3: SciPy's sparse solver with or without UMFPACK
     elif solver_inter in {
@@ -184,7 +191,7 @@ def solve(
         try:
             from scipy import sparse as sps
             from scipy.sparse.linalg import spsolve
-        except ImportError as imp_err:
+        except ImportError as imp_err:  # pragma: no cover
             msg = "pentapy.solve: scipy.sparse could not be imported"
             raise ValueError(msg) from imp_err
 
@@ -209,11 +216,18 @@ def solve(
             format="csc",
         )
 
-        return spsolve(
+        sol = spsolve(
             A=M,
             b=rhs,
             use_umfpack=use_umfpack,
         )
+
+        # NOTE: spsolve flattens column-vectors, thus their shape has to be restored
+        # NOTE: it already fills the result vector with NaNs if the matrix is singular
+        if rhs.ndim == 2 and 1 in rhs.shape:
+            sol = sol[::, np.newaxis]
+
+        return sol
 
     else:  # pragma: no cover
         msg = f"pentapy.solve: unknown solver ({solver})"
