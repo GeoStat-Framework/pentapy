@@ -11,7 +11,7 @@ implemented in Cython.
 import numpy as np
 
 cimport numpy as np
-from libc.stdint cimport int64_t, uint64_t
+from libc.stdint cimport int64_t
 
 
 # === Main Python Interface ===
@@ -40,11 +40,15 @@ cdef double[:, :] c_penta_solver1(double[:, :] mat_flat, double[:, :] rhs):
 
     """
 
-    cdef uint64_t mat_n_rows = mat_flat.shape[1]
-    cdef uint64_t rhs_n_cols = rhs.shape[1]
-    cdef uint64_t iter_col
+    # === Variable declarations ===
+
+    cdef int64_t mat_n_rows = mat_flat.shape[1]
+    cdef int64_t rhs_n_cols = rhs.shape[1]
+    cdef int64_t iter_col
     cdef double[::, ::1] result = np.empty(shape=(mat_n_rows, rhs_n_cols))
     cdef double[::, ::1] mat_factorized = np.empty(shape=(mat_n_rows, 5))
+
+    # === Solving the system of equations ===
 
     # first, the matrix is factorized
     c_penta_factorize_algo1(
@@ -67,7 +71,7 @@ cdef double[:, :] c_penta_solver1(double[:, :] mat_flat, double[:, :] rhs):
 
 cdef void c_penta_factorize_algo1(
     double[:, :] mat_flat,
-    uint64_t mat_n_rows,
+    int64_t mat_n_rows,
     double[::, ::1] mat_factorized,
 ):
     """
@@ -82,14 +86,14 @@ cdef void c_penta_factorize_algo1(
     They are overwriting the memoryview ``mat_factorized`` as follows:
 
     ```bash
-    [[  *           mu_0        *           al_0        be_0  ]
-     [  *           mu_1        ga_1        al_1        be_1  ]
-     [  e_2         mu_2        ga_2        al_2        be_2  ]
+    [[   *          mu_0         *          al_0        be_0      ]
+     [   *          mu_1        ga_1        al_1        be_1      ]
+     [  e_2         mu_2        ga_2        al_2        be_2      ]
                                 ...
      [  e_i         mu_i        ga_i        al_i        be_i  ]
-                                ...
-     [  e_{n-2}     mu_{n-2}    ga_{n-2}    al_{n-2}    *     ]
-     [  e_{n-1}     mu_{n-1}    ga_{n-1}    *           *     ]]
+     [  e_{n-3}     mu_{n-3}    ga_{n-3}    al_{n-3}    be_{n-3}  ]                                ...
+     [  e_{n-2}     mu_{n-2}    ga_{n-2}    al_{n-2}      *       ]
+     [  e_{n-1}     mu_{n-1}    ga_{n-1}      *           *       ]]
     ```
 
     where the entries marked with ``*`` are not used by design, but overwritten with
@@ -99,7 +103,7 @@ cdef void c_penta_factorize_algo1(
 
     # === Variable declarations ===
 
-    cdef uint64_t iter_row
+    cdef int64_t iter_row
     cdef double mu_i, ga_i, e_i # mu, gamma, e
     cdef double al_i, al_i_minus_1, al_i_plus_1 # alpha
     cdef double be_i, be_i_minus_1, be_i_plus_1 # beta
@@ -176,7 +180,7 @@ cdef void c_penta_factorize_algo1(
 
 
 cdef void c_solve_penta_from_factorize_algo_1(
-    uint64_t mat_n_rows,
+    int64_t mat_n_rows,
     double[::, ::1] mat_factorized,
     double[::] rhs_single,
     double[::] result_view,
