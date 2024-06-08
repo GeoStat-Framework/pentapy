@@ -1,5 +1,6 @@
 """
-Test suite for testing the pentadiagonal solver based on Algorithm PTRANS-I.
+Test suite for testing the pentadiagonal solver based on either Algorithm PTRANS-I or
+PTRANS-II.
 
 """
 
@@ -40,13 +41,17 @@ N_ROWS = [
     10_000,
     10_001,
 ]
-REF_WARNING = "pentapy: PTRANS-I not suitable for input-matrix."
+REF_WARNING_CONTENT = "not suitable for input-matrix."
+SOLVER_ALIASES_PTRANS_I = [1, "1", "PTRANS-I", "ptrans-i"]
+SOLVER_ALIASES_PTRANS_II = [2, "2", "PTRANS-II", "ptrans-ii"]
 
 # === Tests ===
 
 
 @pytest.mark.parametrize("induce_error", [False, True])
-@pytest.mark.parametrize("solver_alias", [1])  # "1", "PTRANS-I"])
+@pytest.mark.parametrize(
+    "solver_alias", SOLVER_ALIASES_PTRANS_I + SOLVER_ALIASES_PTRANS_II
+)
 @pytest.mark.parametrize("input_layout", ["full", "banded_row_wise", "banded_col_wise"])
 @pytest.mark.parametrize("n_rhs", [None, 1, 10])
 @pytest.mark.parametrize("n_rows", N_ROWS)
@@ -72,17 +77,20 @@ def test_penta_solver1(
         ill_conditioned=False,
     )
 
-    # an error is induced by setting the first diagonal element to zero
+    # an error is induced by setting the first or last diagonal element to zero
     if induce_error:
         # the induction of the error is only possible if the matrix does not have
         # only 3 rows
         if n_rows == 3:
             pytest.skip(
                 "Only 3 rows, cannot induce error because this will not go into "
-                "PTRANS-I, but NumPy"
+                "PTRANS-I, but NumPy."
             )
 
-        mat_full[0, 0] = 0.0
+        if solver_alias in SOLVER_ALIASES_PTRANS_I:
+            mat_full[0, 0] = 0.0
+        else:
+            mat_full[n_rows - 1, n_rows - 1] = 0.0
 
     # the right-hand side is generated
     np.random.seed(SEED)
@@ -119,7 +127,7 @@ def test_penta_solver1(
     # Case 1: in case of an error, a warning has to be issued and the result has to
     # be NaN
     if induce_error:
-        with pytest.warns(UserWarning, match=REF_WARNING):
+        with pytest.warns(UserWarning, match=REF_WARNING_CONTENT):
             sol = pp.solve(
                 mat=mat,
                 rhs=rhs,
