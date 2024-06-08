@@ -5,8 +5,8 @@ import warnings
 
 import numpy as np
 
+from pentapy import tools as ptools
 from pentapy.solver import penta_solver1, penta_solver2
-from pentapy.tools import _check_penta, create_banded, shift_banded
 
 
 def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
@@ -66,40 +66,60 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
     result : :class:`numpy.ndarray`
         Solution of the equation system
     """
+
     if solver in [1, "1", "PTRANS-I"]:
         if is_flat and index_row_wise:
             mat_flat = np.asarray(mat, dtype=np.double)
-            _check_penta(mat_flat)
+            ptools._check_penta(mat_flat)
         elif is_flat:
             mat_flat = np.array(mat, dtype=np.double)
-            _check_penta(mat_flat)
-            shift_banded(mat_flat, copy=False)
+            ptools._check_penta(mat_flat)
+            ptools.shift_banded(mat_flat, copy=False)
         else:
-            mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
+            mat_flat = ptools.create_banded(mat, col_wise=False, dtype=np.double)
+
         rhs = np.asarray(rhs, dtype=np.double)
+
+        # Special case: Early exit when the matrix has only 3 rows/columns
+        # NOTE: this avoids memory leakage in the Cython-solver that will iterate over
+        #       at least 4 rows/columns no matter what
+        if mat_flat.shape[1] == 3:
+            return np.linalg.solve(
+                a=ptools.create_full(mat_flat, col_wise=False),
+                b=rhs,
+            )
+
+        # if there is only a single right-hand side, it has to be reshaped to a 2D array
+        # NOTE: this has to be reverted at the end
         single_rhs = rhs.ndim == 1
+        rhs_og_shape = rhs.shape
         if single_rhs:
             rhs = rhs[:, np.newaxis]
 
         try:
+            # if there was only a 1D right-hand side, the result has to be flattened
             if single_rhs:
                 return penta_solver1(mat_flat, rhs).ravel()
 
             return penta_solver1(mat_flat, rhs)
+
         except ZeroDivisionError:
             warnings.warn("pentapy: PTRANS-I not suitable for input-matrix.")
-            return np.full_like(rhs, np.nan)
+            return np.full(shape=rhs_og_shape, fill_value=np.nan)
+
     elif solver in [2, "2", "PTRANS-II"]:
         if is_flat and index_row_wise:
             mat_flat = np.asarray(mat, dtype=np.double)
-            _check_penta(mat_flat)
+            ptools._check_penta(mat_flat)
         elif is_flat:
             mat_flat = np.array(mat, dtype=np.double)
-            _check_penta(mat_flat)
-            shift_banded(mat_flat, copy=False)
+            ptools._check_penta(mat_flat)
+            ptools.shift_banded(mat_flat, copy=False)
         else:
-            mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
+            mat_flat = ptools.create_banded(mat, col_wise=False, dtype=np.double)
+
         rhs = np.asarray(rhs, dtype=np.double)
+
         try:
             return penta_solver2(mat_flat, rhs)
         except ZeroDivisionError:
@@ -113,12 +133,12 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             raise ValueError(msg) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
-            _check_penta(mat_flat)
-            shift_banded(mat_flat, col_to_row=False, copy=False)
+            ptools._check_penta(mat_flat)
+            ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
             mat_flat = np.asarray(mat)
         else:
-            mat_flat = create_banded(mat)
+            mat_flat = ptools.create_banded(mat)
         return solve_banded((2, 2), mat_flat, rhs)
     elif solver in [4, "4", "spsolve"]:  # pragma: no cover
         try:
@@ -129,12 +149,12 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             raise ValueError(msg) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
-            _check_penta(mat_flat)
-            shift_banded(mat_flat, col_to_row=False, copy=False)
+            ptools._check_penta(mat_flat)
+            ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
             mat_flat = np.asarray(mat)
         else:
-            mat_flat = create_banded(mat)
+            mat_flat = ptools.create_banded(mat)
         size = mat_flat.shape[1]
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=False)
@@ -153,12 +173,12 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
             raise ValueError(msg) from imp_err
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)
-            _check_penta(mat_flat)
-            shift_banded(mat_flat, col_to_row=False, copy=False)
+            ptools._check_penta(mat_flat)
+            ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
             mat_flat = np.asarray(mat)
         else:
-            mat_flat = create_banded(mat)
+            mat_flat = ptools.create_banded(mat)
         size = mat_flat.shape[1]
         M = sps.spdiags(mat_flat, [2, 1, 0, -1, -2], size, size, format="csc")
         return spsolve(M, rhs, use_umfpack=True)
