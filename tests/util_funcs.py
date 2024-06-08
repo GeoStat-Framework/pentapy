@@ -3,7 +3,7 @@ This test suite implements the utility functions for testing the ``pentapy`` pac
 
 """
 
-### Imports ###
+# === Imports ===
 
 from functools import partial
 from typing import Tuple
@@ -11,7 +11,7 @@ from typing import Tuple
 import numpy as np
 import pentapy as pp
 
-### Utility Functions ###
+# === Utility Functions ===
 
 
 def get_diag_indices(
@@ -25,7 +25,7 @@ def get_diag_indices(
     https://stackoverflow.com/a/18081653/14814813
 
     Doctests
-    --------
+    ======--
     >>> # Setting up a test matrix
     >>> n_rows = 5
     >>> mat = np.arange(start=0, stop=n_rows * n_rows).reshape(n_rows, n_rows)
@@ -110,7 +110,7 @@ def gen_rand_penta_matrix_dense_int(
     data type ``int64``.
 
     Doctests
-    --------
+    ======--
     >>> # Generating a random pentadiagonal matrix with NumPy indices
     >>> n_rows = 5
     >>> seed = 19_031_977
@@ -167,7 +167,7 @@ def gen_rand_penta_matrix_dense_int(
     return mat
 
 
-### Doctests ###
+# === Doctests ===
 
 if __name__ == "__main__":  # pragma: no cover
     import doctest

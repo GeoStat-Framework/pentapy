@@ -3,7 +3,7 @@ This test suite implements the test for the ``tools`` module of the ``pentapy`` 
 
 """
 
-### Imports ###
+# === Imports ===
 
 import warnings
 from typing import Optional, Tuple, Type
@@ -16,7 +16,7 @@ from pentapy.tools import _check_penta
 
 warnings.simplefilter("always")
 
-### Constants ###
+# === Constants ===
 
 SEED = 19_031_977
 N_ROWS = [
@@ -41,7 +41,7 @@ N_ROWS = [
     10_001,
 ]
 
-### Tests ###
+# === Tests ===
 
 
 @pytest.mark.parametrize("offset", [0, 1, 2, -1, -2])
