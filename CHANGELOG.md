@@ -2,6 +2,16 @@
 
 All notable changes to **pentapy** will be documented in this file.
 
+## [2.0.0] - 2024-06
+
+See [#27](https://github.com/GeoStat-Framework/pentapy/pull/27)
+
+### Breaking Changes
+
+- fully parallelized the Cython implementation of PTRANS-I and PTRANS-II for single and multiple right-hand sides support that can now be enabled via the new ``workers`` parameter in ``pentapy.solve`` (default: 1)
+- fully typed the ``pentapy.tools`` module
+- updated the **Cython low level interfaces** to PTRANS-I and PTRANS-II to **only accept C-contiguous arrays** (not backwards compatible)
+
 ## [1.4.0] - 2024-06
 
 See [#26](https://github.com/GeoStat-Framework/pentapy/pull/26)
@@ -133,6 +143,7 @@ This is the first release of pentapy, a python toolbox for solving pentadiagonal
 The solver is implemented in cython, which makes it really fast.
 
 
+[2.0.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.2...v1.2.0
