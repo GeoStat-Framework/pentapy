@@ -28,7 +28,6 @@ def diag_indices(
     offset: int = 0,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-
     Get indices for the main or minor diagonals of a matrix.
 
     This returns a tuple of indices that can be used to access the main
@@ -251,7 +250,8 @@ def create_full(
     low: int = 2,
     col_wise: bool = True,
 ) -> np.ndarray:
-    """Create a (n x n) Matrix from a given banded matrix.
+    """
+    Create an (n x n) Matrix from a given banded matrix.
 
     The given Matrix has to be a flattened matrix.
     Either in a column-wise flattened form::

@@ -48,7 +48,7 @@ def solve(
     """
     Solver for a pentadiagonal system.
 
-    The matrix can be given as a full n x n matrix or as a flattened one.
+    The matrix can be given as a full (n x n) matrix or as a flattened one.
     The flattened matrix can be given in a row-wise flattened form::
 
       [[Dup2[0]  Dup2[1]  Dup2[2]  ... Dup2[N-2]  0          0       ]
