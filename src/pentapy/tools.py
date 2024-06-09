@@ -14,12 +14,21 @@ The following functions are provided
    create_full
 """
 
-# pylint: disable=C0103
+# === Imports ===
+
+from typing import Optional, Tuple, Type
+
 import numpy as np
 
+# === Functions ===
 
-def diag_indices(n, offset=0):
+
+def diag_indices(
+    n: int,
+    offset: int = 0,
+) -> Tuple[np.ndarray, np.ndarray]:
     """
+
     Get indices for the main or minor diagonals of a matrix.
 
     This returns a tuple of indices that can be used to access the main
@@ -28,17 +37,17 @@ def diag_indices(n, offset=0):
 
     Parameters
     ----------
-    n : int
+    n : :class:`int`
       The size, along each dimension, of the arrays for which the returned
       indices can be used.
-    offset : int, optional
-      The diagonal offset.
+    offset : :class:`int`, default=0
+      The diagonal offset. Default: 0
 
     Returns
     -------
-    idx : :class:`numpy.ndarray`
+    idx : :class:`numpy.ndarray` of shape (n - abs(offset),)
         row indices
-    idy : :class:`numpy.ndarray`
+    idy : :class:`numpy.ndarray` of shape (n - abs(offset),)
         col indices
 
     """
@@ -47,8 +56,15 @@ def diag_indices(n, offset=0):
     return idx, idy
 
 
-def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
-    """Shift rows of a banded matrix.
+def shift_banded(
+    mat: np.ndarray,
+    up: int = 2,
+    low: int = 2,
+    col_to_row: bool = True,
+    copy: bool = True,
+) -> np.ndarray:
+    """
+    Shift rows of a banded matrix.
 
     Either from column-wise to row-wise storage or vice versa.
 
@@ -83,27 +99,33 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
 
     Parameters
     ----------
-    mat : :class:`numpy.ndarray`
+    mat : :class:`numpy.ndarray` of shape (5, n)
         The Matrix or the flattened Version of the pentadiagonal matrix.
-    up : :class:`int`
+    up : :class:`int`, default=2
         The number of upper minor-diagonals. Default: 2
-    low : :class:`int`
+    low : :class:`int`, default=2
         The number of lower minor-diagonals. Default: 2
-    col_to_row : :class:`bool`, optional
+    col_to_row : :class:`bool`, default=``True``
         Shift from column-wise to row-wise storage or vice versa.
         Default: ``True``
-    copy : :class:`bool`, optional
+    copy : :class:`bool`, default=``True``
         Copy the input matrix or overwrite it. Default: ``True``
 
     Returns
     -------
-    :class:`numpy.ndarray`
+    :class:`numpy.ndarray` of shape (5, n)
         Shifted banded matrix
+
     """
+
+    # first, the matrix is copied if required
     if copy:
         mat_flat = np.copy(mat)
     else:
         mat_flat = mat
+
+    # then, the shifting is performed
+    # Case 1: Column-wise to row-wise
     if col_to_row:
         for i in range(up):
             mat_flat[i, : -(up - i)] = mat_flat[i, (up - i) :]
@@ -111,18 +133,29 @@ def shift_banded(mat, up=2, low=2, col_to_row=True, copy=True):
         for i in range(low):
             mat_flat[-i - 1, (low - i) :] = mat_flat[-i - 1, : -(low - i)]
             mat_flat[-i - 1, : (low - i)] = 0
-    else:
-        for i in range(up):
-            mat_flat[i, (up - i) :] = mat_flat[i, : -(up - i)]
-            mat_flat[i, : (up - i)] = 0
-        for i in range(low):
-            mat_flat[-i - 1, : -(low - i)] = mat_flat[-i - 1, (low - i) :]
-            mat_flat[-i - 1, -(low - i) :] = 0
+
+        return mat_flat
+
+    # Case 2: Row-wise to column-wise
+    for i in range(up):
+        mat_flat[i, (up - i) :] = mat_flat[i, : -(up - i)]
+        mat_flat[i, : (up - i)] = 0
+    for i in range(low):
+        mat_flat[-i - 1, : -(low - i)] = mat_flat[-i - 1, (low - i) :]
+        mat_flat[-i - 1, -(low - i) :] = 0
+
     return mat_flat
 
 
-def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
-    """Create a banded matrix from a given quadratic Matrix.
+def create_banded(
+    mat: np.ndarray,
+    up: int = 2,
+    low: int = 2,
+    col_wise: bool = True,
+    dtype: Optional[Type] = None,
+) -> np.ndarray:
+    """
+    Create a banded matrix from a given square Matrix.
 
     The Matrix will to be returned as a flattened matrix.
     Either in a column-wise flattened form::
@@ -155,21 +188,27 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
 
     Parameters
     ----------
-    mat : :class:`numpy.ndarray`
+    mat : :class:`numpy.ndarray` of shape (n, n)
         The full (n x n) Matrix.
-    up : :class:`int`
+    up : :class:`int`, default=2
         The number of upper minor-diagonals. Default: 2
-    low : :class:`int`
+    low : :class:`int`, default=2
         The number of lower minor-diagonals. Default: 2
-    col_wise : :class:`bool`, optional
+    col_wise : :class:`bool`, default=``True``
         Use column-wise storage. If False, use row-wise storage.
         Default: ``True``
+    dtype : :class:`type` or ``None``, default=``None``
+        The data type of the returned matrix. If ``None``, the data type of the
+        input matrix is preserved. Default: ``None``
 
     Returns
     -------
-    :class:`numpy.ndarray`
+    :class:`numpy.ndarray` of shape (5, n)
         Banded matrix
+
     """
+
+    # first, the matrix is checked
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
         msg = f"create_banded: matrix has to be 2D, got {mat.ndim}D"
@@ -182,24 +221,36 @@ def create_banded(mat, up=2, low=2, col_wise=True, dtype=None):
         )
         raise ValueError(msg)
 
+    # then, the matrix is created
+    dtype = mat.dtype if dtype is None else dtype
     size = mat.shape[0]
-    mat_flat = np.zeros((5, size), dtype=dtype)
+    mat_flat = np.zeros(shape=(5, size), dtype=dtype)
     mat_flat[up, :] = mat.diagonal()
 
+    # Case 1: Column-wise storage
     if col_wise:
         for i in range(up):
             mat_flat[i, (up - i) :] = mat.diagonal(up - i)
         for i in range(low):
             mat_flat[-i - 1, : -(low - i)] = mat.diagonal(-(low - i))
-    else:
-        for i in range(up):
-            mat_flat[i, : -(up - i)] = mat.diagonal(up - i)
-        for i in range(low):
-            mat_flat[-i - 1, (low - i) :] = mat.diagonal(-(low - i))
+
+        return mat_flat
+
+    # Case 2: Row-wise storage
+    for i in range(up):
+        mat_flat[i, : -(up - i)] = mat.diagonal(up - i)
+    for i in range(low):
+        mat_flat[-i - 1, (low - i) :] = mat.diagonal(-(low - i))
+
     return mat_flat
 
 
-def create_full(mat, up=2, low=2, col_wise=True):
+def create_full(
+    mat: np.ndarray,
+    up: int = 2,
+    low: int = 2,
+    col_wise: bool = True,
+) -> np.ndarray:
     """Create a (n x n) Matrix from a given banded matrix.
 
     The given Matrix has to be a flattened matrix.
@@ -233,21 +284,24 @@ def create_full(mat, up=2, low=2, col_wise=True):
 
     Parameters
     ----------
-    mat : :class:`numpy.ndarray`
+    mat : :class:`numpy.ndarray` of shape (5, n)
         The flattened Matrix.
-    up : :class:`int`
+    up : :class:`int`, default=2
         The number of upper minor-diagonals. Default: 2
-    low : :class:`int`
+    low : :class:`int`, default=2
         The number of lower minor-diagonals. Default: 2
-    col_wise : :class:`bool`, optional
+    col_wise : :class:`bool`, default=``True``
         Input is in column-wise storage. If False, use as row-wise storage.
         Default: ``True``
 
     Returns
     -------
-    :class:`numpy.ndarray`
+    :class:`numpy.ndarray` of shape (n, n)
         Full matrix.
+
     """
+
+    # first, the matrix is checked
     mat = np.asanyarray(mat)
     if mat.ndim != 2:
         msg = f"create_full: matrix has to be 2D, got {mat.ndim}D"
@@ -267,23 +321,29 @@ def create_full(mat, up=2, low=2, col_wise=True):
         )
         raise ValueError(msg)
 
+    # then, the matrix is created
     size = mat.shape[1]
     mat_full = np.diag(mat[up])
+
+    # Case 1: Column-wise storage
     if col_wise:
         for i in range(up):
             mat_full[diag_indices(size, up - i)] = mat[i, (up - i) :]
         for i in range(low):
             mat_full[diag_indices(size, -(low - i))] = mat[-i - 1, : -(low - i)]
-    else:
-        for i in range(up):
-            mat_full[diag_indices(size, up - i)] = mat[i, : -(up - i)]
-        for i in range(low):
-            mat_full[diag_indices(size, -(low - i))] = mat[-i - 1, (low - i) :]
+
+        return mat_full
+
+    # Case 2: Row-wise storage
+    for i in range(up):
+        mat_full[diag_indices(size, up - i)] = mat[i, : -(up - i)]
+    for i in range(low):
+        mat_full[diag_indices(size, -(low - i))] = mat[-i - 1, (low - i) :]
 
     return mat_full
 
 
-def _check_penta(mat):
+def _check_penta(mat: np.ndarray) -> None:
     if mat.ndim != 2:
         msg = f"pentapy: matrix has to be 2D, got {mat.ndim}D"
         raise ValueError(msg)
