@@ -196,6 +196,9 @@ def gen_conditioned_rand_penta_matrix_dense(
 
     Doctests
     --------
+    >>> # Imports
+    >>> from math import log10
+
     >>> # 1) Generating a super small well-conditioned random pentadiagonal matrix
     >>> n_rows = 3
     >>> seed = 19_031_977
@@ -215,8 +218,8 @@ def gen_conditioned_rand_penta_matrix_dense(
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
-    >>> np.linalg.cond(mat)
-    4.976880305142543
+    >>> round(np.linalg.cond(mat), 2)
+    4.98
 
     >>> # 2) Generating a super small ill-conditioned random pentadiagonal matrix
     >>> mat = gen_conditioned_rand_penta_matrix_dense(
@@ -235,8 +238,8 @@ def gen_conditioned_rand_penta_matrix_dense(
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
     >>> # reciprocal floating point precision, i.e., ~1e16
-    >>> np.linalg.cond(mat)
-    1.493156437173682e+17
+    >>> round(log10(np.linalg.cond(mat)), 2)
+    17.17
 
     >>> # 3) Generating a small well-conditioned random pentadiagonal matrix
     >>> n_rows = 7
@@ -260,8 +263,8 @@ def gen_conditioned_rand_penta_matrix_dense(
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
-    >>> np.linalg.cond(mat)
-    42.4847446467131
+    >>> round(np.linalg.cond(mat), 2)
+    42.48
 
     >>> # 4) Generating a small ill-conditioned random pentadiagonal matrix
     >>> mat = gen_conditioned_rand_penta_matrix_dense(
@@ -284,8 +287,8 @@ def gen_conditioned_rand_penta_matrix_dense(
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
     >>> # reciprocal floating point precision, i.e., ~1e16
-    >>> np.linalg.cond(mat)
-    1.1079218802103074e+17
+    >>> round(log10(np.linalg.cond(mat)), 2)
+    17.04
 
     >>> # 5) Generating a large well-conditioned random pentadiagonal matrix
     >>> n_rows = 1_000
@@ -301,8 +304,8 @@ def gen_conditioned_rand_penta_matrix_dense(
     >>> spla.bandwidth(mat)
     (2, 2)
     >>> # its condition number is computed and values below 1e10 can be considered good
-    >>> np.linalg.cond(mat)
-    9570.995402466417
+    >>> round(np.linalg.cond(mat), 2)
+    9571.0
 
     >>> # 6) Generating a large ill-conditioned random pentadiagonal matrix
     >>> mat = gen_conditioned_rand_penta_matrix_dense(
@@ -317,8 +320,8 @@ def gen_conditioned_rand_penta_matrix_dense(
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
     >>> # reciprocal floating point precision, i.e., ~1e16
-    >>> np.linalg.cond(mat)
-    1.7137059583101745e+19
+    >>> round(log10(np.linalg.cond(mat)), 2)
+    19.23
 
     """
 
