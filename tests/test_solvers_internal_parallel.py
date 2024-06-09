@@ -9,7 +9,7 @@ It tests them in PARALLEL mode.
 # === Imports ===
 
 from copy import deepcopy
-from typing import Literal
+from typing import Literal, Optional, Type
 
 import pytest
 import templates
@@ -57,3 +57,35 @@ for key, value in param_dict.items():
     test_pentapy_solvers_parallel = pytest.mark.parametrize(key, value)(
         test_pentapy_solvers_parallel
     )
+
+
+@pytest.mark.parametrize(
+    "workers, expected", [(0, None), (1, None), (-1, None), (-2, ValueError)]
+)
+def test_pentapy_solvers_parallel_different_workers(
+    workers: int, expected: Optional[Type[Exception]]
+) -> None:
+    """
+    Tests the parallel solver with different number of workers, which might be wrong.
+
+    """
+
+    kwargs = dict(
+        n_rows=10,
+        n_rhs=1,
+        input_layout="full",
+        solver_alias=1,
+        induce_error=False,
+        from_order="C",
+        workers=workers,
+    )
+
+    # Case 1: the test should fail
+    if expected is not None:
+        with pytest.raises(expected):
+            templates.pentapy_solvers_template(**kwargs)  # type: ignore
+
+        return
+
+    # Case 2: the test should pass
+    templates.pentapy_solvers_template(**kwargs)  # type: ignore
