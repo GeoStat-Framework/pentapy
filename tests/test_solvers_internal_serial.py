@@ -2,6 +2,8 @@
 Test suite for testing the pentadiagonal solver based on either Algorithm PTRANS-I or
 PTRANS-II.
 
+It tests them in SERIAL mode only.
+
 """
 
 # === Imports ===
@@ -132,6 +134,7 @@ def test_pentapy_solvers(
                 mat=mat,
                 rhs=rhs,
                 solver=solver_alias,  # type: ignore
+                workers=1,
                 **kwargs,
             )
             assert sol.shape == result_shape
@@ -144,6 +147,7 @@ def test_pentapy_solvers(
         mat=mat,
         rhs=rhs,
         solver=solver_alias,  # type: ignore
+        workers=1,
         **kwargs,
     )
     assert sol.shape == result_shape
