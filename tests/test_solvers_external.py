@@ -10,9 +10,10 @@ solution.
 from typing import Literal
 
 import numpy as np
-import pentapy as pp
 import pytest
 import util_funcs as uf
+
+import pentapy as pp
 
 # === Constants ===
 
@@ -100,6 +101,7 @@ def test_external_solvers(
     # be NaN
     if induce_error:
         with pytest.warns(UserWarning, match=REF_WARNING_CONTENT):
+            mat_ref_copy = mat.copy()
             sol = pp.solve(
                 mat=mat,
                 rhs=rhs,
@@ -108,10 +110,12 @@ def test_external_solvers(
             )
             assert sol.shape == result_shape
             assert np.isnan(sol).all()
+            assert np.array_equal(mat, mat_ref_copy)
 
         return
 
     # Case 2: in case of no error, the solution can be computed without any issues
+    mat_ref_copy = mat.copy()
     sol = pp.solve(
         mat=mat,
         rhs=rhs,
@@ -119,3 +123,4 @@ def test_external_solvers(
         **kwargs,
     )
     assert sol.shape == result_shape
+    assert np.array_equal(mat, mat_ref_copy)

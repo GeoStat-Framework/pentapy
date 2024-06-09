@@ -144,6 +144,7 @@ def pentapy_solvers_template(
     # be NaN
     if induce_error:
         with pytest.warns(UserWarning, match=REF_WARNING_CONTENT):
+            mat_ref_copy = mat.copy()
             sol = pp.solve(
                 mat=mat,
                 rhs=rhs,
@@ -153,10 +154,12 @@ def pentapy_solvers_template(
             )
             assert sol.shape == result_shape
             assert np.isnan(sol).all()
+            assert np.array_equal(mat, mat_ref_copy)
 
         return
 
     # Case 2: in case of no error, the solution can be computed without any issues
+    mat_ref_copy = mat.copy()
     sol = pp.solve(
         mat=mat,
         rhs=rhs,
@@ -165,6 +168,7 @@ def pentapy_solvers_template(
         **kwargs,
     )
     assert sol.shape == result_shape
+    assert np.array_equal(mat, mat_ref_copy)
 
     # if no error was induced, the reference solution is computed with SciPy
     sol_ref = uf.solve_penta_matrix_dense_scipy(

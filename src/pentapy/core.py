@@ -119,7 +119,7 @@ def solve(
             mat_flat = np.asarray(mat, dtype=np.double)
             ptools._check_penta(mat_flat)
         elif is_flat:
-            mat_flat = np.asarray(mat, dtype=np.double)
+            mat_flat = np.array(mat, dtype=np.double) # NOTE: this is a copy
             ptools._check_penta(mat_flat)
             ptools.shift_banded(mat_flat, copy=False)
         else:
@@ -192,7 +192,7 @@ def solve(
             raise ValueError(msg) from imp_err
 
         if is_flat and index_row_wise:
-            mat_flat = np.asarray(mat)
+            mat_flat = np.array(mat)  # NOTE: this is a copy
             ptools._check_penta(mat_flat)
             ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
@@ -227,7 +227,7 @@ def solve(
             raise ValueError(msg) from imp_err
 
         if is_flat and index_row_wise:
-            mat_flat = np.asarray(mat)
+            mat_flat = np.array(mat)  # NOTE: this is a copy
             ptools._check_penta(mat_flat)
             ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
