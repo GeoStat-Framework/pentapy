@@ -79,11 +79,11 @@ def solve(
     rhs : :class:`numpy.ndarray` of shape (m,) or (m, n)
         The right hand side(s) of the equation system. Its shape determines the shape
         of the output as they will be identical.
-    is_flat : :class:`bool`, default=False
+    is_flat : :class:`bool`, optional
         State if the matrix is already flattened. Default: ``False``
-    index_row_wise : :class:`bool`, default=True
+    index_row_wise : :class:`bool`, optional
         State if the flattened matrix is row-wise flattened. Default: ``True``
-    solver : :class:`int` or :class:`str`, default=1
+    solver : :class:`int` or :class:`str`, optional
         Which solver should be used. The following are provided:
 
             * ``[1, "1", "PTRANS-I"]`` : The PTRANS-I algorithm (default)
@@ -93,7 +93,7 @@ def solve(
             * ``[5, "5", "spsolve_umf", "umf", "umf_pack"]`` : :func:`scipy.sparse.linalg.spsolve(..., use_umfpack=False)`
 
         Strings are not case-sensitive.
-    workers : :class:`int`, default=1
+    workers : :class:`int`, optional
         Number of workers used in the PTRANS-I and PTRANS-II solvers for parallel
         processing of multiple right-hand sides. Parallelisation overhead can be
         significant for small systems. If set to ``-1``, the number of workers is
@@ -119,7 +119,7 @@ def solve(
             mat_flat = np.asarray(mat, dtype=np.double)
             ptools._check_penta(mat_flat)
         elif is_flat:
-            mat_flat = np.array(mat, dtype=np.double) # NOTE: this is a copy
+            mat_flat = np.array(mat, dtype=np.double)  # NOTE: this is a copy
             ptools._check_penta(mat_flat)
             ptools.shift_banded(mat_flat, copy=False)
         else:

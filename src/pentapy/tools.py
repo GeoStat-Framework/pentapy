@@ -40,7 +40,7 @@ def diag_indices(
     n : :class:`int`
       The size, along each dimension, of the arrays for which the returned
       indices can be used.
-    offset : :class:`int`, default=0
+    offset : :class:`int`, optional
       The diagonal offset. Default: 0
 
     Returns
@@ -101,14 +101,14 @@ def shift_banded(
     ----------
     mat : :class:`numpy.ndarray` of shape (5, n)
         The Matrix or the flattened Version of the pentadiagonal matrix.
-    up : :class:`int`, default=2
+    up : :class:`int`, optional
         The number of upper minor-diagonals. Default: 2
-    low : :class:`int`, default=2
+    low : :class:`int`, optional
         The number of lower minor-diagonals. Default: 2
-    col_to_row : :class:`bool`, default=``True``
+    col_to_row : :class:`bool`, optional
         Shift from column-wise to row-wise storage or vice versa.
         Default: ``True``
-    copy : :class:`bool`, default=``True``
+    copy : :class:`bool`, optional
         Copy the input matrix or overwrite it. Default: ``True``
 
     Returns
@@ -190,14 +190,14 @@ def create_banded(
     ----------
     mat : :class:`numpy.ndarray` of shape (n, n)
         The full (n x n) Matrix.
-    up : :class:`int`, default=2
+    up : :class:`int`, optional
         The number of upper minor-diagonals. Default: 2
-    low : :class:`int`, default=2
+    low : :class:`int`, optional
         The number of lower minor-diagonals. Default: 2
-    col_wise : :class:`bool`, default=``True``
+    col_wise : :class:`bool`, optional
         Use column-wise storage. If False, use row-wise storage.
         Default: ``True``
-    dtype : :class:`type` or ``None``, default=``None``
+    dtype : :class:`type` or ``None``, optional
         The data type of the returned matrix. If ``None``, the data type of the
         input matrix is preserved. Default: ``None``
 
@@ -286,11 +286,11 @@ def create_full(
     ----------
     mat : :class:`numpy.ndarray` of shape (5, n)
         The flattened Matrix.
-    up : :class:`int`, default=2
+    up : :class:`int`, optional
         The number of upper minor-diagonals. Default: 2
-    low : :class:`int`, default=2
+    low : :class:`int`, optional
         The number of lower minor-diagonals. Default: 2
-    col_wise : :class:`bool`, default=``True``
+    col_wise : :class:`bool`, optional
         Input is in column-wise storage. If False, use as row-wise storage.
         Default: ``True``
 
