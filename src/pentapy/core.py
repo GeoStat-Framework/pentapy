@@ -8,6 +8,7 @@ import warnings
 from typing import Literal
 
 import numpy as np
+import psutil
 
 from pentapy import _models as pmodels
 from pentapy import solver as psolver  # type: ignore
@@ -42,6 +43,7 @@ def solve(
         "umf",
         "umf_pack",
     ] = 1,
+    workers: int = 1,
 ) -> np.ndarray:
     """
     Solver for a pentadiagonal system.
@@ -91,6 +93,11 @@ def solve(
             * ``[5, "5", "spsolve_umf", "umf", "umf_pack"]`` : :func:`scipy.sparse.linalg.spsolve(..., use_umfpack=False)`
 
         Strings are not case-sensitive.
+    workers : :class:`int`, default=1
+        Number of workers used in the PTRANS-I and PTRANS-II solvers for parallel
+        processing of multiple right-hand sides. Parallelisation overhead can be
+        significant for small systems. If set to ``-1``, the number of workers is
+        automatically determined. Default: ``1``
 
     Returns
     -------
@@ -107,16 +114,18 @@ def solve(
         pmodels.PentaSolverAliases.PTRANS_I,
         pmodels.PentaSolverAliases.PTRANS_II,
     }:
+        # the matrix is checked and shifted if necessary ...
         if is_flat and index_row_wise:
             mat_flat = np.asarray(mat, dtype=np.double)
             ptools._check_penta(mat_flat)
         elif is_flat:
-            mat_flat = np.array(mat, dtype=np.double)
+            mat_flat = np.asarray(mat, dtype=np.double)
             ptools._check_penta(mat_flat)
             ptools.shift_banded(mat_flat, copy=False)
         else:
             mat_flat = ptools.create_banded(mat, col_wise=False, dtype=np.double)
 
+        # ... followed by the conversion of the right-hand side
         rhs = np.asarray(rhs, dtype=np.double)
 
         # Special case: Early exit when the matrix has only 3 rows/columns
@@ -127,6 +136,23 @@ def solve(
                 a=ptools.create_full(mat_flat, col_wise=False),
                 b=rhs,
             )
+
+        # now, the number of workers for multithreading has to be determined if
+        # necessary
+        # NOTE: the following does not count the number of total threads, but the number
+        #       of threads available for the solver
+        if workers < -1:
+            raise ValueError(
+                f"pentapy.solve: workers has to be -1 or greater, not {workers=}"
+            )
+
+        if workers == -1:
+            proc = psutil.Process()
+            workers = len(proc.cpu_affinity())  # type: ignore
+            del proc
+
+        elif workers == 0:
+            workers = 1
 
         # if there is only a single right-hand side, it has to be reshaped to a 2D array
         # NOTE: this has to be reverted at the end
@@ -143,7 +169,11 @@ def solve(
             )
 
             # if there was only a 1D right-hand side, the result has to be flattened
-            sol = solver_func(mat_flat, rhs)
+            sol = solver_func(
+                np.ascontiguousarray(mat_flat),
+                np.ascontiguousarray(rhs),
+                workers,
+            )
             if single_rhs:
                 sol = sol.ravel()
 
@@ -162,7 +192,7 @@ def solve(
             raise ValueError(msg) from imp_err
 
         if is_flat and index_row_wise:
-            mat_flat = np.array(mat)
+            mat_flat = np.asarray(mat)
             ptools._check_penta(mat_flat)
             ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
@@ -197,7 +227,7 @@ def solve(
             raise ValueError(msg) from imp_err
 
         if is_flat and index_row_wise:
-            mat_flat = np.array(mat)
+            mat_flat = np.asarray(mat)
             ptools._check_penta(mat_flat)
             ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
