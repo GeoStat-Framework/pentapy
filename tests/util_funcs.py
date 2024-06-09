@@ -320,8 +320,10 @@ def gen_conditioned_rand_penta_matrix_dense(
     (2, 2)
     >>> # its condition number is computed and its value should be close to the
     >>> # reciprocal floating point precision, i.e., ~1e16
-    >>> round(log10(np.linalg.cond(mat)), 2)
-    19.23
+    >>> # NOTE: the next number will be so big that it will be different on each OS
+    >>> #       so it will only be checked if it is greater than 1e16
+    >>> round(log10(np.linalg.cond(mat)), 2) >= 16
+    True
 
     """
 
