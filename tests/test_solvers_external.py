@@ -29,8 +29,8 @@ N_ROWS = [
     51,
 ]
 REF_WARNING_CONTENT = "singular"
-SOLVER_ALIASES_LAPACK = [3, "3", "lapack", "LaPaCk"]
-SOLVER_ALIASES_SPSOLVE = [4, "4", "spsolve", "SpSoLvE"]
+SOLVER_ALIASES_LAPACK = [3, "3", "LaPaCk"]
+SOLVER_ALIASES_SPSOLVE = [4, "4", "SpSoLvE"]
 
 # === Tests ===
 

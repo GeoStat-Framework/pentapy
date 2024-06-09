@@ -2,12 +2,13 @@
 Test suite for testing the pentadiagonal solver based on either Algorithm PTRANS-I or
 PTRANS-II.
 
-It tests them in SERIAL mode only.
+It tests them in PARALLEL mode.
 
 """
 
 # === Imports ===
 
+from copy import deepcopy
 from typing import Literal
 
 import pytest
@@ -16,10 +17,13 @@ import templates
 # === Tests ===
 
 # the following series of decorators parametrize the tests for the pentadiagonal solver
-# based on either Algorithm PTRANS-I or PTRANS-II in serial mode
+# based on either Algorithm PTRANS-I or PTRANS-II in parallel mode
+param_dict = deepcopy(templates.PARAM_DICT)
+param_dict["from_order"] = ["C"]
+param_dict["workers"] = [-1]
 
 
-def test_pentapy_solvers_serial(
+def test_pentapy_solvers_parallel(
     n_rows: int,
     n_rhs: int,
     input_layout: Literal["full", "banded_row_wise", "banded_col_wise"],
@@ -49,7 +53,7 @@ def test_pentapy_solvers_serial(
     )
 
 
-for key, value in templates.PARAM_DICT.items():
-    test_pentapy_solvers_serial = pytest.mark.parametrize(key, value)(
-        test_pentapy_solvers_serial
+for key, value in param_dict.items():
+    test_pentapy_solvers_parallel = pytest.mark.parametrize(key, value)(
+        test_pentapy_solvers_parallel
     )
