@@ -24,13 +24,23 @@ def penta_solver1(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
     int workers,
+    bint validate,
 ):
-    return np.asarray(
-        c_penta_solver1(
-            mat_flat,
-            rhs,
-            workers,
-        )
+
+    # NOTE: info is defined to be overwritten for possible future validations
+    cdef int info
+
+    return (
+        np.asarray(
+            c_penta_solver1(
+                mat_flat,
+                rhs,
+                workers,
+                validate,
+                &info,
+            )
+        ),
+        info,
     )
 
 
@@ -38,13 +48,23 @@ def penta_solver2(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
     int workers,
+    bint validate,
 ):
-    return np.asarray(
-        c_penta_solver2(
-            mat_flat,
-            rhs,
-            workers,
-        )
+
+    # NOTE: info is defined to be overwritten for possible future validations
+    cdef int info
+
+    return (
+        np.asarray(
+            c_penta_solver2(
+                mat_flat,
+                rhs,
+                workers,
+                validate,
+                &info,
+            )
+        ),
+        info,
     )
 
 
@@ -54,6 +74,8 @@ cdef double[::, ::1] c_penta_solver1(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
     int workers,
+    bint validate,
+    int* info,
 ):
     """
     Solves the pentadiagonal system of equations ``Ax = b`` with the matrix ``A`` and
@@ -78,7 +100,7 @@ cdef double[::, ::1] c_penta_solver1(
     # === Solving the system of equations ===
 
     # first, the matrix is factorized
-    c_penta_factorize_algo1(
+    c_penta_factorize_algo_1(
         &mat_flat[0, 0],
         mat_n_cols,
         &mat_factorized[0, 0],
@@ -98,10 +120,11 @@ cdef double[::, ::1] c_penta_solver1(
             &result[0, iter_col],
         )
 
+    info[0] = 0
     return result
 
 
-cdef void c_penta_factorize_algo1(
+cdef void c_penta_factorize_algo_1(
     double* mat_flat,
     int64_t mat_n_cols,
     double* mat_factorized,
@@ -312,6 +335,8 @@ cdef double[::, ::1] c_penta_solver2(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
     int workers,
+    bint validate,
+    int* info,
 ):
     """
     Solves the pentadiagonal system of equations ``Ax = b`` with the matrix ``A`` and
@@ -336,7 +361,7 @@ cdef double[::, ::1] c_penta_solver2(
     # === Solving the system of equations ===
 
     # first, the matrix is factorized
-    c_penta_factorize_algo2(
+    c_penta_factorize_algo_2(
         &mat_flat[0, 0],
         mat_n_cols,
         &mat_factorized[0, 0],
@@ -356,9 +381,10 @@ cdef double[::, ::1] c_penta_solver2(
             &result[0, iter_col],
         )
 
+    info[0] = 0
     return result
 
-cdef void c_penta_factorize_algo2(
+cdef void c_penta_factorize_algo_2(
     double* mat_flat,
     int64_t mat_n_cols,
     double* mat_factorized,

@@ -169,11 +169,13 @@ def solve(
             )
 
             # if there was only a 1D right-hand side, the result has to be flattened
-            sol = solver_func(
+            sol, info = solver_func(  # NOTE: info is for potential future validation
                 np.ascontiguousarray(mat_flat),
                 np.ascontiguousarray(rhs),
                 workers,
+                False,  # NOTE: this can enable validation in the future
             )
+
             if single_rhs:
                 sol = sol.ravel()
 
