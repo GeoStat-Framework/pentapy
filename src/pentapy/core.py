@@ -147,12 +147,20 @@ def solve(
             )
 
         if workers == -1:
-            proc = psutil.Process()
-            workers = len(proc.cpu_affinity())  # type: ignore
-            del proc
+            # NOTE: the following will be overwritten by the number of available threads
+            workers = 999_999_999_999_999_999_999_999_999
 
         elif workers == 0:
             workers = 1
+
+        # the number of workers is limited to the number of available threads
+        proc = psutil.Process()
+        workers = min(
+            workers,
+            len(proc.cpu_affinity()),  # type: ignore
+        )
+        workers = max(workers, 1)
+        del proc
 
         # if there is only a single right-hand side, it has to be reshaped to a 2D array
         # NOTE: this has to be reverted at the end
