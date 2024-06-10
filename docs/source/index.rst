@@ -94,7 +94,8 @@ The performance plot was created with ``perfplot`` (`link <https://github.com/ns
 Requirements
 ============
 
-- `Numpy >= 1.14.5 <http://www.numpy.org>`_
+- `Numpy >= 1.20.0 <http://www.numpy.org>`_
+- `psutil >= 5.8.0 <https://psutil.readthedocs.io/en/latest/>`_
 
 Optional
 --------
