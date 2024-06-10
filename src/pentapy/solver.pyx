@@ -1,4 +1,4 @@
-# cython: language_level=3, boundscheck=False, wraparound=False, cdivision=False
+# cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True
 
 """
 This is a solver linear equation systems with a penta-diagonal matrix,
@@ -24,7 +24,6 @@ def penta_solver1(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
     int workers,
-    bint validate,
 ):
 
     # NOTE: info is defined to be overwritten for possible future validations
@@ -36,7 +35,6 @@ def penta_solver1(
                 mat_flat,
                 rhs,
                 workers,
-                validate,
                 &info,
             )
         ),
@@ -48,7 +46,6 @@ def penta_solver2(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
     int workers,
-    bint validate,
 ):
 
     # NOTE: info is defined to be overwritten for possible future validations
@@ -60,7 +57,6 @@ def penta_solver2(
                 mat_flat,
                 rhs,
                 workers,
-                validate,
                 &info,
             )
         ),
@@ -74,7 +70,6 @@ cdef double[::, ::1] c_penta_solver1(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
     int workers,
-    bint validate,
     int* info,
 ):
     """
@@ -100,11 +95,15 @@ cdef double[::, ::1] c_penta_solver1(
     # === Solving the system of equations ===
 
     # first, the matrix is factorized
-    c_penta_factorize_algo_1(
+    info[0] = c_penta_factorize_algo_1(
         &mat_flat[0, 0],
         mat_n_cols,
         &mat_factorized[0, 0],
     )
+
+    # in case of a zero-division, the function exits early
+    if info[0] > 0:
+        return result
 
     # then, all the right-hand sides are solved
     for iter_col in prange(
@@ -120,11 +119,10 @@ cdef double[::, ::1] c_penta_solver1(
             &result[0, iter_col],
         )
 
-    info[0] = 0
     return result
 
 
-cdef void c_penta_factorize_algo_1(
+cdef int c_penta_factorize_algo_1(
     double* mat_flat,
     int64_t mat_n_cols,
     double* mat_factorized,
@@ -169,10 +167,18 @@ cdef void c_penta_factorize_algo_1(
 
     # === Factorization ===
 
+    # NOTE: in the following mu is manually checked for zero-division to extract the
+    #       proper value of ``info`` and exit early in case of failure;
+    #       ``info`` is set to the row count where the error occured as for LAPACK ``pbtrf``
+
     # First row
     mu_i = mat_flat[mat_row_base_idx_2]
+    if mu_i == 0.0:
+        return 1
+
     al_i_minus_1 = mat_flat[mat_row_base_idx_1] / mu_i
     be_i_minus_1 = mat_flat[0] / mu_i
+
 
     mat_factorized[0] = 0.0
     mat_factorized[1] = mu_i
@@ -183,6 +189,9 @@ cdef void c_penta_factorize_algo_1(
     # Second row
     ga_i = mat_flat[mat_row_base_idx_3 + 1]
     mu_i = mat_flat[mat_row_base_idx_2 + 1] - al_i_minus_1 * ga_i
+    if mu_i == 0.0:
+        return 2
+
     al_i = (mat_flat[mat_row_base_idx_1 + 1] - be_i_minus_1 * ga_i) / mu_i
     be_i = mat_flat[1] / mu_i
 
@@ -198,6 +207,8 @@ cdef void c_penta_factorize_algo_1(
         e_i = mat_flat[mat_row_base_idx_4 + iter_row]
         ga_i = mat_flat[mat_row_base_idx_3 + iter_row] - al_i_minus_1 * e_i
         mu_i = mat_flat[mat_row_base_idx_2 + iter_row] - be_i_minus_1 * e_i - al_i * ga_i
+        if mu_i == 0.0:
+            return iter_row + 1
 
         al_i_plus_1 = (mat_flat[mat_row_base_idx_1 + iter_row] - be_i * ga_i) / mu_i
         al_i_minus_1 = al_i
@@ -219,6 +230,9 @@ cdef void c_penta_factorize_algo_1(
     e_i = mat_flat[mat_row_base_idx_4 + mat_n_cols - 2]
     ga_i = mat_flat[mat_row_base_idx_3 + mat_n_cols - 2] - al_i_minus_1 * e_i
     mu_i = mat_flat[mat_row_base_idx_2 + mat_n_cols - 2] - be_i_minus_1 * e_i - al_i * ga_i
+    if mu_i == 0.0:
+        return mat_n_cols - 1
+
     al_i_plus_1 = (mat_flat[mat_row_base_idx_1 + mat_n_cols - 2] - be_i * ga_i) / mu_i
 
     mat_factorized[fact_curr_base_idx] = e_i
@@ -231,6 +245,8 @@ cdef void c_penta_factorize_algo_1(
     e_i = mat_flat[mat_row_base_idx_4 + mat_n_cols - 1]
     ga_i = mat_flat[mat_row_base_idx_3 + mat_n_cols - 1] - al_i * e_i
     mu_i = mat_flat[mat_row_base_idx_2 + mat_n_cols - 1] - be_i * e_i - al_i_plus_1 * ga_i
+    if mu_i == 0.0:
+        return mat_n_cols
 
     mat_factorized[fact_curr_base_idx + 5] = e_i
     mat_factorized[fact_curr_base_idx + 6] = mu_i
@@ -238,7 +254,7 @@ cdef void c_penta_factorize_algo_1(
     mat_factorized[fact_curr_base_idx + 8] = 0.0
     mat_factorized[fact_curr_base_idx + 9] = 0.0
 
-    return
+    return 0
 
 
 cdef int c_solve_penta_from_factorize_algo_1(
@@ -335,7 +351,6 @@ cdef double[::, ::1] c_penta_solver2(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
     int workers,
-    bint validate,
     int* info,
 ):
     """
@@ -361,11 +376,13 @@ cdef double[::, ::1] c_penta_solver2(
     # === Solving the system of equations ===
 
     # first, the matrix is factorized
-    c_penta_factorize_algo_2(
+    info[0] = c_penta_factorize_algo_2(
         &mat_flat[0, 0],
         mat_n_cols,
         &mat_factorized[0, 0],
     )
+    if info[0] > 0:
+        return result
 
     # then, all the right-hand sides are solved
     for iter_col in prange(
@@ -381,10 +398,9 @@ cdef double[::, ::1] c_penta_solver2(
             &result[0, iter_col],
         )
 
-    info[0] = 0
     return result
 
-cdef void c_penta_factorize_algo_2(
+cdef int c_penta_factorize_algo_2(
     double* mat_flat,
     int64_t mat_n_cols,
     double* mat_factorized,
@@ -430,9 +446,16 @@ cdef void c_penta_factorize_algo_2(
 
     # === Factorization ===
 
+    # NOTE: in the following ps is manually checked for zero-division to extract the
+    #       proper value of ``info`` and exit early in case of failure;
+    #       ``info`` is set to the row count where the error occured as for LAPACK ``pbtrf``
+
     # First row
 
     ps_i = mat_flat[mat_row_base_idx_2 + mat_n_cols - 1]
+    if ps_i == 0.0:
+        return mat_n_cols
+
     si_i_plus_1 = mat_flat[mat_row_base_idx_3 + mat_n_cols - 1] / ps_i
     phi_i_plus_1 = mat_flat[mat_row_base_idx_4 + mat_n_cols - 1] / ps_i
 
@@ -446,6 +469,9 @@ cdef void c_penta_factorize_algo_2(
     # Second row
     rho_i = mat_flat[mat_row_base_idx_1 + mat_n_cols - 2]
     ps_i = mat_flat[mat_row_base_idx_2 + mat_n_cols - 2] - si_i_plus_1 * rho_i
+    if ps_i == 0.0:
+        return mat_n_cols - 1
+
     si_i = (mat_flat[mat_row_base_idx_3 + mat_n_cols - 2] - phi_i_plus_1 * rho_i) / ps_i
     phi_i = mat_flat[mat_row_base_idx_4 + mat_n_cols - 2] / ps_i
 
@@ -461,6 +487,9 @@ cdef void c_penta_factorize_algo_2(
         b_i = mat_flat[iter_row]
         rho_i = mat_flat[mat_row_base_idx_1 + iter_row] - si_i_plus_1 * b_i
         ps_i = mat_flat[mat_row_base_idx_2 + iter_row] - phi_i_plus_1 * b_i - si_i * rho_i
+        if ps_i == 0.0:
+            return iter_row + 1
+
         si_i_minus_1 = (mat_flat[mat_row_base_idx_3 + iter_row] - phi_i * rho_i) / ps_i
         si_i_plus_1 = si_i
         si_i = si_i_minus_1
@@ -479,6 +508,9 @@ cdef void c_penta_factorize_algo_2(
     b_i = mat_flat[1]
     rho_i = mat_flat[mat_row_base_idx_1 + 1] - si_i_plus_1 * b_i
     ps_i = mat_flat[mat_row_base_idx_2 + 1] - phi_i_plus_1 * b_i - si_i * rho_i
+    if ps_i == 0.0:
+        return 2
+
     si_i_minus_1 = (mat_flat[mat_row_base_idx_3 + 1] - phi_i * rho_i) / ps_i
     si_i_plus_1 = si_i
     si_i = si_i_minus_1
@@ -493,6 +525,8 @@ cdef void c_penta_factorize_algo_2(
     b_i = mat_flat[0]
     rho_i = mat_flat[mat_row_base_idx_1 + 0] - si_i_plus_1 * b_i
     ps_i = mat_flat[mat_row_base_idx_2 + 0] - phi_i * b_i - si_i * rho_i
+    if ps_i == 0.0:
+        return 1
 
     mat_factorized[4] = b_i
     mat_factorized[3] = rho_i
@@ -500,7 +534,7 @@ cdef void c_penta_factorize_algo_2(
     mat_factorized[1] = 0.0
     mat_factorized[0] = 0.0
 
-    return
+    return 0
 
 
 cdef int c_solve_penta_from_factorize_algo_2(

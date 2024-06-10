@@ -169,29 +169,33 @@ def solve(
         if single_rhs:
             rhs = rhs[:, np.newaxis]
 
-        try:
-            solver_func = (
-                psolver.penta_solver1
-                if solver_inter == pmodels.PentaSolverAliases.PTRANS_I
-                else psolver.penta_solver2
+        # the respective solver is chosen ...
+        solver_func = (
+            psolver.penta_solver1
+            if solver_inter == pmodels.PentaSolverAliases.PTRANS_I
+            else psolver.penta_solver2
+        )
+
+        # ... and the solver is called
+        sol, info = solver_func(
+            np.ascontiguousarray(mat_flat),
+            np.ascontiguousarray(rhs),
+            workers,
+        )
+
+        # in case of failure, the solver will return NaNs and issue a warning
+        if info > 0:
+            warnings.warn(
+                f"pentapy: {solver_inter.name} solver encountered singular matrix at "
+                f"row index {info - 1}. Returning NaNs."
             )
+            sol = np.full(shape=rhs_og_shape, fill_value=np.nan)
 
-            # if there was only a 1D right-hand side, the result has to be flattened
-            sol, info = solver_func(  # NOTE: info is for potential future validation
-                np.ascontiguousarray(mat_flat),
-                np.ascontiguousarray(rhs),
-                workers,
-                False,  # NOTE: this can enable validation in the future
-            )
+        # in case of success, the solution can be returned (reshaped if necessary)
+        if single_rhs:
+            sol = sol.ravel()
 
-            if single_rhs:
-                sol = sol.ravel()
-
-            return sol
-
-        except ZeroDivisionError:
-            warnings.warn("pentapy: PTRANS-I not suitable for input-matrix.")
-            return np.full(shape=rhs_og_shape, fill_value=np.nan)
+        return sol
 
     # Case 2: LAPACK's banded solver
     elif solver_inter == pmodels.PentaSolverAliases.LAPACK:

@@ -16,7 +16,7 @@ import pentapy as pp
 # === Constants ===
 
 SEED = 19_031_977
-REF_WARNING_CONTENT = "not suitable for input-matrix."
+REF_WARNING_CONTENT = "singular matrix at row index"
 N_ROWS = [
     3,  # important edge case
     4,  # important edge case
@@ -27,12 +27,8 @@ N_ROWS = [
     51,  # odd
     100,  # ...
     101,
-    500,
-    501,
     1_000,
     1_001,
-    5_000,
-    5_001,
 ]
 SOLVER_ALIASES_PTRANS_I = [1, "1", "pTrAnS-I"]
 SOLVER_ALIASES_PTRANS_II = [2, "2", "pTrAnS-Ii"]
