@@ -15,7 +15,7 @@ import util_funcs as uf
 # === Constants ===
 
 SEED = 19_031_977
-SINGULAR_WARNING_REF_CONTENT = "singular matrix at row index"
+SINGULAR_WARNING_REF_CONTENT = "solver encountered singular matrix"
 SHAPE_MISMATCH_ERROR_REF_CONTENT = "shape mismatch between the number of equations"
 N_ROWS = [
     3,  # important edge case
@@ -129,6 +129,8 @@ def pentapy_solvers_extended_template(
     first or last diagonal element exactly zero.
     It has to be ensured that the edge case of ``n_rows = 3`` is also covered.
 
+    For ``n_rows = 3``, the error is induced by initialising a matrix of zeros.
+
     """
 
     # first, a random pentadiagonal matrix is generated
@@ -143,12 +145,9 @@ def pentapy_solvers_extended_template(
         # the induction of the error is only possible if the matrix does not have
         # only 3 rows
         if n_rows == 3:
-            pytest.skip(
-                "Only 3 rows, cannot induce error because this will not go into "
-                "PTRANS-I, but NumPy."
-            )
+            mat_full = np.zeros_like(mat_full)
 
-        if solver_alias in SOLVER_ALIASES_PTRANS_I:
+        elif solver_alias in SOLVER_ALIASES_PTRANS_I:
             mat_full[0, 0] = 0.0
         else:
             mat_full[n_rows - 1, n_rows - 1] = 0.0

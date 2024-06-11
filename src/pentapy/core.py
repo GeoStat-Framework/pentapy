@@ -57,7 +57,165 @@ def _get_num_workers(workers: int) -> int:
     return workers
 
 
-# === Solver ===
+def _raise_ptrans_or_numpy_shape_mismatch_error(
+    mat_n_cols: int,
+    rhs_n_rows: int,
+) -> None:
+    """
+    Raises a shape mismatch error for the PTRANS solver or the NumPy dense solver.
+
+    """
+
+    raise ValueError(
+        perrors.PentaPyErrorMessages.SHAPE_MISMATCH.format(
+            lhs_n_cols=mat_n_cols,
+            rhs_n_rows=rhs_n_rows,
+        )
+    )
+
+
+def _handle_ptrans_info_complete_fail_cases(
+    info: int,
+    mat_n_cols: int,
+    rhs_n_rows: int,
+) -> None:
+    """
+    Handles the cases where the PTRANS solver by raising the appropriate error.
+
+    """
+
+    # Case 1: shape mismatch
+    if info == pmodels.Infos.SHAPE_MISMATCH:
+        _raise_ptrans_or_numpy_shape_mismatch_error(
+            mat_n_cols=mat_n_cols,
+            rhs_n_rows=rhs_n_rows,
+        )
+
+    # Case 2: wrong solver
+    elif info == pmodels.Infos.WRONG_SOLVER:  # pragma: no cover
+        raise AssertionError(perrors.PentaPyErrorMessages.WRONG_SOLVER)
+
+    # Case 3: unknown error
+    # pragma: no cover
+    raise AssertionError(perrors.PentaPyErrorMessages.UNKNOWN_ERROR)
+
+
+# === Auxiliary Solver Interfaces ===
+
+
+def _solve_with_numpy(
+    mat_flat: np.ndarray,
+    rhs: np.ndarray,
+) -> np.ndarray:
+    """
+    Solver for a pentadiagonal system using NumPy's dense LAPACK solver.
+
+    """
+
+    # in case of a shape mismatch, an error will be raised
+    if not mat_flat.shape[1] == rhs.shape[0]:
+        _raise_ptrans_or_numpy_shape_mismatch_error(
+            mat_n_cols=mat_flat.shape[1],
+            rhs_n_rows=rhs.shape[0],
+        )
+
+    # then, the system is solved using NumPy's dense solver
+    try:
+        return np.linalg.solve(
+            a=ptools.create_full(mat_flat, col_wise=False),
+            b=rhs,
+        )
+
+    # in case of a singular matrix, a warning will be issued and NaNs will be returned
+    except np.linalg.LinAlgError:
+        warnings.warn("pentapy: NumPy LAPACK dense solver encountered singular matrix.")
+        return np.full(shape=rhs.shape, fill_value=np.nan)
+
+
+def _solve_with_ptrans(
+    mat: np.ndarray,
+    rhs: np.ndarray,
+    is_flat: bool,
+    index_row_wise: bool,
+    workers: int,
+    solver_inter: pmodels.PentaSolverAliases,
+) -> np.ndarray:  # type: ignore
+    """
+    Solver for a pentadiagonal system using one of the PTRANS algorithms.
+
+    """
+
+    # the matrix is checked and shifted if necessary ...
+    if is_flat and index_row_wise:
+        mat_flat = np.asarray(mat, dtype=np.double)
+        ptools._check_penta(mat_flat)
+    elif is_flat:
+        mat_flat = np.array(mat, dtype=np.double)  # NOTE: this is a copy
+        ptools._check_penta(mat_flat)
+        ptools.shift_banded(mat_flat, copy=False)
+    else:
+        mat_flat = ptools.create_banded(mat, col_wise=False, dtype=np.double)
+
+    # ... followed by the conversion of the right-hand side
+    rhs = np.asarray(rhs, dtype=np.double)
+
+    # Special case: Early exit when the matrix has only 3 rows/columns
+    # NOTE: this avoids memory leakage in the Cython-solver that will iterate over
+    #       at least 4 rows/columns no matter what
+    if mat_flat.shape[1] == 3:
+        return _solve_with_numpy(mat_flat=mat_flat, rhs=rhs)
+
+    # now, the number of workers for multithreading has to be determined if necessary
+    workers = _get_num_workers(workers)
+
+    # if there is only a single right-hand side, it has to be reshaped to a 2D array
+    # NOTE: this has to be reverted at the end
+    single_rhs = rhs.ndim == 1
+    rhs_og_shape = rhs.shape
+    if single_rhs:
+        rhs = rhs[:, np.newaxis]
+
+    # the respective solver is chosen ...
+    solver_func = (
+        psolver.penta_solver1
+        if solver_inter == pmodels.PentaSolverAliases.PTRANS_I
+        else psolver.penta_solver2
+    )
+
+    # ... and the solver is called
+    sol, info = solver_func(
+        np.ascontiguousarray(mat_flat),
+        np.ascontiguousarray(rhs),
+        workers,
+    )
+
+    # in case of success, the solution can be returned (reshaped if necessary)
+    if info == pmodels.Infos.SUCCESS:
+        if single_rhs:
+            sol = sol.ravel()
+
+        return sol
+
+    # in case of a singular matrix, a warning will be issued and NaNs will be returned
+    elif info > pmodels.Infos.SUCCESS:
+        warnings.warn(
+            perrors.PentaPyErrorMessages.SINGULAR_MATRIX.format(
+                solver_inter_name=pmodels.PentaSolverAliases.PTRANS_I.name,
+                row_idx=info - 1,
+            )
+        )
+
+        return np.full(shape=rhs_og_shape, fill_value=np.nan)
+
+    # in case of an error, the respective error will be raised
+    _handle_ptrans_info_complete_fail_cases(
+        info=info,
+        mat_n_cols=mat_flat.shape[1],
+        rhs_n_rows=rhs_og_shape[0],
+    )
+
+
+# === Main Solver Interface ===
 
 
 def solve(
@@ -165,105 +323,14 @@ def solve(
         pmodels.PentaSolverAliases.PTRANS_I,
         pmodels.PentaSolverAliases.PTRANS_II,
     }:
-        # the matrix is checked and shifted if necessary ...
-        if is_flat and index_row_wise:
-            mat_flat = np.asarray(mat, dtype=np.double)
-            ptools._check_penta(mat_flat)
-        elif is_flat:
-            mat_flat = np.array(mat, dtype=np.double)  # NOTE: this is a copy
-            ptools._check_penta(mat_flat)
-            ptools.shift_banded(mat_flat, copy=False)
-        else:
-            mat_flat = ptools.create_banded(mat, col_wise=False, dtype=np.double)
 
-        # ... followed by the conversion of the right-hand side
-        rhs = np.asarray(rhs, dtype=np.double)
-
-        # Special case: Early exit when the matrix has only 3 rows/columns
-        # NOTE: this avoids memory leakage in the Cython-solver that will iterate over
-        #       at least 4 rows/columns no matter what
-        if mat_flat.shape[1] == 3:
-            if not mat_flat.shape[1] == rhs.shape[0]:
-                raise ValueError(
-                    perrors.PentaPyErrorMessages.SHAPE_MISMATCH.format(
-                        lhs_n_cols=mat_flat.shape[1],
-                        rhs_n_rows=rhs.shape[0],
-                    )
-                )
-
-            try:
-                return np.linalg.solve(
-                    a=ptools.create_full(mat_flat, col_wise=False),
-                    b=rhs,
-                )
-            except np.linalg.LinAlgError:
-                warnings.warn(
-                    "pentapy: NumPy LAPACK dense solver encountered singular matrix."
-                )
-                return np.full(shape=rhs.shape, fill_value=np.nan)
-
-        # now, the number of workers for multithreading has to be determined if
-        # necessary
-        workers = _get_num_workers(workers)
-
-        # if there is only a single right-hand side, it has to be reshaped to a 2D array
-        # NOTE: this has to be reverted at the end
-        single_rhs = rhs.ndim == 1
-        rhs_og_shape = rhs.shape
-        if single_rhs:
-            rhs = rhs[:, np.newaxis]
-
-        # the respective solver is chosen ...
-        solver_func = (
-            psolver.penta_solver1
-            if solver_inter == pmodels.PentaSolverAliases.PTRANS_I
-            else psolver.penta_solver2
-        )
-
-        # ... and the solver is called
-        sol, info = solver_func(
-            np.ascontiguousarray(mat_flat),
-            np.ascontiguousarray(rhs),
-            workers,
-        )
-
-        print(f"{info=}")
-
-        # in case of success, the solution can be returned (reshaped if necessary)
-        if info == pmodels.Infos.SUCCESS:
-            if single_rhs:
-                sol = sol.ravel()
-
-            return sol
-
-        # in case of a shape mismatch, an error will be raised
-        if info == pmodels.Infos.SHAPE_MISMATCH:
-            raise ValueError(
-                perrors.PentaPyErrorMessages.SHAPE_MISMATCH.format(
-                    lhs_n_cols=mat_flat.shape[1],
-                    rhs_n_rows=rhs_og_shape[0],
-                )
-            )
-
-        # in case of a zero-division, the solver will return NaNs and issue a warning
-        elif info > pmodels.Infos.SUCCESS:
-            warnings.warn(
-                perrors.PentaPyErrorMessages.SINGULAR_MATRIX.format(
-                    solver_inter_name=solver_inter.name,
-                    row_idx=info - 1,
-                )
-            )
-
-            return np.full(shape=rhs_og_shape, fill_value=np.nan)
-
-        # in case of an internal error in determination of the solver, an error will be
-        # raised
-        elif info == pmodels.Infos.WRONG_SOLVER:  # pragma: no cover
-            raise AssertionError(perrors.PentaPyErrorMessages.WRONG_SOLVER)
-
-        # in case of an unknown error, an error will be raised
-        raise AssertionError(  # pragma: no cover
-            perrors.PentaPyErrorMessages.UNKNOWN_ERROR
+        return _solve_with_ptrans(
+            mat=mat,
+            rhs=rhs,
+            is_flat=is_flat,
+            index_row_wise=index_row_wise,
+            workers=workers,
+            solver_inter=solver_inter,
         )
 
     # Case 2: LAPACK's banded solver
