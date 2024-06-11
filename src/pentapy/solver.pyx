@@ -17,7 +17,18 @@ from cython.parallel import prange
 from libc.stdint cimport int64_t
 
 
+# === Constants ===
+
 cdef enum: MAT_FACT_N_COLS = 5
+
+cdef enum Solvers:
+    PTRRANS_1 = 1
+    PTRRANS_2 = 2
+
+cdef enum Infos:
+    SUCCESS = 0
+    SHAPE_MISMATCH = -1
+    WRONG_SOLVER = -2
 
 # === Main Python Interface ===
 
@@ -90,33 +101,37 @@ cdef double[::, ::1] c_penta_solver1(
     # if the number of columns in the flattened matrix is not equal to the number of
     # rows in the right-hand side, the function exits early to avoid memory errors
     if mat_flat.shape[1] != rhs.shape[0]:
-        info[0] = -1
+        info[0] = Infos.SHAPE_MISMATCH
         return np.empty_like(rhs)
 
     # --- Solving the system of equations ---
 
     # first, the matrix is factorized
-    cdef double[::, ::1] mat_factorized = _c_interf_factorize_algo_1(
+    cdef double[::, ::1] mat_factorized = _c_interf_factorize_algo(
         mat_flat,
         info,
+        Solvers.PTRRANS_1,
     )
 
-    # in case of a zero-division, the function exits early
-    if info[0] > 0:
+    # in case of an error during factorization, the function exits early
+    if info[0] != Infos.SUCCESS:
         return np.empty_like(rhs)
 
     # then, all the right-hand sides are solved
-    return _c_interf_factorize_solve_algo_1(
+    return _c_interf_factorize_solve_algo(
         mat_factorized,
         rhs,
         workers,
+        info,
+        Solvers.PTRRANS_1,
     )
 
 
 
-cdef double[::, ::1] _c_interf_factorize_algo_1(
+cdef double[::, ::1] _c_interf_factorize_algo(
     double[::, ::1] mat_flat,
     int* info,
+    int solver,
 ):
     """
     This function serves as the interface that takes the memoryview of the flattened
@@ -136,19 +151,28 @@ cdef double[::, ::1] _c_interf_factorize_algo_1(
 
     # --- Factorization ---
 
-    info[0] = _c_core_factorize_algo_1(
-        &mat_flat[0, 0],
-        mat_n_cols,
-        &mat_factorized[0, 0],
-    )
+    # the solver algorithm is chosen based on the input parameter
+    # Case 1: PTRRANS-I
+    if solver == Solvers.PTRRANS_1:
+        info[0] = _c_core_factorize_algo_1(
+            &mat_flat[0, 0],
+            mat_n_cols,
+            &mat_factorized[0, 0],
+        )
+
+    # Case 3: the wrong solver is chosen
+    else:
+        info[0] = Infos.WRONG_SOLVER
 
     return mat_factorized
 
 
-cdef double[::, ::1] _c_interf_factorize_solve_algo_1(
+cdef double[::, ::1] _c_interf_factorize_solve_algo(
     double[::, ::1] mat_factorized,
     double[::, ::1] rhs,
     int workers,
+    int* info,
+    int solver,
 ):
     """
     This function serves as the interface that takes the factorized matrix and the
@@ -171,18 +195,25 @@ cdef double[::, ::1] _c_interf_factorize_solve_algo_1(
 
     # --- Solving the system of equations ---
 
-    for iter_col in prange(
-        rhs_n_cols,
-        nogil=True,
-        num_threads=workers,
-    ):
-        _c_core_factorize_solve_algo_1(
-            mat_n_cols,
-            &mat_factorized[0, 0],
-            &rhs[0, iter_col],
+    # the solver algorithm is chosen based on the input parameter
+    # Case 1: PTRRANS-I
+    if solver == Solvers.PTRRANS_1:
+        for iter_col in prange(
             rhs_n_cols,
-            &result[0, iter_col],
-        )
+            nogil=True,
+            num_threads=workers,
+        ):
+            info[0] = _c_core_factorize_solve_algo_1(
+                mat_n_cols,
+                &mat_factorized[0, 0],
+                &rhs[0, iter_col],
+                rhs_n_cols,
+                &result[0, iter_col],
+            )
+
+    # Case 3: the wrong solver is chosen
+    else:
+        info[0] = Infos.WRONG_SOLVER
 
     return result
 
