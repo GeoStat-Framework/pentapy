@@ -11,6 +11,8 @@ implemented in Cython.
 import numpy as np
 
 cimport numpy as np
+
+from cython cimport view
 from cython.parallel import prange
 from libc.stdint cimport int64_t
 
@@ -83,35 +85,98 @@ cdef double[::, ::1] c_penta_solver1(
 
     """
 
-    # === Variable declarations ===
+    # --- Initial checks ---
 
-    cdef int64_t mat_n_cols = mat_flat.shape[1]
-    cdef int64_t rhs_n_cols = rhs.shape[1]
-    cdef int64_t iter_col
+    # if the number of columns in the flattened matrix is not equal to the number of
+    # rows in the right-hand side, the function exits early to avoid memory errors
+    if mat_flat.shape[1] != rhs.shape[0]:
+        info[0] = -1
+        return np.empty_like(rhs)
 
-    cdef double[::, ::1] result = np.empty(shape=(mat_n_cols, rhs_n_cols))
-    cdef double[::, ::1] mat_factorized = np.empty(shape=(mat_n_cols, MAT_FACT_N_COLS))
-
-    # === Solving the system of equations ===
+    # --- Solving the system of equations ---
 
     # first, the matrix is factorized
-    info[0] = c_penta_factorize_algo_1(
+    cdef double[::, ::1] mat_factorized = _c_interf_factorize_algo_1(
+        mat_flat,
+        info,
+    )
+
+    # in case of a zero-division, the function exits early
+    if info[0] > 0:
+        return np.empty_like(rhs)
+
+    # then, all the right-hand sides are solved
+    return _c_interf_factorize_solve_algo_1(
+        mat_factorized,
+        rhs,
+        workers,
+    )
+
+
+
+cdef double[::, ::1] _c_interf_factorize_algo_1(
+    double[::, ::1] mat_flat,
+    int* info,
+):
+    """
+    This function serves as the interface that takes the memoryview of the flattened
+    matrix and returns the freshly allocated factorized matrix.
+
+    """
+
+    # --- Variable declarations ---
+
+    cdef int64_t mat_n_cols = mat_flat.shape[1]
+    tmp = view.array(
+        shape=(mat_n_cols, MAT_FACT_N_COLS),
+        itemsize=sizeof(double),
+        format="d",
+    )
+    cdef double[::, ::1] mat_factorized = tmp
+
+    # --- Factorization ---
+
+    info[0] = _c_core_factorize_algo_1(
         &mat_flat[0, 0],
         mat_n_cols,
         &mat_factorized[0, 0],
     )
 
-    # in case of a zero-division, the function exits early
-    if info[0] > 0:
-        return result
+    return mat_factorized
 
-    # then, all the right-hand sides are solved
+
+cdef double[::, ::1] _c_interf_factorize_solve_algo_1(
+    double[::, ::1] mat_factorized,
+    double[::, ::1] rhs,
+    int workers,
+):
+    """
+    This function serves as the interface that takes the factorized matrix and the
+    right-hand sides and returns the freshly allocated solution vector obtained by
+    solving the system of equations via backward substitution.
+
+    """
+
+    # --- Variable declarations ---
+
+    cdef int64_t mat_n_cols = mat_factorized.shape[0]
+    cdef int64_t rhs_n_cols = rhs.shape[1]
+    cdef int64_t iter_col
+    tmp = view.array(
+        shape=(mat_n_cols, rhs_n_cols),
+        itemsize=sizeof(double),
+        format="d",
+    )
+    cdef double[::, ::1] result = tmp
+
+    # --- Solving the system of equations ---
+
     for iter_col in prange(
         rhs_n_cols,
         nogil=True,
         num_threads=workers,
     ):
-        c_solve_penta_from_factorize_algo_1(
+        _c_core_factorize_solve_algo_1(
             mat_n_cols,
             &mat_factorized[0, 0],
             &rhs[0, iter_col],
@@ -121,8 +186,7 @@ cdef double[::, ::1] c_penta_solver1(
 
     return result
 
-
-cdef int c_penta_factorize_algo_1(
+cdef int _c_core_factorize_algo_1(
     double* mat_flat,
     int64_t mat_n_cols,
     double* mat_factorized,
@@ -154,7 +218,7 @@ cdef int c_penta_factorize_algo_1(
 
     """
 
-    # === Variable declarations ===
+    # --- Variable declarations ---
 
     cdef int64_t iter_row, fact_curr_base_idx
     cdef int64_t mat_row_base_idx_1 = mat_n_cols  # base index for the second row
@@ -257,7 +321,7 @@ cdef int c_penta_factorize_algo_1(
     return 0
 
 
-cdef int c_solve_penta_from_factorize_algo_1(
+cdef int _c_core_factorize_solve_algo_1(
     int64_t mat_n_cols,
     double* mat_factorized,
     double* rhs_single,
@@ -272,7 +336,7 @@ cdef int c_solve_penta_from_factorize_algo_1(
 
     """
 
-    # === Variable declarations ===
+    # --- Variable declarations ---
 
     cdef int64_t iter_row, fact_curr_base_idx, res_curr_base_idx
     cdef double ze_i, ze_i_minus_1, ze_i_plus_1  # zeta
@@ -364,7 +428,7 @@ cdef double[::, ::1] c_penta_solver2(
 
     """
 
-    # === Variable declarations ===
+    # --- Variable declarations ---
 
     cdef int64_t mat_n_cols = mat_flat.shape[1]
     cdef int64_t rhs_n_cols = rhs.shape[1]
@@ -433,7 +497,7 @@ cdef int c_penta_factorize_algo_2(
 
     """
 
-    # === Variable declarations ===
+    # --- Variable declarations ---
 
     cdef int64_t iter_row, fact_curr_base_idx
     cdef int64_t mat_row_base_idx_1 = mat_n_cols  # base index for the second row
@@ -553,7 +617,7 @@ cdef int c_solve_penta_from_factorize_algo_2(
 
     """
 
-    # === Variable declarations ===
+    # --- Variable declarations ---
 
     cdef int64_t iter_row, fact_curr_base_idx, res_curr_base_idx
     cdef double om_i, om_i_minus_1, om_i_plus_1  # omega
