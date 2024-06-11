@@ -11,12 +11,29 @@ from typing import Dict
 # === Models ===
 
 
+class Infos(IntEnum):
+    """
+    Defines the possible returns for ``info`` of the low level pentadiagonal solvers,
+    namely
+
+    - ``SUCCESS``: the solver has successfully solved the system
+    - ``SHAPE_MISMATCH``: the shape of the input arrays is incorrect
+    - ``WRONG_SOLVER``: the solver alias is the solver alias is incorrect on C-level
+        (internal error, should not occur)
+
+    """
+
+    SUCCESS = 0
+    SHAPE_MISMATCH = -1
+    WRONG_SOLVER = -2
+
+
 class PentaSolverAliases(IntEnum):
     """
     Defines all available solver aliases for pentadiagonal systems, namely
 
-    - ``PTRANS_I``: The PTRANS-I algorithm
-    - ``PTRANS_II``: The PTRANS-II algorithm
+    - ``PTRANS_I``: the PTRANS-I algorithm
+    - ``PTRANS_II``: the PTRANS-II algorithm
     - ``LAPACK``: Scipy's LAPACK solver :func:`scipy.linalg.solve_banded`
     - ``SUPER_LU``: Scipy's SuperLU solver :func:`scipy.sparse.linalg.spsolve(..., use_umfpack=False)`
     - ``UMFPACK``: Scipy's UMFpack solver :func:`scipy.sparse.linalg.spsolve(..., use_umfpack=True)`

@@ -107,7 +107,7 @@ cdef double[::, ::1] c_penta_solver1(
     # --- Solving the system of equations ---
 
     # first, the matrix is factorized
-    cdef double[::, ::1] mat_factorized = _c_interf_factorize_algo(
+    cdef double[::, ::1] mat_factorized = _c_interf_factorize(
         mat_flat,
         info,
         Solvers.PTRRANS_1,
@@ -118,7 +118,7 @@ cdef double[::, ::1] c_penta_solver1(
         return np.empty_like(rhs)
 
     # then, all the right-hand sides are solved
-    return _c_interf_factorize_solve_algo(
+    return _c_interf_factorize_solve(
         mat_factorized,
         rhs,
         workers,
@@ -128,7 +128,7 @@ cdef double[::, ::1] c_penta_solver1(
 
 
 
-cdef double[::, ::1] _c_interf_factorize_algo(
+cdef double[::, ::1] _c_interf_factorize(
     double[::, ::1] mat_flat,
     int* info,
     int solver,
@@ -159,15 +159,24 @@ cdef double[::, ::1] _c_interf_factorize_algo(
             mat_n_cols,
             &mat_factorized[0, 0],
         )
+        return mat_factorized
+
+    # Case 2: PTRRANS-II
+    elif solver == Solvers.PTRRANS_2:
+        info[0] = _c_core_factorize_algo_2(
+            &mat_flat[0, 0],
+            mat_n_cols,
+            &mat_factorized[0, 0],
+        )
+        return mat_factorized
 
     # Case 3: the wrong solver is chosen
     else:
         info[0] = Infos.WRONG_SOLVER
+        return mat_factorized
 
-    return mat_factorized
 
-
-cdef double[::, ::1] _c_interf_factorize_solve_algo(
+cdef double[::, ::1] _c_interf_factorize_solve(
     double[::, ::1] mat_factorized,
     double[::, ::1] rhs,
     int workers,
@@ -211,11 +220,30 @@ cdef double[::, ::1] _c_interf_factorize_solve_algo(
                 &result[0, iter_col],
             )
 
+        return result
+
+    # Case 2: PTRRANS-II
+    elif solver == Solvers.PTRRANS_2:
+        for iter_col in prange(
+            rhs_n_cols,
+            nogil=True,
+            num_threads=workers,
+        ):
+            info[0] = _c_core_factorize_solve_algo_2(
+                mat_n_cols,
+                &mat_factorized[0, 0],
+                &rhs[0, iter_col],
+                rhs_n_cols,
+                &result[0, iter_col],
+            )
+
+        return result
+
     # Case 3: the wrong solver is chosen
     else:
         info[0] = Infos.WRONG_SOLVER
+        return result
 
-    return result
 
 cdef int _c_core_factorize_algo_1(
     double* mat_flat,
@@ -260,7 +288,7 @@ cdef int _c_core_factorize_algo_1(
     cdef double al_i, al_i_minus_1, al_i_plus_1  # alpha
     cdef double be_i, be_i_minus_1, be_i_plus_1  # beta
 
-    # === Factorization ===
+    # --- Factorization ---
 
     # NOTE: in the following mu is manually checked for zero-division to extract the
     #       proper value of ``info`` and exit early in case of failure;
@@ -372,7 +400,7 @@ cdef int _c_core_factorize_solve_algo_1(
     cdef int64_t iter_row, fact_curr_base_idx, res_curr_base_idx
     cdef double ze_i, ze_i_minus_1, ze_i_plus_1  # zeta
 
-    # === Transformation ===
+    # --- Transformation ---
 
     # first, the right-hand side is transformed into the vector ``zeta``
     # First row
@@ -419,7 +447,7 @@ cdef int _c_core_factorize_solve_algo_1(
     ) / mat_factorized[fact_curr_base_idx + 6]
     result_view[res_curr_base_idx + rhs_n_cols] = ze_i_plus_1
 
-    # === Backward substitution ===
+    # --- Backward substitution ---
 
     # The solution vector is calculated by backward substitution that overwrites the
     # right-hand side vector with the solution vector
@@ -459,43 +487,38 @@ cdef double[::, ::1] c_penta_solver2(
 
     """
 
-    # --- Variable declarations ---
+    # --- Initial checks ---
 
-    cdef int64_t mat_n_cols = mat_flat.shape[1]
-    cdef int64_t rhs_n_cols = rhs.shape[1]
-    cdef int64_t iter_col
+    # if the number of columns in the flattened matrix is not equal to the number of
+    # rows in the right-hand side, the function exits early to avoid memory errors
+    if mat_flat.shape[1] != rhs.shape[0]:
+        info[0] = Infos.SHAPE_MISMATCH
+        return np.empty_like(rhs)
 
-    cdef double[::, ::1] result = np.empty(shape=(mat_n_cols, rhs_n_cols))
-    cdef double[::, ::1] mat_factorized = np.empty(shape=(mat_n_cols, 5))
-
-    # === Solving the system of equations ===
+    # --- Solving the system of equations ---
 
     # first, the matrix is factorized
-    info[0] = c_penta_factorize_algo_2(
-        &mat_flat[0, 0],
-        mat_n_cols,
-        &mat_factorized[0, 0],
+    cdef double[::, ::1] mat_factorized = _c_interf_factorize(
+        mat_flat,
+        info,
+        Solvers.PTRRANS_2,
     )
-    if info[0] > 0:
-        return result
+
+    # in case of an error during factorization, the function exits early
+    if info[0] != Infos.SUCCESS:
+        return np.empty_like(rhs)
 
     # then, all the right-hand sides are solved
-    for iter_col in prange(
-        rhs_n_cols,
-        nogil=True,
-        num_threads=workers,
-    ):
-        c_solve_penta_from_factorize_algo_2(
-            mat_n_cols,
-            &mat_factorized[0, 0],
-            &rhs[0, iter_col],
-            rhs_n_cols,
-            &result[0, iter_col],
-        )
+    return _c_interf_factorize_solve(
+        mat_factorized,
+        rhs,
+        workers,
+        info,
+        Solvers.PTRRANS_2,
+    )
 
-    return result
 
-cdef int c_penta_factorize_algo_2(
+cdef int _c_core_factorize_algo_2(
     double* mat_flat,
     int64_t mat_n_cols,
     double* mat_factorized,
@@ -539,7 +562,7 @@ cdef int c_penta_factorize_algo_2(
     cdef double si_i, si_i_minus_1, si_i_plus_1  # sigma
     cdef double phi_i, phi_i_minus_1, phi_i_plus_1  # phi
 
-    # === Factorization ===
+    # --- Factorization ---
 
     # NOTE: in the following ps is manually checked for zero-division to extract the
     #       proper value of ``info`` and exit early in case of failure;
@@ -632,7 +655,7 @@ cdef int c_penta_factorize_algo_2(
     return 0
 
 
-cdef int c_solve_penta_from_factorize_algo_2(
+cdef int _c_core_factorize_solve_algo_2(
     int64_t mat_n_cols,
     double* mat_factorized,
     double* rhs_single,
@@ -653,7 +676,7 @@ cdef int c_solve_penta_from_factorize_algo_2(
     cdef int64_t iter_row, fact_curr_base_idx, res_curr_base_idx
     cdef double om_i, om_i_minus_1, om_i_plus_1  # omega
 
-    # === Transformation ===
+    # --- Transformation ---
 
     # first, the right-hand side is transformed into the vector ``omega``
     # First row
@@ -708,7 +731,7 @@ cdef int c_solve_penta_from_factorize_algo_2(
     ) / mat_factorized[2]
     result_view[0] = om_i_minus_1
 
-    # === Forward substitution ===
+    # --- Forward substitution ---
 
     # The solution vector is calculated by forward substitution that overwrites the
     # right-hand side vector with the solution vector

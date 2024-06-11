@@ -5,18 +5,18 @@ on either Algorithm PTRANS-I or PTRANS-II.
 
 # === Imports ===
 
-from typing import Literal
+from typing import Dict, Literal
 
 import numpy as np
+import pentapy as pp
 import pytest
 import util_funcs as uf
-
-import pentapy as pp
 
 # === Constants ===
 
 SEED = 19_031_977
-REF_WARNING_CONTENT = "singular matrix at row index"
+SINGULAR_WARNING_REF_CONTENT = "singular matrix at row index"
+SHAPE_MISMATCH_ERROR_REF_CONTENT = "shape mismatch between the number of equations"
 N_ROWS = [
     3,  # important edge case
     4,  # important edge case
@@ -43,10 +43,69 @@ PARAM_DICT = {
     "workers": [1],
 }
 
+# === Auxiliary functions ===
+
+
+def convert_matrix_to_layout(
+    mat: np.ndarray,
+    input_layout: Literal["full", "banded_row_wise", "banded_col_wise"],
+) -> tuple[np.ndarray, Dict[str, bool]]:
+    """
+    Converts a dense pentadiagonal matrix to the desired layout.
+
+    """
+
+    if input_layout == "full":
+        return (
+            mat,
+            dict(is_flat=False),
+        )
+
+    elif input_layout == "banded_row_wise":
+        return (
+            pp.create_banded(mat, col_wise=False),
+            dict(
+                is_flat=True,
+                index_row_wise=True,
+            ),
+        )
+
+    elif input_layout == "banded_col_wise":
+        return (
+            pp.create_banded(mat, col_wise=True),
+            dict(
+                is_flat=True,
+                index_row_wise=False,
+            ),
+        )
+
+    else:
+        raise ValueError(f"Invalid input layout: {input_layout}")
+
+
+def convert_matrix_to_order(
+    mat: np.ndarray,
+    from_order: Literal["C", "F"],
+) -> np.ndarray:
+    """
+    Converts a dense pentadiagonal matrix to the desired order.
+
+    """
+
+    if from_order == "C":
+        return np.ascontiguousarray(mat)
+
+    elif from_order == "F":
+        return np.asfortranarray(mat)
+
+    else:
+        raise ValueError(f"Invalid from order: {from_order=}")
+
+
 # === Templates ===
 
 
-def pentapy_solvers_template(
+def pentapy_solvers_extended_template(
     n_rows: int,
     n_rhs: int,
     input_layout: Literal["full", "banded_row_wise", "banded_col_wise"],
@@ -65,9 +124,9 @@ def pentapy_solvers_template(
     workers: int,
 ) -> None:
     """
-    Tests the pentadiagonal solver based on Algorithm PTRANS-I when starting from
-    different input layouts, number of right-hand sides, number of rows, and also
-    when inducing an error by making the first diagonal element zero.
+    Tests the pentadiagonal solvers when starting from different input layouts, number
+    of right-hand sides, number of rows, and also when inducing an error by making the
+    first or last diagonal element exactly zero.
     It has to be ensured that the edge case of ``n_rows = 3`` is also covered.
 
     """
@@ -104,42 +163,17 @@ def pentapy_solvers_template(
         result_shape = (n_rows,)
 
     # the matrix is converted to the desired layout
-    if input_layout == "full":
-        mat = mat_full
-        kwargs = dict(is_flat=False)
+    mat, kwargs = convert_matrix_to_layout(mat_full, input_layout)
 
-    elif input_layout == "banded_row_wise":
-        mat = pp.create_banded(mat_full, col_wise=False)
-        kwargs = dict(
-            is_flat=True,
-            index_row_wise=True,
-        )
-
-    elif input_layout == "banded_col_wise":
-        mat = pp.create_banded(mat_full, col_wise=True)
-        kwargs = dict(
-            is_flat=True,
-            index_row_wise=False,
-        )
-
-    else:
-        raise ValueError(f"Invalid input layout: {input_layout}")
-
-    # the matrix is converted to the desired order
-    if from_order == "C":
-        mat = np.ascontiguousarray(mat)
-        rhs = np.ascontiguousarray(rhs)
-    elif from_order == "F":
-        mat = np.asfortranarray(mat)
-        rhs = np.asfortranarray(rhs)
-    else:
-        raise ValueError(f"Invalid from order: {from_order=}")
+    # the left-hand side matrix and right-hand side is converted to the desired order
+    mat = convert_matrix_to_order(mat=mat, from_order=from_order)
+    rhs = convert_matrix_to_order(mat=rhs, from_order=from_order)
 
     # the solution is computed
     # Case 1: in case of an error, a warning has to be issued and the result has to
     # be NaN
     if induce_error:
-        with pytest.warns(UserWarning, match=REF_WARNING_CONTENT):
+        with pytest.warns(UserWarning, match=SINGULAR_WARNING_REF_CONTENT):
             mat_ref_copy = mat.copy()
             sol = pp.solve(
                 mat=mat,
@@ -148,9 +182,10 @@ def pentapy_solvers_template(
                 workers=workers,
                 **kwargs,
             )
-            assert sol.shape == result_shape
-            assert np.isnan(sol).all()
-            assert np.array_equal(mat, mat_ref_copy)
+
+        assert sol.shape == result_shape
+        assert np.isnan(sol).all()
+        assert np.array_equal(mat, mat_ref_copy)
 
         return
 
@@ -174,3 +209,64 @@ def pentapy_solvers_template(
 
     # the solutions are compared
     assert np.allclose(sol, sol_ref)
+
+    return
+
+
+def pentapy_solvers_shape_mismatch_template(
+    n_rows: int,
+    n_rhs: int,
+    input_layout: Literal["full", "banded_row_wise", "banded_col_wise"],
+    solver_alias: Literal[
+        1,
+        "1",
+        "PTRANS-I",
+        "pTrAnS-I",
+        2,
+        "2",
+        "PTRANS-II",
+        "pTrAnS-Ii",
+    ],
+    from_order: Literal["C", "F"],
+    workers: int,
+) -> None:
+    """
+    Tests the pentadiagonal solvers when the shape of the right-hand side is incorrect,
+    starting from different input layouts, number of right-hand sides, and number of
+    rows.
+
+    """
+
+    # first, a random pentadiagonal matrix is generated
+    mat_full = uf.gen_conditioned_rand_penta_matrix_dense(
+        n_rows=n_rows,
+        seed=SEED,
+        ill_conditioned=False,
+    )
+
+    # the right-hand side is generated with a wrong shape (rows + 10)
+    np.random.seed(SEED)
+    if n_rhs is not None:
+        rhs = np.random.rand(n_rows + 10, n_rhs)
+    else:
+        rhs = np.random.rand(n_rows + 10)
+
+    # the matrix is converted to the desired layout
+    mat, kwargs = convert_matrix_to_layout(mat_full, input_layout)
+
+    # the left-hand side matrix and right-hand side is converted to the desired order
+    mat = convert_matrix_to_order(mat=mat, from_order=from_order)
+    rhs = convert_matrix_to_order(mat=rhs, from_order=from_order)
+
+    # the solution is computed, but due to the wrong shape of the right-hand side, an
+    # error has to be raised
+    with pytest.raises(ValueError, match=SHAPE_MISMATCH_ERROR_REF_CONTENT):
+        pp.solve(
+            mat=mat,
+            rhs=rhs,
+            solver=solver_alias,  # type: ignore
+            workers=workers,
+            **kwargs,
+        )
+
+    return

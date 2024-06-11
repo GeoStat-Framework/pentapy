@@ -11,8 +11,51 @@ import numpy as np
 import psutil
 
 from pentapy import _models as pmodels
+from pentapy import errors as perrors
 from pentapy import solver as psolver  # type: ignore
 from pentapy import tools as ptools
+
+# === Auxiliary functions ===
+
+
+def _get_num_workers(workers: int) -> int:
+    """
+    Gets the number of available workers for the solver.
+
+    Parameters
+    ----------
+    workers : :class:`int`
+        Number of workers requested.
+
+    Returns
+    -------
+    workers : :class:`int`
+        Number of workers available.
+
+    """
+
+    if workers < -1:
+        raise ValueError(
+            perrors.PentaPyErrorMessages.WRONG_WORKERS.format(workers=workers)
+        )
+
+    if workers == -1:
+        # NOTE: the following will be overwritten by the number of available threads
+        workers = 999_999_999_999_999_999_999_999_999
+
+    # the number of workers is limited between 1 and the number of available threads
+    # NOTE: the following does not count the number of total threads, but the number of
+    #       threads available for the solver
+    proc = psutil.Process()
+    workers = min(
+        workers,
+        len(proc.cpu_affinity()),  # type: ignore
+    )
+    workers = max(workers, 1)
+    del proc
+
+    return workers
+
 
 # === Solver ===
 
@@ -104,6 +147,14 @@ def solve(
     result : :class:`numpy.ndarray` of shape (m,) or (m, n)
         Solution of the equation system with the same shape as ``rhs``.
 
+    Raises
+    ------
+    ValueError
+        If the number of workers is incorrect.
+    ValueError
+        If there is a shape mismatch between the number of equations in the left-hand
+        side matrix and the number of right-hand sides.
+
     """
 
     # first, the solver is converted to the internal name to avoid confusion
@@ -132,35 +183,28 @@ def solve(
         # NOTE: this avoids memory leakage in the Cython-solver that will iterate over
         #       at least 4 rows/columns no matter what
         if mat_flat.shape[1] == 3:
-            return np.linalg.solve(
-                a=ptools.create_full(mat_flat, col_wise=False),
-                b=rhs,
-            )
+            if not mat_flat.shape[1] == rhs.shape[0]:
+                raise ValueError(
+                    perrors.PentaPyErrorMessages.SHAPE_MISMATCH.format(
+                        lhs_n_cols=mat_flat.shape[1],
+                        rhs_n_rows=rhs.shape[0],
+                    )
+                )
+
+            try:
+                return np.linalg.solve(
+                    a=ptools.create_full(mat_flat, col_wise=False),
+                    b=rhs,
+                )
+            except np.linalg.LinAlgError:
+                warnings.warn(
+                    "pentapy: NumPy LAPACK dense solver encountered singular matrix."
+                )
+                return np.full(shape=rhs.shape, fill_value=np.nan)
 
         # now, the number of workers for multithreading has to be determined if
         # necessary
-        # NOTE: the following does not count the number of total threads, but the number
-        #       of threads available for the solver
-        if workers < -1:
-            raise ValueError(
-                f"pentapy.solve: workers has to be -1 or greater, not {workers=}"
-            )
-
-        if workers == -1:
-            # NOTE: the following will be overwritten by the number of available threads
-            workers = 999_999_999_999_999_999_999_999_999
-
-        elif workers == 0:
-            workers = 1
-
-        # the number of workers is limited to the number of available threads
-        proc = psutil.Process()
-        workers = min(
-            workers,
-            len(proc.cpu_affinity()),  # type: ignore
-        )
-        workers = max(workers, 1)
-        del proc
+        workers = _get_num_workers(workers)
 
         # if there is only a single right-hand side, it has to be reshaped to a 2D array
         # NOTE: this has to be reverted at the end
@@ -183,19 +227,44 @@ def solve(
             workers,
         )
 
-        # in case of failure, the solver will return NaNs and issue a warning
-        if info > 0:
-            warnings.warn(
-                f"pentapy: {solver_inter.name} solver encountered singular matrix at "
-                f"row index {info - 1}. Returning NaNs."
-            )
-            sol = np.full(shape=rhs_og_shape, fill_value=np.nan)
+        print(f"{info=}")
 
         # in case of success, the solution can be returned (reshaped if necessary)
-        if single_rhs:
-            sol = sol.ravel()
+        if info == pmodels.Infos.SUCCESS:
+            if single_rhs:
+                sol = sol.ravel()
 
-        return sol
+            return sol
+
+        # in case of a shape mismatch, an error will be raised
+        if info == pmodels.Infos.SHAPE_MISMATCH:
+            raise ValueError(
+                perrors.PentaPyErrorMessages.SHAPE_MISMATCH.format(
+                    lhs_n_cols=mat_flat.shape[1],
+                    rhs_n_rows=rhs_og_shape[0],
+                )
+            )
+
+        # in case of a zero-division, the solver will return NaNs and issue a warning
+        elif info > pmodels.Infos.SUCCESS:
+            warnings.warn(
+                perrors.PentaPyErrorMessages.SINGULAR_MATRIX.format(
+                    solver_inter_name=solver_inter.name,
+                    row_idx=info - 1,
+                )
+            )
+
+            return np.full(shape=rhs_og_shape, fill_value=np.nan)
+
+        # in case of an internal error in determination of the solver, an error will be
+        # raised
+        elif info == pmodels.Infos.WRONG_SOLVER:  # pragma: no cover
+            raise AssertionError(perrors.PentaPyErrorMessages.WRONG_SOLVER)
+
+        # in case of an unknown error, an error will be raised
+        raise AssertionError(  # pragma: no cover
+            perrors.PentaPyErrorMessages.UNKNOWN_ERROR
+        )
 
     # Case 2: LAPACK's banded solver
     elif solver_inter == pmodels.PentaSolverAliases.LAPACK:

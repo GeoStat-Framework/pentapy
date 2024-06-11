@@ -22,6 +22,8 @@ param_dict = deepcopy(templates.PARAM_DICT)
 param_dict["from_order"] = ["C"]
 param_dict["workers"] = [-1]
 
+# --- Extended solve test ---
+
 
 def test_pentapy_solvers_parallel(
     n_rows: int,
@@ -42,7 +44,7 @@ def test_pentapy_solvers_parallel(
     workers: int,
 ) -> None:
 
-    templates.pentapy_solvers_template(
+    templates.pentapy_solvers_extended_template(
         n_rows=n_rows,
         n_rhs=n_rhs,
         input_layout=input_layout,
@@ -57,6 +59,9 @@ for key, value in param_dict.items():
     test_pentapy_solvers_parallel = pytest.mark.parametrize(key, value)(
         test_pentapy_solvers_parallel
     )
+
+
+# --- Different workers test ---
 
 
 @pytest.mark.parametrize(
@@ -83,9 +88,50 @@ def test_pentapy_solvers_parallel_different_workers(
     # Case 1: the test should fail
     if expected is not None:
         with pytest.raises(expected):
-            templates.pentapy_solvers_template(**kwargs)  # type: ignore
+            templates.pentapy_solvers_extended_template(**kwargs)  # type: ignore
 
         return
 
     # Case 2: the test should pass
-    templates.pentapy_solvers_template(**kwargs)  # type: ignore
+    templates.pentapy_solvers_extended_template(**kwargs)  # type: ignore
+
+
+# --- Shape mismatch test ---
+
+
+def test_pentapy_solvers_shape_mismatch_parallel(
+    n_rows: int,
+    n_rhs: int,
+    input_layout: Literal["full", "banded_row_wise", "banded_col_wise"],
+    solver_alias: Literal[
+        1,
+        "1",
+        "PTRANS-I",
+        "pTrAnS-I",
+        2,
+        "2",
+        "PTRANS-II",
+        "pTrAnS-Ii",
+    ],
+    from_order: Literal["C", "F"],
+    workers: int,
+) -> None:
+
+    templates.pentapy_solvers_shape_mismatch_template(
+        n_rows=n_rows,
+        n_rhs=n_rhs,
+        input_layout=input_layout,
+        solver_alias=solver_alias,
+        from_order=from_order,
+        workers=workers,
+    )
+
+
+params_dict_without_induce_error = deepcopy(templates.PARAM_DICT)
+params_dict_without_induce_error["workers"] = [-1]
+params_dict_without_induce_error.pop("induce_error")
+
+for key, value in params_dict_without_induce_error.items():
+    test_pentapy_solvers_shape_mismatch_parallel = pytest.mark.parametrize(key, value)(
+        test_pentapy_solvers_shape_mismatch_parallel
+    )
