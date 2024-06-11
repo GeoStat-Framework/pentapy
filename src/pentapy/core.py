@@ -96,8 +96,10 @@ def _handle_ptrans_info_complete_fail_cases(
         raise AssertionError(perrors.PentaPyErrorMessages.WRONG_SOLVER)
 
     # Case 3: unknown error
-    # pragma: no cover
-    raise AssertionError(perrors.PentaPyErrorMessages.UNKNOWN_ERROR)
+
+    raise AssertionError(  # pragma: no cover
+        perrors.PentaPyErrorMessages.UNKNOWN_ERROR,
+    )
 
 
 # === Auxiliary Solver Interfaces ===
