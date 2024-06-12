@@ -262,14 +262,14 @@ cdef int _c_core_factorize_algo_1(
     They are overwriting the memoryview ``mat_factorized`` as follows:
 
     ```bash
-    [[   *          mu_0         *          al_0        be_0      ]
-     [   *          mu_1        ga_1        al_1        be_1      ]
-     [  e_2         mu_2        ga_2        al_2        be_2      ]
+    [[   *           *          mu_0        al_0        be_0      ]
+     [   *          ga_1        mu_1        al_1        be_1      ]
+     [  e_2         ga_2        mu_2        al_2        be_2      ]
                                 ...
-     [  e_i         mu_i        ga_i        al_i        be_i  ]
-     [  e_{n-3}     mu_{n-3}    ga_{n-3}    al_{n-3}    be_{n-3}  ]                                ...
-     [  e_{n-2}     mu_{n-2}    ga_{n-2}    al_{n-2}      *       ]
-     [  e_{n-1}     mu_{n-1}    ga_{n-1}      *           *       ]]
+     [  e_i         ga_i        mu_i        al_i        be_i  ]
+     [  e_{n-3}     ga_{n-3}    mu_{n-3}    al_{n-3}    be_{n-3}  ]                                ...
+     [  e_{n-2}     ga_{n-2}    mu_{n-2}    al_{n-2}      *       ]
+     [  e_{n-1}     ga_{n-1}    mu_{n-1}      *           *       ]]
     ```
 
     where the entries marked with ``*`` are not used by design, but overwritten with
@@ -304,8 +304,8 @@ cdef int _c_core_factorize_algo_1(
 
 
     mat_factorized[0] = 0.0
-    mat_factorized[1] = mu_i
-    mat_factorized[2] = 0.0
+    mat_factorized[1] = 0.0
+    mat_factorized[2] = mu_i
     mat_factorized[3] = al_i_minus_1
     mat_factorized[4] = be_i_minus_1
 
@@ -319,8 +319,8 @@ cdef int _c_core_factorize_algo_1(
     be_i = mat_flat[1] / mu_i
 
     mat_factorized[5] = 0.0
-    mat_factorized[6] = mu_i
-    mat_factorized[7] = ga_i
+    mat_factorized[6] = ga_i
+    mat_factorized[7] = mu_i
     mat_factorized[8] = al_i
     mat_factorized[9] = be_i
 
@@ -342,8 +342,8 @@ cdef int _c_core_factorize_algo_1(
         be_i = be_i_plus_1
 
         mat_factorized[fact_curr_base_idx] = e_i
-        mat_factorized[fact_curr_base_idx + 1] = mu_i
-        mat_factorized[fact_curr_base_idx + 2] = ga_i
+        mat_factorized[fact_curr_base_idx + 1] = ga_i
+        mat_factorized[fact_curr_base_idx + 2] = mu_i
         mat_factorized[fact_curr_base_idx + 3] = al_i
         mat_factorized[fact_curr_base_idx + 4] = be_i
 
@@ -359,8 +359,8 @@ cdef int _c_core_factorize_algo_1(
     al_i_plus_1 = (mat_flat[mat_row_base_idx_1 + mat_n_cols - 2] - be_i * ga_i) / mu_i
 
     mat_factorized[fact_curr_base_idx] = e_i
-    mat_factorized[fact_curr_base_idx + 1] = mu_i
-    mat_factorized[fact_curr_base_idx + 2] = ga_i
+    mat_factorized[fact_curr_base_idx + 1] = ga_i
+    mat_factorized[fact_curr_base_idx + 2] = mu_i
     mat_factorized[fact_curr_base_idx + 3] = al_i_plus_1
     mat_factorized[fact_curr_base_idx + 4] = 0.0
 
@@ -372,8 +372,8 @@ cdef int _c_core_factorize_algo_1(
         return mat_n_cols
 
     mat_factorized[fact_curr_base_idx + 5] = e_i
-    mat_factorized[fact_curr_base_idx + 6] = mu_i
-    mat_factorized[fact_curr_base_idx + 7] = ga_i
+    mat_factorized[fact_curr_base_idx + 6] = ga_i
+    mat_factorized[fact_curr_base_idx + 7] = mu_i
     mat_factorized[fact_curr_base_idx + 8] = 0.0
     mat_factorized[fact_curr_base_idx + 9] = 0.0
 
@@ -405,11 +405,11 @@ cdef int _c_core_factorize_solve_algo_1(
     # first, the right-hand side is transformed into the vector ``zeta``
     # First row
 
-    ze_i_minus_1 = rhs_single[0] / mat_factorized[1]
+    ze_i_minus_1 = rhs_single[0] / mat_factorized[2]
     result_view[0] = ze_i_minus_1
 
     # Second row
-    ze_i = (rhs_single[rhs_n_cols] - ze_i_minus_1 * mat_factorized[7]) / mat_factorized[6]
+    ze_i = (rhs_single[rhs_n_cols] - ze_i_minus_1 * mat_factorized[6]) / mat_factorized[7]
     result_view[rhs_n_cols] = ze_i
 
     # Central rows
@@ -420,8 +420,8 @@ cdef int _c_core_factorize_solve_algo_1(
         ze_i_plus_1 = (
             rhs_single[res_curr_base_idx]
             - ze_i_minus_1 * mat_factorized[fact_curr_base_idx]
-            - ze_i * mat_factorized[fact_curr_base_idx + 2]
-        ) / mat_factorized[fact_curr_base_idx + 1]
+            - ze_i * mat_factorized[fact_curr_base_idx + 1]
+        ) / mat_factorized[fact_curr_base_idx + 2]
         ze_i_minus_1 = ze_i
         ze_i = ze_i_plus_1
         result_view[res_curr_base_idx] = ze_i_plus_1
@@ -433,8 +433,8 @@ cdef int _c_core_factorize_solve_algo_1(
     ze_i_plus_1 = (
         rhs_single[res_curr_base_idx]
         - ze_i_minus_1 * mat_factorized[fact_curr_base_idx]
-        - ze_i * mat_factorized[fact_curr_base_idx + 2]
-    ) / mat_factorized[fact_curr_base_idx + 1]
+        - ze_i * mat_factorized[fact_curr_base_idx + 1]
+    ) / mat_factorized[fact_curr_base_idx + 2]
     ze_i_minus_1 = ze_i
     ze_i = ze_i_plus_1
     result_view[res_curr_base_idx] = ze_i_plus_1
@@ -443,8 +443,8 @@ cdef int _c_core_factorize_solve_algo_1(
     ze_i_plus_1 = (
         rhs_single[res_curr_base_idx + rhs_n_cols]
         - ze_i_minus_1 * mat_factorized[fact_curr_base_idx + 5]
-        - ze_i * mat_factorized[fact_curr_base_idx + 7]
-    ) / mat_factorized[fact_curr_base_idx + 6]
+        - ze_i * mat_factorized[fact_curr_base_idx + 6]
+    ) / mat_factorized[fact_curr_base_idx + 7]
     result_view[res_curr_base_idx + rhs_n_cols] = ze_i_plus_1
 
     # --- Backward substitution ---
