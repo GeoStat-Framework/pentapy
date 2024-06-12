@@ -1,0 +1,4 @@
+black>=24,<25
+isort[colors]
+pylint
+cython-lint

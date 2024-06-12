@@ -88,7 +88,7 @@ If M is a full matrix, you call the following:
 
     X = pp.solve(M, Y)
 
-If M is flattend in row-wise order you have to set the keyword argument ``is_flat=True``:
+If M is flattened in row-wise order you have to set the keyword argument ``is_flat=True``:
 
 .. code-block:: python
 
@@ -99,7 +99,7 @@ If M is flattend in row-wise order you have to set the keyword argument ``is_fla
 
     X = pp.solve(M, Y, is_flat=True)
 
-If you got a col-wise flattend matrix you have to set ``index_row_wise=False``:
+If you got a col-wise flattened matrix you have to set ``index_row_wise=False``:
 
 .. code-block:: python
 
