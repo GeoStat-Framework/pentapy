@@ -386,7 +386,7 @@ cdef int _c_core_factorize_solve_algo_1(
     double* rhs_single,
     int64_t rhs_n_cols,
     double* result_view,
-) except * nogil:
+) noexcept nogil:
     """
     Solves the pentadiagonal system of equations ``Ax = b`` with the factorized
     unit upper triangular matrix ``U`` and the right-hand side ``b``.
@@ -661,7 +661,7 @@ cdef int _c_core_factorize_solve_algo_2(
     double* rhs_single,
     int64_t rhs_n_cols,
     double* result_view,
-) except * nogil:
+) noexcept nogil:
 
     """
     Solves the pentadiagonal system of equations ``Ax = b`` with the factorized
