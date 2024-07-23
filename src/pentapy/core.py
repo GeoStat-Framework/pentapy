@@ -258,7 +258,7 @@ def solve(
 
         Strings are not case-sensitive.
     num_threads : :class:`int` or ``None``, optional
-        Number of num_threads used in the PTRANS-I and PTRANS-II solvers for parallel
+        Number of threads used in the PTRANS-I and PTRANS-II solvers for parallel
         processing of multiple right-hand sides. Parallelisation overhead can be
         significant for small systems. If set to a negative value or ``None``, the
         number of threads is automatically determined. Default: ``None``
