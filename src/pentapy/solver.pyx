@@ -11,10 +11,37 @@ implemented in Cython.
 import numpy as np
 
 cimport numpy as np
-
 from cython cimport view
+
 from cython.parallel import prange
+
 from libc.stdint cimport int64_t
+
+# NOTE: OPENMP is set during setup
+if OPENMP:
+    cimport openmp
+
+# === Optional Setup of OpenMP ===
+
+
+def get_c_num_threads(num_threads):
+    # if the thread number was speficied explicitly, it needs to be sanitized
+    if num_threads is not None:
+        if num_threads >= 0:
+            return max(1, num_threads)
+
+        elif OPENMP:  # negative numbers result in maximum thread number with OPENMP
+            return openmp.omp_get_max_threads()
+
+        # without OpenMP, the number of threads is set to 1 in the final return
+
+    # if None, the maximum thread number is retrieved with OPENMP if available
+    # NOTE: OPENMP is set during setup
+    if OPENMP:
+        return openmp.omp_get_num_procs()
+
+    # if no threads were set so far, the number of threads is set to 1 (serial mode)
+    return 1
 
 
 # === Constants ===
@@ -36,18 +63,19 @@ cdef enum Infos:
 def penta_solver1(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
-    int workers,
+    num_threads=None,
 ):
 
     # NOTE: info is defined to be overwritten for possible future validations
     cdef int info
 
+    num_threads_c = get_c_num_threads(num_threads)
     return (
         np.asarray(
             c_penta_solver1(
                 mat_flat,
                 rhs,
-                workers,
+                num_threads_c,
                 &info,
             )
         ),
@@ -58,18 +86,19 @@ def penta_solver1(
 def penta_solver2(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
-    int workers,
+    num_threads=None,
 ):
 
     # NOTE: info is defined to be overwritten for possible future validations
     cdef int info
 
+    num_threads_c = get_c_num_threads(num_threads)
     return (
         np.asarray(
             c_penta_solver2(
                 mat_flat,
                 rhs,
-                workers,
+                num_threads_c,
                 &info,
             )
         ),
@@ -82,7 +111,7 @@ def penta_solver2(
 cdef double[::, ::1] c_penta_solver1(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
-    int workers,
+    int num_threads,
     int* info,
 ):
     """
@@ -121,11 +150,10 @@ cdef double[::, ::1] c_penta_solver1(
     return _c_interf_factorize_solve(
         mat_factorized,
         rhs,
-        workers,
+        num_threads,
         info,
         Solvers.PTRRANS_1,
     )
-
 
 
 cdef double[::, ::1] _c_interf_factorize(
@@ -179,7 +207,7 @@ cdef double[::, ::1] _c_interf_factorize(
 cdef double[::, ::1] _c_interf_factorize_solve(
     double[::, ::1] mat_factorized,
     double[::, ::1] rhs,
-    int workers,
+    int num_threads,
     int* info,
     int solver,
 ):
@@ -210,7 +238,7 @@ cdef double[::, ::1] _c_interf_factorize_solve(
         for iter_col in prange(
             rhs_n_cols,
             nogil=True,
-            num_threads=workers,
+            num_threads=num_threads,
         ):
             info[0] = _c_core_factorize_solve_algo_1(
                 mat_n_cols,
@@ -227,7 +255,7 @@ cdef double[::, ::1] _c_interf_factorize_solve(
         for iter_col in prange(
             rhs_n_cols,
             nogil=True,
-            num_threads=workers,
+            num_threads=num_threads,
         ):
             info[0] = _c_core_factorize_solve_algo_2(
                 mat_n_cols,
@@ -301,7 +329,6 @@ cdef int _c_core_factorize_algo_1(
 
     al_i_minus_1 = mat_flat[mat_row_base_idx_1] / mu_i
     be_i_minus_1 = mat_flat[0] / mu_i
-
 
     mat_factorized[0] = 0.0
     mat_factorized[1] = 0.0
@@ -473,7 +500,7 @@ cdef int _c_core_factorize_solve_algo_1(
 cdef double[::, ::1] c_penta_solver2(
     double[::, ::1] mat_flat,
     double[::, ::1] rhs,
-    int workers,
+    int num_threads,
     int* info,
 ):
     """
@@ -512,7 +539,7 @@ cdef double[::, ::1] c_penta_solver2(
     return _c_interf_factorize_solve(
         mat_factorized,
         rhs,
-        workers,
+        num_threads,
         info,
         Solvers.PTRRANS_2,
     )

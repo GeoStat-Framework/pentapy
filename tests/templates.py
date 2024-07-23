@@ -40,7 +40,7 @@ PARAM_DICT = {
     "solver_alias": SOLVER_ALIASES_PTRANS_I + SOLVER_ALIASES_PTRANS_II,
     "induce_error": [False, True],
     "from_order": ["C", "F"],
-    "workers": [1],
+    "num_threads": [1],
 }
 
 # === Auxiliary functions ===
@@ -121,7 +121,7 @@ def pentapy_solvers_extended_template(
     ],
     induce_error: bool,
     from_order: Literal["C", "F"],
-    workers: int,
+    num_threads: int,
 ) -> None:
     """
     Tests the pentadiagonal solvers when starting from different input layouts, number
@@ -178,7 +178,7 @@ def pentapy_solvers_extended_template(
                 mat=mat,
                 rhs=rhs,
                 solver=solver_alias,  # type: ignore
-                workers=workers,
+                num_threads=num_threads,
                 **kwargs,
             )
 
@@ -194,7 +194,7 @@ def pentapy_solvers_extended_template(
         mat=mat,
         rhs=rhs,
         solver=solver_alias,  # type: ignore
-        workers=workers,
+        num_threads=num_threads,
         **kwargs,
     )
     assert sol.shape == result_shape
@@ -227,7 +227,7 @@ def pentapy_solvers_shape_mismatch_template(
         "pTrAnS-Ii",
     ],
     from_order: Literal["C", "F"],
-    workers: int,
+    num_threads: int,
 ) -> None:
     """
     Tests the pentadiagonal solvers when the shape of the right-hand side is incorrect,
@@ -264,7 +264,7 @@ def pentapy_solvers_shape_mismatch_template(
             mat=mat,
             rhs=rhs,
             solver=solver_alias,  # type: ignore
-            workers=workers,
+            num_threads=num_threads,
             **kwargs,
         )
 

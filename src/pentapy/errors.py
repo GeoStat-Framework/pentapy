@@ -12,7 +12,6 @@ class PentaPyErrorMessages(str, Enum):
     """
     Defines the possible error messages for the pentapy package, namely
 
-    - ``WRONG_WORKERS``: the number of workers is incorrect
     - ``SINGULAR_MATRIX``: the matrix is singular
     - ``SHAPE_MISMATCH``: the shape of the input arrays is incorrect
     - ``WRONG_SOLVER``: the solver alias is incorrect on C-level (internal error,
@@ -21,9 +20,6 @@ class PentaPyErrorMessages(str, Enum):
 
     """
 
-    WRONG_WORKERS = (
-        "pentapy.solve: workers has to be -1 or greater, but got workers={workers}"
-    )
     SINGULAR_MATRIX = (
         "pentapy: {solver_inter_name} solver encountered singular matrix at "
         "row index {row_idx}. Returning NaNs."

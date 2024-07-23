@@ -95,7 +95,6 @@ Requirements
 ============
 
 - `Numpy >= 1.20.0 <http://www.numpy.org>`_
-- `psutil >= 5.8.0 <https://psutil.readthedocs.io/en/latest/>`_
 
 Optional
 --------

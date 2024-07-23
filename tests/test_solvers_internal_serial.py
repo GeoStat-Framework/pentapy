@@ -39,7 +39,7 @@ def test_pentapy_solvers_extended_serial(
     ],
     induce_error: bool,
     from_order: Literal["C", "F"],
-    workers: int,
+    num_threads: int,
 ) -> None:
 
     templates.pentapy_solvers_extended_template(
@@ -49,7 +49,7 @@ def test_pentapy_solvers_extended_serial(
         solver_alias=solver_alias,
         induce_error=induce_error,
         from_order=from_order,
-        workers=workers,
+        num_threads=num_threads,
     )
 
 
@@ -77,7 +77,7 @@ def test_pentapy_solvers_shape_mismatch_serial(
         "pTrAnS-Ii",
     ],
     from_order: Literal["C", "F"],
-    workers: int,
+    num_threads: int,
 ) -> None:
 
     templates.pentapy_solvers_shape_mismatch_template(
@@ -86,7 +86,7 @@ def test_pentapy_solvers_shape_mismatch_serial(
         input_layout=input_layout,
         solver_alias=solver_alias,
         from_order=from_order,
-        workers=workers,
+        num_threads=num_threads,
     )
 
 

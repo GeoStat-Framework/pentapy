@@ -5,56 +5,40 @@
 # === Imports ===
 
 import warnings
-from typing import Literal
+from typing import Literal, Optional
 
 import numpy as np
-import psutil
 
 from pentapy import _models as pmodels
 from pentapy import errors as perrors
 from pentapy import solver as psolver  # type: ignore
 from pentapy import tools as ptools
 
+# === Types ===
+
+SolverAliases = Literal[
+    1,
+    "1",
+    "PTRANS-I",
+    "ptrans-i",
+    2,
+    "2",
+    "PTRANS-II",
+    "ptrans-ii",
+    3,
+    "3",
+    "lapack",
+    4,
+    "4",
+    "spsolve",
+    5,
+    "5",
+    "spsolve_umf",
+    "umf",
+    "umf_pack",
+]
+
 # === Auxiliary functions ===
-
-
-def _get_num_workers(workers: int) -> int:
-    """
-    Gets the number of available workers for the solver.
-
-    Parameters
-    ----------
-    workers : :class:`int`
-        Number of workers requested.
-
-    Returns
-    -------
-    workers : :class:`int`
-        Number of workers available.
-
-    """
-
-    if workers < -1:
-        raise ValueError(
-            perrors.PentaPyErrorMessages.WRONG_WORKERS.format(workers=workers)
-        )
-
-    if workers == -1:
-        # NOTE: the following will be overwritten by the number of available threads
-        workers = 999_999_999_999_999_999_999_999_999
-
-    # the number of workers is limited between 1 and the number of available threads
-    # NOTE: the following does not count the number of total threads, but the number of
-    #       threads available for the solver
-    proc = psutil.Process()
-    workers = min(
-        workers,
-        len(proc.cpu_affinity()),  # type: ignore
-    )
-    workers = max(workers, 1)
-    del proc
-
-    return workers
 
 
 def _raise_ptrans_or_numpy_shape_mismatch_error(
@@ -134,12 +118,12 @@ def _solve_with_numpy(
         return np.full(shape=rhs.shape, fill_value=np.nan)
 
 
-def _solve_with_ptrans(
+def _solve_with_ptrans(  # pylint: disable=R1710
     mat: np.ndarray,
     rhs: np.ndarray,
     is_flat: bool,
     index_row_wise: bool,
-    workers: int,
+    num_threads: Optional[int],
     solver_inter: pmodels.PentaSolverAliases,
 ) -> np.ndarray:  # type: ignore
     """
@@ -150,10 +134,10 @@ def _solve_with_ptrans(
     # the matrix is checked and shifted if necessary ...
     if is_flat and index_row_wise:
         mat_flat = np.asarray(mat, dtype=np.double)
-        ptools._check_penta(mat_flat)
+        ptools._check_penta(mat_flat)  # pylint: disable=W0212
     elif is_flat:
         mat_flat = np.array(mat, dtype=np.double)  # NOTE: this is a copy
-        ptools._check_penta(mat_flat)
+        ptools._check_penta(mat_flat)  # pylint: disable=W0212
         ptools.shift_banded(mat_flat, copy=False)
     else:
         mat_flat = ptools.create_banded(mat, col_wise=False, dtype=np.double)
@@ -167,9 +151,6 @@ def _solve_with_ptrans(
     if mat_flat.shape[1] == 3:
         return _solve_with_numpy(mat_flat=mat_flat, rhs=rhs)
 
-    # now, the number of workers for multithreading has to be determined if necessary
-    workers = _get_num_workers(workers)
-
     # if there is only a single right-hand side, it has to be reshaped to a 2D array
     # NOTE: this has to be reverted at the end
     single_rhs = rhs.ndim == 1
@@ -179,16 +160,16 @@ def _solve_with_ptrans(
 
     # the respective solver is chosen ...
     solver_func = (
-        psolver.penta_solver1
+        psolver.penta_solver1  # pylint: disable=I1101
         if solver_inter == pmodels.PentaSolverAliases.PTRANS_I
-        else psolver.penta_solver2
+        else psolver.penta_solver2  # pylint: disable=I1101
     )
 
     # ... and the solver is called
     sol, info = solver_func(
         np.ascontiguousarray(mat_flat),
         np.ascontiguousarray(rhs),
-        workers,
+        num_threads,
     )
 
     # in case of success, the solution can be returned (reshaped if necessary)
@@ -199,7 +180,7 @@ def _solve_with_ptrans(
         return sol
 
     # in case of a singular matrix, a warning will be issued and NaNs will be returned
-    elif info > pmodels.Infos.SUCCESS:
+    if info > pmodels.Infos.SUCCESS:
         warnings.warn(
             perrors.PentaPyErrorMessages.SINGULAR_MATRIX.format(
                 solver_inter_name=pmodels.PentaSolverAliases.PTRANS_I.name,
@@ -225,28 +206,8 @@ def solve(
     rhs: np.ndarray,
     is_flat: bool = False,
     index_row_wise: bool = True,
-    solver: Literal[
-        1,
-        "1",
-        "PTRANS-I",
-        "ptrans-i",
-        2,
-        "2",
-        "PTRANS-II",
-        "ptrans-ii",
-        3,
-        "3",
-        "lapack",
-        4,
-        "4",
-        "spsolve",
-        5,
-        "5",
-        "spsolve_umf",
-        "umf",
-        "umf_pack",
-    ] = 1,
-    workers: int = 1,
+    solver: SolverAliases = 1,
+    num_threads: Optional[int] = None,
 ) -> np.ndarray:
     """
     Solver for a pentadiagonal system.
@@ -296,11 +257,11 @@ def solve(
             * ``[5, "5", "spsolve_umf", "umf", "umf_pack"]`` : :func:`scipy.sparse.linalg.spsolve(..., use_umfpack=False)`
 
         Strings are not case-sensitive.
-    workers : :class:`int`, optional
-        Number of workers used in the PTRANS-I and PTRANS-II solvers for parallel
+    num_threads : :class:`int` or ``None``, optional
+        Number of num_threads used in the PTRANS-I and PTRANS-II solvers for parallel
         processing of multiple right-hand sides. Parallelisation overhead can be
-        significant for small systems. If set to ``-1``, the number of workers is
-        automatically determined. Default: ``1``
+        significant for small systems. If set to a negative value or ``None``, the
+        number of threads is automatically determined. Default: ``None``
 
     Returns
     -------
@@ -310,15 +271,15 @@ def solve(
     Raises
     ------
     ValueError
-        If the number of workers is incorrect.
-    ValueError
         If there is a shape mismatch between the number of equations in the left-hand
         side matrix and the number of right-hand sides.
 
-    """
+    """  # pylint: disable=C0301
 
     # first, the solver is converted to the internal name to avoid confusion
-    solver_inter = pmodels._SOLVER_ALIAS_CONVERSIONS[str(solver).lower()]
+    solver_inter = pmodels._SOLVER_ALIAS_CONVERSIONS[  # pylint: disable=W0212
+        str(solver).lower()
+    ]
 
     # Case 1: the pentapy solvers
     if solver_inter in {
@@ -331,12 +292,12 @@ def solve(
             rhs=rhs,
             is_flat=is_flat,
             index_row_wise=index_row_wise,
-            workers=workers,
+            num_threads=num_threads,
             solver_inter=solver_inter,
         )
 
     # Case 2: LAPACK's banded solver
-    elif solver_inter == pmodels.PentaSolverAliases.LAPACK:
+    if solver_inter == pmodels.PentaSolverAliases.LAPACK:
         try:
             from scipy.linalg import solve_banded
         except ImportError as imp_err:  # pragma: no cover
@@ -345,7 +306,7 @@ def solve(
 
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)  # NOTE: this is a copy
-            ptools._check_penta(mat_flat)
+            ptools._check_penta(mat_flat)  # pylint: disable=W0212
             ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
             mat_flat = np.asarray(mat)
@@ -367,7 +328,7 @@ def solve(
             return np.full(shape=rhs.shape, fill_value=np.nan)
 
     # Case 3: SciPy's sparse solver with or without UMFPACK
-    elif solver_inter in {
+    if solver_inter in {
         pmodels.PentaSolverAliases.SUPER_LU,
         pmodels.PentaSolverAliases.UMFPACK,
     }:
@@ -380,7 +341,7 @@ def solve(
 
         if is_flat and index_row_wise:
             mat_flat = np.array(mat)  # NOTE: this is a copy
-            ptools._check_penta(mat_flat)
+            ptools._check_penta(mat_flat)  # pylint: disable=W0212
             ptools.shift_banded(mat_flat, col_to_row=False, copy=False)
         elif is_flat:
             mat_flat = np.asarray(mat)
@@ -412,6 +373,6 @@ def solve(
 
         return sol
 
-    else:  # pragma: no cover
-        msg = f"pentapy.solve: unknown solver ({solver})"
-        raise ValueError(msg)
+    # Case 4: unknown solver
+    msg = f"pentapy.solve: unknown solver ({solver})"  # pragma: no cover
+    raise ValueError(msg)  # pragma: no cover
