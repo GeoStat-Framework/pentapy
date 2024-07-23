@@ -61,8 +61,8 @@ cdef enum Infos:
 
 
 def penta_solver1(
-    double[::, ::1] mat_flat,
-    double[::, ::1] rhs,
+    const double[::, ::1] mat_flat,
+    const double[::, ::1] rhs,
     num_threads=None,
 ):
 
@@ -84,8 +84,8 @@ def penta_solver1(
 
 
 def penta_solver2(
-    double[::, ::1] mat_flat,
-    double[::, ::1] rhs,
+    const double[::, ::1] mat_flat,
+    const double[::, ::1] rhs,
     num_threads=None,
 ):
 
@@ -109,8 +109,8 @@ def penta_solver2(
 # === Solver Algorithm 1 ===
 
 cdef double[::, ::1] c_penta_solver1(
-    double[::, ::1] mat_flat,
-    double[::, ::1] rhs,
+    const double[::, ::1] mat_flat,
+    const double[::, ::1] rhs,
     int num_threads,
     int* info,
 ):
@@ -157,7 +157,7 @@ cdef double[::, ::1] c_penta_solver1(
 
 
 cdef double[::, ::1] _c_interf_factorize(
-    double[::, ::1] mat_flat,
+    const double[::, ::1] mat_flat,
     int* info,
     int solver,
 ):
@@ -206,7 +206,7 @@ cdef double[::, ::1] _c_interf_factorize(
 
 cdef double[::, ::1] _c_interf_factorize_solve(
     double[::, ::1] mat_factorized,
-    double[::, ::1] rhs,
+    const double[::, ::1] rhs,
     int num_threads,
     int* info,
     int solver,
@@ -498,8 +498,8 @@ cdef int _c_core_factorize_solve_algo_1(
 
 
 cdef double[::, ::1] c_penta_solver2(
-    double[::, ::1] mat_flat,
-    double[::, ::1] rhs,
+    const double[::, ::1] mat_flat,
+    const double[::, ::1] rhs,
     int num_threads,
     int* info,
 ):
