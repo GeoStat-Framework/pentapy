@@ -14,7 +14,7 @@ name = "pentapy"
 authors = [{name = "Sebastian Müller", email = "info@geostat-framework.org"}]
 readme = "README.md"
 license = {text = "MIT"}
-dynamic = ["version", "dependencies", "optional-dependencies"]
+dynamic = ["version"]
 description = "pentapy: A toolbox for pentadiagonal matrizes."
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -35,10 +35,37 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Utilities",
 ]
+dependencies = [
+    "numpy>=1.20.0",
+    "psutil>=5.8.0",
+]
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements/base.txt"]}
-optional-dependencies = {scipy = {file = ["requirements/scipy.txt"]}, umfpack = {file = ["requirements/umfpack.txt"]}, all = {file = ["requirements/all.txt"]}, doc = {file = ["requirements/doc.txt"]}, test = {file = ["requirements/test.txt"]}, check = {file = ["requirements/check.txt"]}}
+[project.optional-dependencies]
+scipy = ["scipy"]
+umfpack = ["scikit-umfpack"]
+all = ["scipy", "scikit-umfpack"]
+doc = [
+    "m2r2>=0.2.8",
+    "scipy>=1.1.0",
+    "matplotlib>=3",
+    "perfplot<0.9",
+    "numpydoc>=1.1",
+    "sphinx>=7",
+    "sphinx-gallery>=0.8",
+    "sphinx-rtd-theme>=2",
+]
+test = [
+    "pytest>=8",
+    "pytest-cov>=3",
+    "pytest-xdist>=3",
+    "scipy>=1.1.0",
+]
+check = [
+    "black>=24,<25",
+    "isort[colors]",
+    "pylint",
+    "cython-lint",
+]
 
 [project.urls]
 Homepage = "https://github.com/GeoStat-Framework/pentapy"
@@ -115,6 +142,9 @@ max-line-length = 120
     max-statements = 80
     max-attributes = 25
     max-public-methods = 75
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
 
 [tool.cibuildwheel]
 # Switch to using build
