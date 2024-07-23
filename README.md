@@ -107,7 +107,7 @@ Have a look at the script: [``examples/03_perform_simple.py``](https://github.co
 
 ## Requirements:
 
-- [NumPy >= 1.14.5](https://www.numpy.org)
+- [NumPy >= 1.20.0](https://www.numpy.org)
 
 ### Optional
 

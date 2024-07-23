@@ -4,6 +4,7 @@ requires = [
     "setuptools_scm>=7",
     "numpy>=2.0.0rc1,<2.3; python_version >= '3.9'",
     "oldest-supported-numpy; python_version < '3.9'",
+    "extension-helpers>=1",
     "Cython>=3.0.10,<3.1.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -35,15 +36,14 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Utilities",
 ]
-dependencies = ["numpy>=1.20.0"]
+dependencies = [
+    "numpy>=1.20.0",
+]
 
 [project.optional-dependencies]
 scipy = ["scipy"]
 umfpack = ["scikit-umfpack"]
-all = [
-    "scipy",
-    "scikit-umfpack",
-]
+all = ["scipy", "scikit-umfpack"]
 doc = [
     "m2r2>=0.2.8",
     "scipy>=1.1.0",
@@ -54,12 +54,17 @@ doc = [
     "sphinx-gallery>=0.8",
     "sphinx-rtd-theme>=2",
 ]
-test = ["pytest-cov>=3"]
+test = [
+    "pytest>=8",
+    "pytest-cov>=3",
+    "pytest-xdist>=3",
+    "scipy>=1.1.0",
+]
 check = [
-  "black>=24,<25",
-  "isort[colors]",
-  "pylint",
-  "cython-lint",
+    "black>=24,<25",
+    "isort[colors]",
+    "pylint",
+    "cython-lint",
 ]
 
 [project.urls]
@@ -103,6 +108,8 @@ max-line-length = 120
         "*examples*",
         "*tests*",
         "*paper*",
+        "src/pentapy/_version.py",
+        "src/pentapy/__init__.py",
     ]
 
     [tool.coverage.report]
@@ -135,6 +142,9 @@ max-line-length = 120
     max-statements = 80
     max-attributes = 25
     max-public-methods = 75
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
 
 [tool.cibuildwheel]
 # Switch to using build

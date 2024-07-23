@@ -1,4 +1,14 @@
 # cython: language_level=3
-cdef double[:] c_penta_solver1(double[:, :] mat_flat, double[:] rhs)
+cdef double[::, ::1] c_penta_solver1(
+    const double[::, ::1] mat_flat,
+    const double[::, ::1] rhs,
+    int num_threads,
+    int* info,
+)
 
-cdef double[:] c_penta_solver2(double[:, :] mat_flat, double[:] rhs)
+cdef double[::, ::1] c_penta_solver2(
+    const double[::, ::1] mat_flat,
+    const double[::, ::1] rhs,
+    int num_threads,
+    int* info,
+)
