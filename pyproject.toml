@@ -100,6 +100,7 @@ max-line-length = 120
 
 [tool.coverage]
     [tool.coverage.run]
+    plugins = ["Cython.Coverage"]
     source = ["pentapy"]
     omit = [
         "*docs*",
