@@ -6,7 +6,7 @@ import warnings
 import numpy as np
 
 from pentapy.solver import penta_solver1, penta_solver2
-from pentapy.tools import _check_penta, create_banded, shift_banded
+from pentapy.tools import _check_penta, create_banded, create_full, shift_banded
 
 
 def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
@@ -77,6 +77,11 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         else:
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
         rhs = np.asarray(rhs, dtype=np.double)
+        # Special case: Early exit when the matrix has only 3 rows/columns
+        # NOTE: this avoids memory leakage in the Cython-solver that will iterate over
+        #       at least 4 rows/columns no matter what
+        if mat_flat.shape[1] == 3:
+            return np.linalg.solve(a=create_full(mat_flat, col_wise=False), b=rhs)
         try:
             return penta_solver1(mat_flat, rhs)
         except ZeroDivisionError:
@@ -93,6 +98,11 @@ def solve(mat, rhs, is_flat=False, index_row_wise=True, solver=1):
         else:
             mat_flat = create_banded(mat, col_wise=False, dtype=np.double)
         rhs = np.asarray(rhs, dtype=np.double)
+        # Special case: Early exit when the matrix has only 3 rows/columns
+        # NOTE: this avoids memory leakage in the Cython-solver that will iterate over
+        #       at least 4 rows/columns no matter what
+        if mat_flat.shape[1] == 3:
+            return np.linalg.solve(a=create_full(mat_flat, col_wise=False), b=rhs)
         try:
             return penta_solver2(mat_flat, rhs)
         except ZeroDivisionError:
