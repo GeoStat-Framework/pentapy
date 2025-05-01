@@ -1,15 +1,15 @@
 [build-system]
 requires = [
     "setuptools>=64",
+    "setuptools<72.2; implementation_name == 'pypy'", # https://github.com/pypa/distutils/issues/283
     "setuptools_scm>=7",
-    "numpy>=2.0.0rc1,<2.3; python_version >= '3.9'",
-    "oldest-supported-numpy; python_version < '3.9'",
+    "numpy>=2.0.0rc1",
     "Cython>=3.0.10,<3.1.0",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 name = "pentapy"
 authors = [{name = "Sebastian Müller", email = "info@geostat-framework.org"}]
 readme = "README.md"
@@ -26,11 +26,11 @@ classifiers = [
     "Operating System :: Unix",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Scientific/Engineering",
     "Topic :: Utilities",
@@ -45,18 +45,21 @@ all = [
     "scikit-umfpack",
 ]
 doc = [
-    "m2r2>=0.2.8",
+    "myst_parser",
     "scipy>=1.1.0",
     "matplotlib>=3",
     "perfplot<0.9",
     "numpydoc>=1.1",
     "sphinx>=7",
     "sphinx-gallery>=0.8",
-    "sphinx-rtd-theme>=2",
+    "sphinx-rtd-theme>=3",
 ]
-test = ["pytest-cov>=3"]
+test = [
+    "pytest-cov>=3",
+     "Cython>=3.0.10,<3.1.0",
+]
 check = [
-  "black>=24,<25",
+  "black>=24",
   "isort[colors]",
   "pylint",
   "cython-lint",
@@ -85,11 +88,11 @@ multi_line_output = 3
 
 [tool.black]
 target-version = [
-    "py38",
     "py39",
     "py310",
     "py311",
     "py312",
+    "py313",
 ]
 
 [tool.cython-lint]
@@ -97,6 +100,7 @@ max-line-length = 120
 
 [tool.coverage]
     [tool.coverage.run]
+    plugins = ["Cython.Coverage"]
     source = ["pentapy"]
     omit = [
         "*docs*",
@@ -132,17 +136,17 @@ max-line-length = 120
     max-args = 20
     max-locals = 50
     max-branches = 30
-    max-statements = 80
+    max-statements = 85
     max-attributes = 25
     max-public-methods = 75
 
 [tool.cibuildwheel]
 # Switch to using build
 build-frontend = "build"
-# Disable building PyPy wheels on all platforms, 32bit builds, py3.6, py3.7
-skip = ["cp36-*", "cp37-*", "pp*", "*-win32", "*-manylinux_i686", "*-musllinux_*"]
+# explicitly enable pypy
+enable = ["pypy"]
+# Disable building py3.6/7/8, pp3.8, 32bit linux
+skip = ["cp36-*", "cp37-*", "cp38-*", "pp38-*", "*_i686"]
 # Run the package tests using `pytest`
 test-extras = "test"
 test-command = "pytest -v {package}/tests"
-# Skip trying to test arm64 builds on Intel Macs
-test-skip = "*-macosx_arm64 *-macosx_universal2:arm64"
