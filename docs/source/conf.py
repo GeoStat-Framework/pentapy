@@ -60,7 +60,7 @@ extensions = [
     "sphinx.ext.napoleon",  # parameters look better than with numpydoc only
     "numpydoc",
     "sphinx_gallery.gen_gallery",
-    "m2r2",
+    "myst_parser",
 ]
 
 # autosummaries from source-files
@@ -89,7 +89,11 @@ templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = [".rst", ".md"]
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+# source_suffix = [".rst", ".md"]
 # source_suffix = ".rst"
 
 # The master toctree document.
@@ -143,7 +147,7 @@ html_theme_options = {
     #    'canonical_url': '',
     #    'analytics_id': '',
     "logo_only": False,
-    "display_version": True,
+    "version_selector": True,
     "prev_next_buttons_location": "top",
     #    'style_external_links': False,
     #    'vcs_pageview_mode': '',
@@ -192,11 +196,13 @@ latex_logo = "pics/pentapy_150.png"
 # latex_show_urls = 'footnote'
 # http://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-latex-output
 latex_elements = {
-    "preamble": r"""
+    "preamble": (
+        r"""
 \setcounter{secnumdepth}{1}
 \setcounter{tocdepth}{2}
 \pagestyle{fancy}
-""",
+"""
+    ),
     "pointsize": "10pt",
     "papersize": "a4paper",
     "fncychap": "\\usepackage[Glenn]{fncychap}",
@@ -252,9 +258,6 @@ intersphinx_mapping = {
     "Sphinx": ("http://www.sphinx-doc.org/en/stable/", None),
 }
 
-# -- Sphinx Gallery Options
-from sphinx_gallery.sorting import FileNameSortKey
-
 sphinx_gallery_conf = {
     # only show "print" output as output
     "capture_repr": (),
@@ -267,7 +270,7 @@ sphinx_gallery_conf = {
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
-    "within_subsection_order": FileNameSortKey,
+    "within_subsection_order": "FileNameSortKey",
     # directory where function granular galleries are stored
     "backreferences_dir": None,
     # Modules for which function level galleries are created.  In
