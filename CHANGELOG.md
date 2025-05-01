@@ -3,6 +3,26 @@
 All notable changes to **pentapy** will be documented in this file.
 
 
+## [1.4.0] - 2025-05
+
+See [#31](https://github.com/GeoStat-Framework/pentapy/pull/31)
+
+### Enhancements
+- added support for python 3.13
+- adding [musllinux](https://musl.libc.org/) wheels
+- adding PyPy wheels (pp39 and pp310)
+  - PyPy needs `setuptools<72.2`: https://github.com/pypa/distutils/issues/283
+- adding 32bit Windows wheels again (still Tier 1 support in Python)
+- adding aarch64 Linux wheels
+
+### Changes
+- dropped python 3.8 support
+
+### Bugfixes
+- use numpy solver for 3x3 matrices
+- set `cdivision=False` in cython solver
+
+
 ## [1.3.0] - 2024-04
 
 See [#21](https://github.com/GeoStat-Framework/pentapy/pull/21)
@@ -100,6 +120,7 @@ This is the first release of pentapy, a python toolbox for solving pentadiagonal
 The solver is implemented in cython, which makes it really fast.
 
 
+[1.4.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.1...v1.1.2
