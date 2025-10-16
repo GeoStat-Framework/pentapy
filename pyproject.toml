@@ -1,10 +1,9 @@
 [build-system]
 requires = [
-    "setuptools>=64",
-    "setuptools<72.2; implementation_name == 'pypy'", # https://github.com/pypa/distutils/issues/283
+    "setuptools>=77",
     "setuptools_scm>=7",
-    "numpy>=2.0.0rc1",
-    "Cython>=3.0.10,<3.1.0",
+    "numpy>=2",
+    "Cython>=3",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -13,7 +12,8 @@ requires-python = ">=3.9"
 name = "pentapy"
 authors = [{name = "Sebastian Müller", email = "info@geostat-framework.org"}]
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 dynamic = ["version"]
 description = "pentapy: A toolbox for pentadiagonal matrizes."
 classifiers = [
@@ -21,7 +21,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: End Users/Desktop",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: Unix",
     "Programming Language :: Python",
@@ -31,6 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Scientific/Engineering",
     "Topic :: Utilities",
@@ -72,9 +72,6 @@ Source = "https://github.com/GeoStat-Framework/pentapy"
 Tracker = "https://github.com/GeoStat-Framework/pentapy/issues"
 Changelog = "https://github.com/GeoStat-Framework/pentapy/blob/main/CHANGELOG.md"
 Conda-Forge = "https://anaconda.org/conda-forge/pentapy"
-
-[tool.setuptools]
-license-files = ["LICENSE"]
 
 [tool.setuptools_scm]
 write_to = "src/pentapy/_version.py"
@@ -145,8 +142,8 @@ max-line-length = 120
 build-frontend = "build"
 # explicitly enable pypy
 enable = ["pypy"]
-# Disable building py3.6/7/8, pp3.8, 32bit linux
-skip = ["cp36-*", "cp37-*", "cp38-*", "pp38-*", "*_i686"]
+# Disable building free-threaded versions and cp39/310 on windows-arm64 (no numpy support)
+skip = ["cp31?t-*", "cp39-win_arm64", "cp310-win_arm64"]
 # Run the package tests using `pytest`
 test-extras = "test"
 test-command = "pytest -v {package}/tests"
