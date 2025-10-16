@@ -3,6 +3,14 @@
 All notable changes to **pentapy** will be documented in this file.
 
 
+## [1.4.1] - 2025-10
+
+See [#33](https://github.com/GeoStat-Framework/pentapy/pull/33)
+
+### Enhancements
+- added support for python 3.14
+
+
 ## [1.4.0] - 2025-05
 
 See [#31](https://github.com/GeoStat-Framework/pentapy/pull/31)
@@ -120,6 +128,7 @@ This is the first release of pentapy, a python toolbox for solving pentadiagonal
 The solver is implemented in cython, which makes it really fast.
 
 
+[1.4.1]: https://github.com/GeoStat-Framework/pentapy/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/GeoStat-Framework/pentapy/compare/v1.1.2...v1.2.0
