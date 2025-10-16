@@ -59,7 +59,7 @@ jobs:
       fail-fast: false
       matrix:
         # macos-13 is an intel runner, macos-latest is apple silicon
-        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-13, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-15-intel, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
           fetch-depth: "0"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.22.0
+        uses: pypa/cibuildwheel@v3.2.1
         with:
           output-dir: dist-wheel-${{ matrix.os }}
 
@@ -82,7 +82,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-15-intel, macos-latest]
         # https://github.com/scipy/oldest-supported-numpy/blob/main/setup.cfg
         ver:
           - { py: "3.9", np: "==1.20.0" }
@@ -90,11 +90,12 @@ jobs:
           - { py: "3.11", np: "==1.23.2" }
           - { py: "3.12", np: "==1.26.2" }
           - { py: "3.13", np: "==2.1.0" }
-          - { py: "3.13", np: ">=2.1.0" }
+          - { py: "3.14", np: "==2.3.2" }
+          - { py: "3.14", np: ">=2.3.2" }
         exclude:
-          - os: macos-14
+          - os: macos-latest
             ver: { py: "3.9", np: "==1.20.0" }
-          - os: macos-14
+          - os: macos-latest
             ver: { py: "3.10", np: "==1.21.6" }
     steps:
       - uses: actions/checkout@v4

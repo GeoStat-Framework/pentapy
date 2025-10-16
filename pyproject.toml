@@ -145,8 +145,8 @@ max-line-length = 120
 build-frontend = "build"
 # explicitly enable pypy
 enable = ["pypy"]
-# Disable building py3.6/7/8, pp3.8, 32bit linux
-skip = ["cp36-*", "cp37-*", "cp38-*", "pp38-*", "*_i686"]
+# Disable building free-threaded versions
+skip = ["cp31?t-*"]
 # Run the package tests using `pytest`
 test-extras = "test"
 test-command = "pytest -v {package}/tests"
