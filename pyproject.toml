@@ -145,8 +145,8 @@ max-line-length = 120
 build-frontend = "build"
 # explicitly enable pypy
 enable = ["pypy"]
-# Disable building free-threaded versions
-skip = ["cp31?t-*"]
+# Disable building free-threaded versions and cp39/310 on windows-arm64 (no numpy support)
+skip = ["cp31?t-*", "cp39-win_arm64", "cp310-win_arm64"]
 # Run the package tests using `pytest`
 test-extras = "test"
 test-command = "pytest -v {package}/tests"
