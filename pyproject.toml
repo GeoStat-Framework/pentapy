@@ -13,7 +13,7 @@ requires-python = ">=3.9"
 name = "pentapy"
 authors = [{name = "Sebastian Müller", email = "info@geostat-framework.org"}]
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT License" }
 dynamic = ["version"]
 description = "pentapy: A toolbox for pentadiagonal matrizes."
 classifiers = [
@@ -21,7 +21,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: End Users/Desktop",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: Unix",
     "Programming Language :: Python",
