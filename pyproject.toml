@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=64",
+    "setuptools>=77",
     "setuptools_scm>=7",
     "numpy>=2",
     "Cython>=3",
@@ -12,7 +12,8 @@ requires-python = ">=3.9"
 name = "pentapy"
 authors = [{name = "Sebastian Müller", email = "info@geostat-framework.org"}]
 readme = "README.md"
-license = "MIT License"
+license = "MIT"
+license-files = ["LICENSE"]
 dynamic = ["version"]
 description = "pentapy: A toolbox for pentadiagonal matrizes."
 classifiers = [
@@ -71,9 +72,6 @@ Source = "https://github.com/GeoStat-Framework/pentapy"
 Tracker = "https://github.com/GeoStat-Framework/pentapy/issues"
 Changelog = "https://github.com/GeoStat-Framework/pentapy/blob/main/CHANGELOG.md"
 Conda-Forge = "https://anaconda.org/conda-forge/pentapy"
-
-[tool.setuptools]
-license-files = ["LICENSE"]
 
 [tool.setuptools_scm]
 write_to = "src/pentapy/_version.py"
